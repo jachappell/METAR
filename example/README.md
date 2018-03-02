@@ -1,6 +1,6 @@
 # METAR example
 
-To build:
+To build:<br />
 $ make -f weather.mak<br />
 
 Get the current weather condtions in Saint Louis:<br />
