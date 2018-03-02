@@ -13,10 +13,10 @@ This is a work in progress.  So far, the following have been implemented:
 
 Look <a href="https://github.com/jachappell/METAR/blob/master/example/main.cpp">here</a> to see an example.
  
-To build the example:
+To build the example:<br />
 $ cd example <br />
 $ make -f weather.mak <br />
 
-To build and run tests:
+To build and run tests:<br />
 $ cd tests <br />
 $ ./run_tests.sh <br />
