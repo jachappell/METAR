@@ -59,7 +59,6 @@ BOOST_AUTO_TEST_CASE(good_temperature_string_both_positive1)
   BOOST_CHECK(metar.DewPoint() == 6);
 }
 
-
 BOOST_AUTO_TEST_CASE(good_temperature_string_negative_dew_point)
 {
   char buffer[8];
@@ -422,6 +421,82 @@ BOOST_AUTO_TEST_CASE(good_slp_string)
   BOOST_CHECK(metar.SeaLevelPressure() == 1017.7);
 }
 
+BOOST_AUTO_TEST_CASE(bad_visibility_string_meters)
+{
+  Metar metar("15O0");
+
+  BOOST_CHECK(!metar.hasVisibility());
+  BOOST_CHECK(!metar.hasVisibilityUnits());
+}
+
+BOOST_AUTO_TEST_CASE(good_visibility_string_meters)
+{
+  Metar metar("1500");
+
+  BOOST_CHECK(metar.hasVisibility());
+  BOOST_CHECK(metar.Visibility() == 1500);
+
+  BOOST_CHECK(metar.hasVisibilityUnits());
+  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "M") == 0);
+}
+
+BOOST_AUTO_TEST_CASE(bad_visibility_string_sm)
+{
+  Metar metar1("1OSM");
+
+  BOOST_CHECK(!metar1.hasVisibility());
+  BOOST_CHECK(!metar1.hasVisibilityUnits());
+
+  Metar metar2("l0SM");
+
+  BOOST_CHECK(!metar2.hasVisibility());
+  BOOST_CHECK(!metar2.hasVisibilityUnits());
+}
+
+BOOST_AUTO_TEST_CASE(good_visibility_string_integer_sm)
+{
+  Metar metar("10SM");
+
+  BOOST_CHECK(metar.hasVisibility());
+  BOOST_CHECK(metar.Visibility() == 10);
+
+  BOOST_CHECK(metar.hasVisibilityUnits());
+  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+}
+
+BOOST_AUTO_TEST_CASE(good_visibility_string_fraction_sm_1)
+{
+  Metar metar("1/4SM");
+
+  BOOST_CHECK(metar.hasVisibility());
+  BOOST_CHECK(metar.Visibility() == 0.25);
+
+  BOOST_CHECK(metar.hasVisibilityUnits());
+  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+}
+
+BOOST_AUTO_TEST_CASE(good_visibility_string_fraction_sm_2)
+{
+  Metar metar("5/16SM");
+
+  BOOST_CHECK(metar.hasVisibility());
+  BOOST_CHECK(metar.Visibility() == (5.0 / 16.0));
+
+  BOOST_CHECK(metar.hasVisibilityUnits());
+  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+}
+
+BOOST_AUTO_TEST_CASE(good_visibility_string_fraction_sm_3)
+{
+  Metar metar("2 1/2SM");
+
+  BOOST_CHECK(metar.hasVisibility());
+  BOOST_CHECK(metar.Visibility() == 2.5);
+
+  BOOST_CHECK(metar.hasVisibilityUnits());
+  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+}
+
 BOOST_AUTO_TEST_CASE(real_METAR_1)
 {
   char buffer[100];
@@ -445,6 +520,9 @@ BOOST_AUTO_TEST_CASE(real_METAR_1)
 
   BOOST_CHECK(!metar.hasMinWindDirection());
   BOOST_CHECK(!metar.hasMaxWindDirection());
+  
+  BOOST_CHECK(metar.Visibility() == 10);
+  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
 
   BOOST_CHECK(metar.Temperature() == 9);
   BOOST_CHECK(metar.DewPoint() == 6);
@@ -487,6 +565,9 @@ BOOST_AUTO_TEST_CASE(real_METAR_2)
   BOOST_CHECK(metar.MinWindDirection() == 90);
   BOOST_CHECK(metar.MaxWindDirection() == 150);
 
+  BOOST_CHECK(metar.Visibility() == 1400);
+  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "M") == 0);
+
   BOOST_CHECK(metar.Temperature() == -4);
   BOOST_CHECK(metar.DewPoint() == -7);
   
@@ -523,6 +604,9 @@ BOOST_AUTO_TEST_CASE(real_METAR_3)
 
   BOOST_CHECK(!metar.hasMinWindDirection());
   BOOST_CHECK(!metar.hasMaxWindDirection());
+  
+  BOOST_CHECK(metar.Visibility() == 2);
+  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
 
   BOOST_CHECK(metar.Temperature() == 2);
   BOOST_CHECK(metar.DewPoint() == 2);
@@ -557,6 +641,9 @@ BOOST_AUTO_TEST_CASE(real_METAR_4)
 
   BOOST_CHECK(!metar.hasMinWindDirection());
   BOOST_CHECK(!metar.hasMaxWindDirection());
+  
+  BOOST_CHECK(metar.Visibility() == 10);
+  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
 
   BOOST_CHECK(metar.Temperature() == 16);
   BOOST_CHECK(metar.DewPoint() == -1);

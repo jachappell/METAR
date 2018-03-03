@@ -20,6 +20,9 @@ static const char *WIND_SPEED_KT = "KT";
 static const char *WIND_SPEED_MPS = "MPS";
 static const char *WIND_SPEED_KPH = "KPH";
 
+static const char *VIS_UNITS_M = "M";
+static const char *VIS_UNITS_SM = "SM";
+
 Metar::Metar()
   : _day(_INTEGER_UNDEFINED)
   , _hour(_INTEGER_UNDEFINED)
@@ -30,6 +33,8 @@ Metar::Metar()
   , _wind_speed_units(nullptr)
   , _min_wind_dir(_INTEGER_UNDEFINED)
   , _max_wind_dir(_INTEGER_UNDEFINED)
+  , _vis(_DOUBLE_UNDEFINED)
+  , _vis_units(nullptr)
   , _temp(_INTEGER_UNDEFINED) 
   , _dew(_INTEGER_UNDEFINED)
   , _altimeterA(_DOUBLE_UNDEFINED)
@@ -37,15 +42,26 @@ Metar::Metar()
   , _slp(_DOUBLE_UNDEFINED)
   , _ftemp(_DOUBLE_UNDEFINED) 
   , _fdew(_DOUBLE_UNDEFINED)
+  , _previous_element(nullptr)
 {
   _metar[0] = '\0';
   _icao[0] = '\0';
 }
 
+Metar::Metar(const char *metar_str) : Metar()
+{
+  parse(metar_str);
+}
+
+Metar::Metar(char *metar_str) : Metar()
+{
+  parse(metar_str);
+}
+
 static bool match(const char *pattern, const char *str)
 {
   size_t pattern_len = strlen(pattern);
-  if (pattern_len == strlen(str))
+  if (str && (pattern_len == strlen(str)))
   {
     for (size_t i = 0 ; i < pattern_len ; i++)
     {
@@ -122,6 +138,29 @@ static inline bool is_wind_var(const char *str)
   return match("###V###", str);
 }
 
+static inline bool is_vis(const char *str)
+{
+  const char *p = strstr(str, VIS_UNITS_SM);
+  if (!p)
+  {  
+    return match("####", str);
+  }
+ 
+  auto len = strlen(str); 
+  if ((str + len - p) == 2)
+  {
+    if (!isdigit(str[0]) && (str[0] != 'M')) return false;
+    for (size_t i = 1 ; i < len - 2 ; i++)
+    {
+      if (!isdigit(str[i]) && str[i] != '/') return false;
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
 static inline bool is_temp(const char *str)
 {
   return match("##/##", str) 
@@ -181,6 +220,10 @@ void Metar::parse(char *metar_str)
     {
       parse_wind_var(el);
     }
+    else if (!hasVisibility() && is_vis(el))
+    {
+      parse_vis(el);
+    }
     else if (!hasTemperature() && is_temp(el))
     {
       parse_temp(el);
@@ -201,6 +244,8 @@ void Metar::parse(char *metar_str)
     {
       parse_tempNA(el);
     }
+
+    _previous_element = el;
 
     el = strtok(nullptr, " ");
   }
@@ -280,6 +325,52 @@ void Metar::parse_wind_var(const char *str)
 
   strcpy(val, str + 4);
   _max_wind_dir = atoi(val);
+}
+
+void Metar::parse_vis(const char *str)
+{
+  const char *u = strstr(str, VIS_UNITS_SM);
+  if (!u)
+  {
+    _vis = atof(str);
+    _vis_units = VIS_UNITS_M;
+  }
+  else
+  {
+    const char *p = strstr(str, "/");
+    if (p == nullptr)
+    {
+      _vis = atof(str);
+    }
+    else
+    {
+      char val[4];
+      auto len = p - str;
+      
+      if (str[0] == 'M')
+      {
+        strncpy(val, str + 1, len);
+      }
+      else
+      {
+        strncpy(val, str, len);
+      }
+      val[len] = '\0';
+      double numerator = atof(val);
+
+      len = u - p;
+      strncpy(val, p + 1, len);
+      val[len] = '\0';
+      double denominator = atof(val);
+
+      _vis = numerator / denominator;
+      if (match("#", _previous_element))
+      {
+        _vis += atof(_previous_element);
+      }
+    }
+    _vis_units = VIS_UNITS_SM;
+  }
 }
 
 static inline int temp(char *val)

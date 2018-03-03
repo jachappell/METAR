@@ -138,9 +138,20 @@ int main(int argc, char **argv)
     }
     cout << " " << metar.WindSpeedUnits() << endl;
 
+    cout << "\nVisibility:  " << metar.Visibility() << " ";
+    if (strcmp(metar.VisibilityUnits(), "SM"))
+    {
+      cout << "meters" << endl;
+    }
+    else
+    {
+      cout << "miles" << endl;
+    }
+
     return 0;
   }
 
   usage(command);
+
   return 1;
 }

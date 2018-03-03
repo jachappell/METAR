@@ -8,6 +8,7 @@ This is a work in progress.  So far, the following have been implemented:
   * Location Identifier
   * Date and Time of Report
   * Wind
+  * Visibility
   * Pressure
   * Temperature
 

@@ -14,21 +14,13 @@ public:
   // Constructor
   //    metar_str - METAR to decode
   //
-  Metar(const char *metar_str)
-    : Metar()
-  {
-    parse(metar_str);
-  }
+  Metar(const char *metar_str);
 
   //
   // Constructor
   //    metar_str - METAR to decode
   //
-  Metar(char *metar_str)
-    : Metar()
-  {
-    parse(metar_str);
-  }
+  Metar(char *metar_str);
 
   ~Metar() = default;
 
@@ -108,6 +100,19 @@ public:
   int hasWindSpeedUnits() const { return _wind_speed_units != nullptr;  }
 
   //
+  // Visibility
+  //
+  double Visibility() const { return _vis; }
+  bool hasVisibility() const { return _vis != _DOUBLE_UNDEFINED; }
+
+  //
+  // Visibility units
+  //    SM - statute miles
+  //    M  - meters
+  const char *VisibilityUnits() const { return _vis_units; }
+  int hasVisibilityUnits() const { return _vis_units != nullptr;  }
+
+  //
   // Temperature
   //    Celsius
   //
@@ -168,6 +173,8 @@ private:
   void parse_wind(const char *str);
 
   void parse_wind_var(const char *str);
+
+  void parse_vis(const char *str);
   
   void parse_temp(const char *str);
 
@@ -193,6 +200,9 @@ private:
   int _min_wind_dir;
   int _max_wind_dir;
 
+  double _vis;
+  const char *_vis_units;
+
   int _temp;
   int _dew;
 
@@ -204,6 +214,8 @@ private:
 
   double _ftemp;
   double _fdew;
+
+  const char *_previous_element;
 
   static int _INTEGER_UNDEFINED;
   static double _DOUBLE_UNDEFINED;
