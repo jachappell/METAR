@@ -1,7 +1,7 @@
 # METAR example
 
 To build:<br />
-$ make -f weather.mak<br />
+$ make<br />
 
 Get the current weather condtions in Saint Louis:<br />
 $ ./weather KSTL

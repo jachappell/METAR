@@ -3,9 +3,7 @@ OBJDIR=.obj
 CC=g++
 
 CFLAGS = -Wall -I.. 
-LDFLAGS = 
-
-$(shell test -f metar.cpp || ln ../metar.cpp .)
+LDFLAGS =
 
 $(shell mkdir -p $(OBJDIR)) 
 
@@ -15,6 +13,9 @@ $(PROG) : $(OBJS)
 	$(CC) $(OBJS) $(LDFLAGS) -o $(PROG)
 
 -include $(OBJS:.o=.d)
+
+metar.cpp: ../metar.cpp
+	cp ../metar.cpp .
 
 $(OBJDIR)/%.o: %.cpp
 	$(CC) -c $(CFLAGS) $*.cpp -o $(OBJDIR)/$*.o

@@ -15,7 +15,7 @@ Look <a href="https://github.com/jachappell/METAR/blob/master/example/main.cpp">
  
 To build the example:<br />
 $ cd example <br />
-$ make -f weather.mak <br />
+$ make<br />
 
 To build and run tests:<br />
 $ cd tests <br />
