@@ -228,6 +228,21 @@ BOOST_AUTO_TEST_CASE(good_wind_string_kt_3digit_gust)
   BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
 }
 
+BOOST_AUTO_TEST_CASE(good_wind_string_vrb_kt_3digit_gust)
+{
+  Metar metar("VRB105G121KT");
+
+  BOOST_CHECK(metar.hasWindSpeed());
+  BOOST_CHECK(!metar.hasWindDirection());
+
+  BOOST_CHECK(metar.WindSpeed() == 105);
+  
+  BOOST_CHECK(metar.hasWindGust());
+  BOOST_CHECK(metar.WindGust() == 121);
+
+  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
+}
+
 BOOST_AUTO_TEST_CASE(good_wind_string_kt_gust)
 {
   Metar metar("25005G12KT");
@@ -308,6 +323,21 @@ BOOST_AUTO_TEST_CASE(good_wind_string_kph)
   BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KPH") == 0);
   
   BOOST_CHECK(!metar.hasWindGust());
+}
+
+BOOST_AUTO_TEST_CASE(good_wind_string_vrb_kph_2digit_gust)
+{
+  Metar metar("VRB05G21KPH");
+
+  BOOST_CHECK(metar.hasWindSpeed());
+  BOOST_CHECK(!metar.hasWindDirection());
+
+  BOOST_CHECK(metar.WindSpeed() == 5);
+  
+  BOOST_CHECK(metar.hasWindGust());
+  BOOST_CHECK(metar.WindGust() == 21);
+
+  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KPH") == 0);
 }
 
 BOOST_AUTO_TEST_CASE(bad_altA_string)
