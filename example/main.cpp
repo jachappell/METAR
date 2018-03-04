@@ -122,30 +122,36 @@ int main(int argc, char **argv)
          << DEG_SIM << (fahrenheit_flag ? 'F' : 'C');
     cout << "\nHumidity:    " << humidity(temp, dew) << "%" << endl;
 
-    cout << "\nWind:        ";
-    if (metar.hasWindDirection())
-    { 
-      cout << metar.WindDirection() << DEG_SIM;
-    }
-    else
+    if (metar.hasWindSpeed())
     {
-      cout << "VRB";
+      cout << "\nWind:        ";
+      if (metar.hasWindDirection())
+      { 
+        cout << metar.WindDirection() << DEG_SIM;
+      }
+      else
+      {
+        cout << "VRB";
+      }
+      cout << " / " << metar.WindSpeed();
+      if (metar.hasWindGust())
+      {
+        cout << " (" << metar.WindGust() << ")";
+      }
+      cout << " " << metar.WindSpeedUnits() << endl;
     }
-    cout << " / " << metar.WindSpeed();
-    if (metar.hasWindGust())
-    {
-      cout << " (" << metar.WindGust() << ")";
-    }
-    cout << " " << metar.WindSpeedUnits() << endl;
 
-    cout << "\nVisibility:  " << metar.Visibility() << " ";
-    if (strcmp(metar.VisibilityUnits(), "SM"))
+    if (metar.hasVisibility())
     {
-      cout << "meters" << endl;
-    }
-    else
-    {
-      cout << "miles" << endl;
+      cout << "\nVisibility:  " << metar.Visibility() << " ";
+      if (strcmp(metar.VisibilityUnits(), "SM"))
+      {
+        cout << "meters" << endl;
+      }
+      else
+      {
+        cout << "miles" << endl;
+      }
     }
 
     return 0;
