@@ -141,6 +141,7 @@ int main(int argc, char **argv)
       cout << " " << metar.WindSpeedUnits() << endl;
     }
 
+    cout << setprecision(2) << fixed;
     if (metar.hasVisibility())
     {
       cout << "\nVisibility:  " << metar.Visibility() << " ";
