@@ -658,3 +658,40 @@ BOOST_AUTO_TEST_CASE(real_METAR_4)
   BOOST_CHECK(metar.TemperatureNA() == 15.6);
   BOOST_CHECK(metar.DewPointNA() == -0.6);
 }
+
+BOOST_AUTO_TEST_CASE(real_METAR_5)
+{
+  const char *metar_str = "KHLN 041610Z 28009KT 1/2SM SN FZFG VV007 M10/M12 A2998 RMK AO2 P0001 T11001117";
+
+  Metar metar(metar_str); 
+
+  BOOST_CHECK(metar.hasICAO());
+  BOOST_CHECK(strcmp(metar.ICAO(), "KHLN") == 0);
+
+  BOOST_CHECK(metar.Day() == 4);
+  BOOST_CHECK(metar.Hour() == 16);
+  BOOST_CHECK(metar.Minute() == 10);
+
+  BOOST_CHECK(metar.WindDirection() == 280);
+  BOOST_CHECK(metar.WindSpeed() == 9);
+  BOOST_CHECK(!metar.hasWindGust());
+  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
+
+  BOOST_CHECK(!metar.hasMinWindDirection());
+  BOOST_CHECK(!metar.hasMaxWindDirection());
+  
+  BOOST_CHECK(metar.Visibility() == 0.5);
+  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+
+  BOOST_CHECK(metar.Temperature() == -10);
+  BOOST_CHECK(metar.DewPoint() == -12);
+ 
+  BOOST_CHECK(!metar.hasAltimeterQ());
+  BOOST_CHECK(metar.hasAltimeterA());
+  BOOST_CHECK(metar.AltimeterA() == 29.98);
+
+  BOOST_CHECK(!metar.hasSeaLevelPressure());
+
+  BOOST_CHECK(metar.TemperatureNA() == -10.0);
+  BOOST_CHECK(metar.DewPointNA() == -11.7);
+}
