@@ -88,7 +88,7 @@ public:
   //
   int MaxWindDirection() const { return _max_wind_dir; }
   int hasMaxWindDirection() const
-    { return _max_wind_dir != _INTEGER_UNDEFINED ; }
+    { return _max_wind_dir != _INTEGER_UNDEFINED; }
 
   //
   // Wind speed units
@@ -110,7 +110,14 @@ public:
   //    SM - statute miles
   //    M  - meters
   const char *VisibilityUnits() const { return _vis_units; }
-  int hasVisibilityUnits() const { return _vis_units != nullptr;  }
+  bool hasVisibilityUnits() const { return _vis_units != nullptr;  }
+
+  //
+  // Vertical visibilty
+  //    feet
+  int VerticalVisibility() const { return _vert_vis; }
+  bool hasVerticalVisibility() const
+    { return _vert_vis != _INTEGER_UNDEFINED; }
 
   //
   // Temperature
@@ -176,6 +183,8 @@ private:
 
   void parse_vis(const char *str);
   
+  void parse_vert_vis(const char *str);
+  
   void parse_temp(const char *str);
 
   void parse_alt(const char *str);
@@ -202,6 +211,8 @@ private:
 
   double _vis;
   const char *_vis_units;
+
+  int _vert_vis;
 
   int _temp;
   int _dew;

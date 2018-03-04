@@ -35,6 +35,7 @@ Metar::Metar()
   , _max_wind_dir(_INTEGER_UNDEFINED)
   , _vis(_DOUBLE_UNDEFINED)
   , _vis_units(nullptr)
+  , _vert_vis(_INTEGER_UNDEFINED)
   , _temp(_INTEGER_UNDEFINED) 
   , _dew(_INTEGER_UNDEFINED)
   , _altimeterA(_DOUBLE_UNDEFINED)
@@ -161,6 +162,11 @@ static inline bool is_vis(const char *str)
   return false;
 }
 
+static inline bool is_vert_vis(const char *str)
+{
+  return match("VV###", str);
+}
+
 static inline bool is_temp(const char *str)
 {
   return match("##/##", str) 
@@ -198,7 +204,7 @@ void Metar::parse(const char *metar_str)
 void Metar::parse(char *metar_str)
 {
   char *el = strtok(metar_str, " ");
-  while (el != nullptr)
+  while (el)
   {
     if (!hasMETAR() && is_metar(el))
     {
@@ -223,6 +229,10 @@ void Metar::parse(char *metar_str)
     else if (!hasVisibility() && is_vis(el))
     {
       parse_vis(el);
+    }
+    else if (!hasVerticalVisibility() && is_vert_vis(el))
+    {
+      parse_vert_vis(el);
     }
     else if (!hasTemperature() && is_temp(el))
     {
@@ -279,11 +289,11 @@ void Metar::parse_ot(const char *str)
 
 void Metar::parse_wind(const char *str)
 {
-  if (strstr(str, WIND_SPEED_MPS) != nullptr)
+  if (strstr(str, WIND_SPEED_MPS))
   {
     _wind_speed_units = WIND_SPEED_MPS;
   }
-  else if (strstr(str, WIND_SPEED_KPH) != nullptr)
+  else if (strstr(str, WIND_SPEED_KPH))
   {
     _wind_speed_units = WIND_SPEED_KPH;
   }
@@ -294,7 +304,7 @@ void Metar::parse_wind(const char *str)
 
   char val[4];
 
-  if (strstr(str, "VRB") == nullptr)
+  if (!strstr(str, "VRB"))
   {
     strncpy(val, str, 3);
     val[3] = '\0';
@@ -307,7 +317,7 @@ void Metar::parse_wind(const char *str)
   _wind_spd = atoi(val);
 
   const char *g = strstr(str, "G");
-  if (g != nullptr)
+  if (g)
   {
     strncpy(val, g + 1, 3);
     val[3] = '\0';
@@ -338,7 +348,7 @@ void Metar::parse_vis(const char *str)
   else
   {
     const char *p = strstr(str, "/");
-    if (p == nullptr)
+    if (!p)
     {
       _vis = atof(str);
     }
@@ -371,6 +381,11 @@ void Metar::parse_vis(const char *str)
     }
     _vis_units = VIS_UNITS_SM;
   }
+}
+
+void Metar::parse_vert_vis(const char *str)
+{
+  _vert_vis = atoi(str + 2) * 100;
 }
 
 static inline int temp(char *val)

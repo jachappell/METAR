@@ -497,6 +497,21 @@ BOOST_AUTO_TEST_CASE(good_visibility_string_fraction_sm_3)
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
 }
 
+BOOST_AUTO_TEST_CASE(bad_vert_visibility_string)
+{
+  Metar metar("VV0O7");
+  
+  BOOST_CHECK(!metar.hasVerticalVisibility());
+}
+
+BOOST_AUTO_TEST_CASE(good_vert_visibility_string)
+{
+  Metar metar("VV105");
+  
+  BOOST_CHECK(metar.hasVerticalVisibility());
+  BOOST_CHECK(metar.VerticalVisibility() == 10500);
+}
+
 BOOST_AUTO_TEST_CASE(real_METAR_1)
 {
   char buffer[100];
@@ -523,6 +538,8 @@ BOOST_AUTO_TEST_CASE(real_METAR_1)
   
   BOOST_CHECK(metar.Visibility() == 10);
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  
+  BOOST_CHECK(!metar.hasVerticalVisibility());
 
   BOOST_CHECK(metar.Temperature() == 9);
   BOOST_CHECK(metar.DewPoint() == 6);
@@ -567,6 +584,8 @@ BOOST_AUTO_TEST_CASE(real_METAR_2)
 
   BOOST_CHECK(metar.Visibility() == 1400);
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "M") == 0);
+  
+  BOOST_CHECK(!metar.hasVerticalVisibility());
 
   BOOST_CHECK(metar.Temperature() == -4);
   BOOST_CHECK(metar.DewPoint() == -7);
@@ -607,6 +626,8 @@ BOOST_AUTO_TEST_CASE(real_METAR_3)
   
   BOOST_CHECK(metar.Visibility() == 2);
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  
+  BOOST_CHECK(!metar.hasVerticalVisibility());
 
   BOOST_CHECK(metar.Temperature() == 2);
   BOOST_CHECK(metar.DewPoint() == 2);
@@ -644,6 +665,8 @@ BOOST_AUTO_TEST_CASE(real_METAR_4)
   
   BOOST_CHECK(metar.Visibility() == 10);
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  
+  BOOST_CHECK(!metar.hasVerticalVisibility());
 
   BOOST_CHECK(metar.Temperature() == 16);
   BOOST_CHECK(metar.DewPoint() == -1);
@@ -682,6 +705,9 @@ BOOST_AUTO_TEST_CASE(real_METAR_5)
   
   BOOST_CHECK(metar.Visibility() == 0.5);
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+
+  BOOST_CHECK(metar.hasVerticalVisibility());
+  BOOST_CHECK(metar.VerticalVisibility() == 700);
 
   BOOST_CHECK(metar.Temperature() == -10);
   BOOST_CHECK(metar.DewPoint() == -12);

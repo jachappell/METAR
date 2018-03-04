@@ -9,6 +9,7 @@ This is a work in progress.  So far, the following have been implemented:
   * Date and Time of Report
   * Wind
   * Visibility
+  * Vertical Visibility
   * Pressure
   * Temperature
 
