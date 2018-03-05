@@ -14,16 +14,16 @@
 
 using namespace std;
 
-BOOST_AUTO_TEST_CASE(bad_observation_time_string)
+BOOST_AUTO_TEST_CASE(uninitialized_observation_time)
 {
-  Metar metar("1234S6Z");
+  Metar metar("");
 
   BOOST_CHECK(!metar.hasDay());
   BOOST_CHECK(!metar.hasHour());
   BOOST_CHECK(!metar.hasMinute());
 }
 
-BOOST_AUTO_TEST_CASE(good_observation_time_string)
+BOOST_AUTO_TEST_CASE(observation_time)
 {
   Metar metar("123456Z");
 
@@ -32,19 +32,15 @@ BOOST_AUTO_TEST_CASE(good_observation_time_string)
   BOOST_CHECK(metar.Minute() == 56);
 }
 
-BOOST_AUTO_TEST_CASE(bad_temperature_string)
+BOOST_AUTO_TEST_CASE(uninitialized_temperature)
 {
-
-  char buffer[8];
-  strcpy(buffer, "8/06");
-  
-  Metar metar(buffer);
+  Metar metar("");
 
   BOOST_CHECK(!metar.hasTemperature());
   BOOST_CHECK(!metar.hasDewPoint());
 }
 
-BOOST_AUTO_TEST_CASE(good_temperature_string_both_positive1)
+BOOST_AUTO_TEST_CASE(temperature_both_positive1)
 {
 
   char buffer[8];
@@ -59,7 +55,7 @@ BOOST_AUTO_TEST_CASE(good_temperature_string_both_positive1)
   BOOST_CHECK(metar.DewPoint() == 6);
 }
 
-BOOST_AUTO_TEST_CASE(good_temperature_string_negative_dew_point)
+BOOST_AUTO_TEST_CASE(temperature_negative_dew_point)
 {
   char buffer[8];
   strcpy(buffer, "01/M01");
@@ -73,7 +69,7 @@ BOOST_AUTO_TEST_CASE(good_temperature_string_negative_dew_point)
   BOOST_CHECK(metar.DewPoint() == -1);
 }
 
-BOOST_AUTO_TEST_CASE(good_temperature_string_both_negative)
+BOOST_AUTO_TEST_CASE(temperature_both_negative)
 {
   char buffer[8];
   strcpy(buffer, "M14/M15");
@@ -87,7 +83,7 @@ BOOST_AUTO_TEST_CASE(good_temperature_string_both_negative)
   BOOST_CHECK(metar.DewPoint() == -15);
 }
 
-BOOST_AUTO_TEST_CASE(good_temperature_string_both_positive2)
+BOOST_AUTO_TEST_CASE(temperature_both_positive2)
 {
   char buffer[8];
   strcpy(buffer, "15/14");
@@ -101,18 +97,15 @@ BOOST_AUTO_TEST_CASE(good_temperature_string_both_positive2)
   BOOST_CHECK(metar.DewPoint() == 14);
 }
 
-BOOST_AUTO_TEST_CASE(bad_temperatureNA_string)
+BOOST_AUTO_TEST_CASE(uninitialized_temperatureNA)
 {
-  char buffer[10];
-  strcpy(buffer, "T0083O067");
-
-  Metar metar(buffer);
+  Metar metar("");
 
   BOOST_CHECK(!metar.hasTemperatureNA());
   BOOST_CHECK(!metar.hasDewPointNA());
 }
 
-BOOST_AUTO_TEST_CASE(good_temperatureNA_string1)
+BOOST_AUTO_TEST_CASE(temperatureNA_1)
 {
   char buffer[10];
   strcpy(buffer, "T00830067");
@@ -127,7 +120,7 @@ BOOST_AUTO_TEST_CASE(good_temperatureNA_string1)
 }
 
 
-BOOST_AUTO_TEST_CASE(good_temperatureNA_string2)
+BOOST_AUTO_TEST_CASE(temperatureNA_2)
 {
   char buffer[10];
   strcpy(buffer, "T01830167");
@@ -141,7 +134,7 @@ BOOST_AUTO_TEST_CASE(good_temperatureNA_string2)
   BOOST_CHECK(metar.DewPointNA() == 16.7);
 }
 
-BOOST_AUTO_TEST_CASE(good_temperatureNA_string_both_negative)
+BOOST_AUTO_TEST_CASE(temperatureNA_both_negative)
 {
   char buffer[10];
   strcpy(buffer, "T10171018");
@@ -155,12 +148,9 @@ BOOST_AUTO_TEST_CASE(good_temperatureNA_string_both_negative)
   BOOST_CHECK(metar.DewPointNA() == -1.8);
 }
 
-BOOST_AUTO_TEST_CASE(bad_wind_string_kt)
+BOOST_AUTO_TEST_CASE(uninitialized_wind)
 {
-  char buffer[9];
-  strcpy(buffer, "250O5KT");
-
-  Metar metar(buffer);
+  Metar metar("");
 
   BOOST_CHECK(!metar.hasWindSpeed());
   BOOST_CHECK(!metar.hasWindDirection());
@@ -168,17 +158,7 @@ BOOST_AUTO_TEST_CASE(bad_wind_string_kt)
   BOOST_CHECK(!metar.hasWindSpeedUnits());
 }
 
-BOOST_AUTO_TEST_CASE(bad_wind_string_mps)
-{
-  Metar metar("2S005G12MPS");
-
-  BOOST_CHECK(!metar.hasWindSpeed());
-  BOOST_CHECK(!metar.hasWindDirection());
-  BOOST_CHECK(!metar.hasWindGust());
-  BOOST_CHECK(!metar.hasWindSpeedUnits());
-}
-
-BOOST_AUTO_TEST_CASE(good_wind_string_kt)
+BOOST_AUTO_TEST_CASE(wind_kt)
 {
   char buffer[9];
   strcpy(buffer, "25005KT");
@@ -196,7 +176,7 @@ BOOST_AUTO_TEST_CASE(good_wind_string_kt)
   BOOST_CHECK(!metar.hasWindGust());
 }
 
-BOOST_AUTO_TEST_CASE(good_wind_string_kt_3digit)
+BOOST_AUTO_TEST_CASE(wind_kt_3digit)
 {
   Metar metar("240105KT");
 
@@ -211,7 +191,7 @@ BOOST_AUTO_TEST_CASE(good_wind_string_kt_3digit)
   BOOST_CHECK(!metar.hasWindGust());
 }
 
-BOOST_AUTO_TEST_CASE(good_wind_string_kt_3digit_gust)
+BOOST_AUTO_TEST_CASE(wind_kt_3digit_gust)
 {
   Metar metar("240105G121KT");
 
@@ -227,7 +207,7 @@ BOOST_AUTO_TEST_CASE(good_wind_string_kt_3digit_gust)
   BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
 }
 
-BOOST_AUTO_TEST_CASE(good_wind_string_vrb_kt_3digit_gust)
+BOOST_AUTO_TEST_CASE(wind_vrb_kt_3digit_gust)
 {
   Metar metar("VRB105G121KT");
 
@@ -242,7 +222,7 @@ BOOST_AUTO_TEST_CASE(good_wind_string_vrb_kt_3digit_gust)
   BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
 }
 
-BOOST_AUTO_TEST_CASE(good_wind_string_kt_gust)
+BOOST_AUTO_TEST_CASE(wind_kt_gust)
 {
   Metar metar("25005G12KT");
 
@@ -258,7 +238,7 @@ BOOST_AUTO_TEST_CASE(good_wind_string_kt_gust)
   BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
 }
 
-BOOST_AUTO_TEST_CASE(good_wind_string_mps)
+BOOST_AUTO_TEST_CASE(wind_mps)
 {
   char buffer[9];
   strcpy(buffer, "04503MPS");
@@ -276,7 +256,7 @@ BOOST_AUTO_TEST_CASE(good_wind_string_mps)
   BOOST_CHECK(!metar.hasWindGust());
 }
 
-BOOST_AUTO_TEST_CASE(good_wind_string_mps_vrb)
+BOOST_AUTO_TEST_CASE(wind_mps_vrb)
 {
   Metar metar("VRB03MPS");
 
@@ -290,7 +270,7 @@ BOOST_AUTO_TEST_CASE(good_wind_string_mps_vrb)
   BOOST_CHECK(!metar.hasWindGust());
 }
 
-BOOST_AUTO_TEST_CASE(good_wind_string_mps_3digit_gust)
+BOOST_AUTO_TEST_CASE(wind_mps_3digit_gust)
 {
   Metar metar("08090G102MPS");
 
@@ -306,7 +286,7 @@ BOOST_AUTO_TEST_CASE(good_wind_string_mps_3digit_gust)
   BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "MPS") == 0);
 }
 
-BOOST_AUTO_TEST_CASE(good_wind_string_kph)
+BOOST_AUTO_TEST_CASE(wind_kph)
 {
   char buffer[9];
   strcpy(buffer, "04005KPH");
@@ -324,7 +304,7 @@ BOOST_AUTO_TEST_CASE(good_wind_string_kph)
   BOOST_CHECK(!metar.hasWindGust());
 }
 
-BOOST_AUTO_TEST_CASE(good_wind_string_vrb_kph_2digit_gust)
+BOOST_AUTO_TEST_CASE(wind_vrb_kph_2digit_gust)
 {
   Metar metar("VRB05G21KPH");
 
@@ -339,25 +319,22 @@ BOOST_AUTO_TEST_CASE(good_wind_string_vrb_kph_2digit_gust)
   BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KPH") == 0);
 }
 
-BOOST_AUTO_TEST_CASE(bad_altA_string)
+BOOST_AUTO_TEST_CASE(uninitialized_altA)
 {
-  char buffer[9];
-  strcpy(buffer, "A1P02");
-
-  Metar metar(buffer);
+  Metar metar("");
 
   BOOST_CHECK(!metar.hasAltimeterA());
 }
 
-BOOST_AUTO_TEST_CASE(bad_wind_var_string)
+BOOST_AUTO_TEST_CASE(uninitialized_wind_var)
 {
-  Metar metar("O90V150");
+  Metar metar("");
 
   BOOST_CHECK(!metar.hasMinWindDirection());
   BOOST_CHECK(!metar.hasMaxWindDirection());
 }
 
-BOOST_AUTO_TEST_CASE(good_wind_var_string)
+BOOST_AUTO_TEST_CASE(wind_var)
 {
   Metar metar("090V150");
 
@@ -368,7 +345,7 @@ BOOST_AUTO_TEST_CASE(good_wind_var_string)
   BOOST_CHECK(metar.MaxWindDirection() == 150);
 }
 
-BOOST_AUTO_TEST_CASE(good_altA_string)
+BOOST_AUTO_TEST_CASE(altA)
 {
   char buffer[9];
   strcpy(buffer, "A3006");
@@ -379,17 +356,14 @@ BOOST_AUTO_TEST_CASE(good_altA_string)
   BOOST_CHECK(metar.AltimeterA() == 30.06);
 }
 
-BOOST_AUTO_TEST_CASE(bad_altQ_string)
+BOOST_AUTO_TEST_CASE(uninitialized_altQ)
 {
-  char buffer[9];
-  strcpy(buffer, "Q12J2");
-
-  Metar metar(buffer);
+  Metar metar("");
 
   BOOST_CHECK(!metar.hasAltimeterQ());
 }
 
-BOOST_AUTO_TEST_CASE(good_altQ_string)
+BOOST_AUTO_TEST_CASE(altQ)
 {
   char buffer[9];
   strcpy(buffer, "Q1020");
@@ -400,17 +374,14 @@ BOOST_AUTO_TEST_CASE(good_altQ_string)
   BOOST_CHECK(metar.AltimeterQ() == 1020);
 }
 
-BOOST_AUTO_TEST_CASE(bad_slp_string)
+BOOST_AUTO_TEST_CASE(uninitialized_slp)
 {
-  char buffer[9];
-  strcpy(buffer, "SLPl77");
-
-  Metar metar(buffer);
+  Metar metar("");
 
   BOOST_CHECK(!metar.hasSeaLevelPressure());
 }
 
-BOOST_AUTO_TEST_CASE(good_slp_string)
+BOOST_AUTO_TEST_CASE(slp)
 {
   char buffer[9];
   strcpy(buffer, "SLP177");
@@ -421,15 +392,15 @@ BOOST_AUTO_TEST_CASE(good_slp_string)
   BOOST_CHECK(metar.SeaLevelPressure() == 1017.7);
 }
 
-BOOST_AUTO_TEST_CASE(bad_visibility_string_meters)
+BOOST_AUTO_TEST_CASE(uninitialized_visibility)
 {
-  Metar metar("15O0");
+  Metar metar("");
 
   BOOST_CHECK(!metar.hasVisibility());
   BOOST_CHECK(!metar.hasVisibilityUnits());
 }
 
-BOOST_AUTO_TEST_CASE(good_visibility_string_meters)
+BOOST_AUTO_TEST_CASE(visibility_meters)
 {
   Metar metar("1500");
 
@@ -440,20 +411,7 @@ BOOST_AUTO_TEST_CASE(good_visibility_string_meters)
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "M") == 0);
 }
 
-BOOST_AUTO_TEST_CASE(bad_visibility_string_sm)
-{
-  Metar metar1("1OSM");
-
-  BOOST_CHECK(!metar1.hasVisibility());
-  BOOST_CHECK(!metar1.hasVisibilityUnits());
-
-  Metar metar2("l0SM");
-
-  BOOST_CHECK(!metar2.hasVisibility());
-  BOOST_CHECK(!metar2.hasVisibilityUnits());
-}
-
-BOOST_AUTO_TEST_CASE(good_visibility_string_integer_sm)
+BOOST_AUTO_TEST_CASE(visibility_integer_sm)
 {
   Metar metar("10SM");
 
@@ -464,7 +422,7 @@ BOOST_AUTO_TEST_CASE(good_visibility_string_integer_sm)
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
 }
 
-BOOST_AUTO_TEST_CASE(good_visibility_string_fraction_sm_1)
+BOOST_AUTO_TEST_CASE(visibility_fraction_sm_1)
 {
   Metar metar("1/4SM");
 
@@ -475,7 +433,7 @@ BOOST_AUTO_TEST_CASE(good_visibility_string_fraction_sm_1)
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
 }
 
-BOOST_AUTO_TEST_CASE(good_visibility_string_fraction_sm_2)
+BOOST_AUTO_TEST_CASE(visibility_fraction_sm_2)
 {
   Metar metar("5/16SM");
 
@@ -486,7 +444,7 @@ BOOST_AUTO_TEST_CASE(good_visibility_string_fraction_sm_2)
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
 }
 
-BOOST_AUTO_TEST_CASE(good_visibility_string_fraction_sm_3)
+BOOST_AUTO_TEST_CASE(visibility_fraction_sm_3)
 {
   Metar metar("2 1/2SM");
 
@@ -497,14 +455,14 @@ BOOST_AUTO_TEST_CASE(good_visibility_string_fraction_sm_3)
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
 }
 
-BOOST_AUTO_TEST_CASE(bad_vert_visibility_string)
+BOOST_AUTO_TEST_CASE(uninitialized_vert_visibility)
 {
-  Metar metar("VV0O7");
+  Metar metar("");
   
   BOOST_CHECK(!metar.hasVerticalVisibility());
 }
 
-BOOST_AUTO_TEST_CASE(good_vert_visibility_string)
+BOOST_AUTO_TEST_CASE(vert_visibility)
 {
   Metar metar("VV105");
   
@@ -721,3 +679,35 @@ BOOST_AUTO_TEST_CASE(real_METAR_5)
   BOOST_CHECK(metar.TemperatureNA() == -10.0);
   BOOST_CHECK(metar.DewPointNA() == -11.7);
 }
+
+BOOST_AUTO_TEST_CASE(real_METAR_6)
+{
+  const char *metar_str = "KSTL 051520Z 12017KT 5SM -TSRA BR OVC007CB 06/05 A2989 RMK AO2 LTG DSNT SE OCNL LTGIC SE TSB0854 TS SE MOV NE P0004 T00560050";
+
+  Metar metar(metar_str); 
+
+  BOOST_CHECK(strcmp(metar.ICAO(), "KSTL") == 0);
+
+  BOOST_CHECK(metar.Day() == 5);
+  BOOST_CHECK(metar.Hour() == 15);
+  BOOST_CHECK(metar.Minute() == 20);
+
+  BOOST_CHECK(metar.WindDirection() == 120);
+  BOOST_CHECK(metar.WindSpeed() == 17);
+  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
+  
+  BOOST_CHECK(metar.Visibility() == 5);
+  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  
+  BOOST_CHECK(!metar.hasVerticalVisibility());
+
+  BOOST_CHECK(metar.Temperature() == 6);
+  BOOST_CHECK(metar.DewPoint() == 5);
+ 
+  BOOST_CHECK(metar.hasAltimeterA());
+  BOOST_CHECK(metar.AltimeterA() == 29.89);
+
+  BOOST_CHECK(metar.TemperatureNA() == 5.6);
+  BOOST_CHECK(metar.DewPointNA() == 5);
+}
+
