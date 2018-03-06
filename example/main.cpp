@@ -125,7 +125,7 @@ int main(int argc, char **argv)
     if (metar.hasWindSpeed())
     {
       cout << "\nWind:        ";
-      if (metar.hasWindDirection())
+      if (!metar.isVariableWindDirection())
       { 
         cout << metar.WindDirection() << DEG_SIM;
       }

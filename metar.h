@@ -65,6 +65,12 @@ public:
   bool hasWindDirection() const { return _wind_dir != _INTEGER_UNDEFINED; }
 
   //
+  // Variable wind direction
+  //    If true, wind direction is variable (hasWindDirection() will 
+  //    return false in this case)
+  bool isVariableWindDirection() const { return _vrb; }
+
+  //
   //  Wind speed
   //
   int WindSpeed() const { return _wind_spd; }
@@ -111,6 +117,18 @@ public:
   //    M  - meters
   const char *VisibilityUnits() const { return _vis_units; }
   bool hasVisibilityUnits() const { return _vis_units != nullptr;  }
+
+  //
+  // Visibility less than
+  //    If true, visibility is less than reported value
+  //
+  bool isVisibilityLessThan() const { return _vis_lt; }
+  
+  //
+  // CAVOK (Ceiling and Visibility OK)  
+  //    If true, Ceiling and Visibility OK
+  //
+  bool isCAVOK() const { return _cavok; }
 
   //
   // Vertical visibilty
@@ -208,9 +226,12 @@ private:
 
   int _min_wind_dir;
   int _max_wind_dir;
+  bool _vrb;
 
   double _vis;
   const char *_vis_units;
+  bool _vis_lt;
+  bool _cavok;
 
   int _vert_vis;
 

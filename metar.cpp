@@ -33,8 +33,11 @@ Metar::Metar()
   , _wind_speed_units(nullptr)
   , _min_wind_dir(_INTEGER_UNDEFINED)
   , _max_wind_dir(_INTEGER_UNDEFINED)
+  , _vrb(false)
   , _vis(_DOUBLE_UNDEFINED)
   , _vis_units(nullptr)
+  , _vis_lt(false)
+  , _cavok(false)
   , _vert_vis(_INTEGER_UNDEFINED)
   , _temp(_INTEGER_UNDEFINED) 
   , _dew(_INTEGER_UNDEFINED)
@@ -141,6 +144,9 @@ static inline bool is_wind_var(const char *str)
 
 static inline bool is_vis(const char *str)
 {
+  if (!strcmp(str, "CAVOK"))
+    return true;
+
   const char *p = strstr(str, VIS_UNITS_SM);
   if (!p)
   {  
@@ -226,7 +232,7 @@ void Metar::parse(char *metar_str)
     {
       parse_wind_var(el);
     }
-    else if (!hasVisibility() && is_vis(el))
+    else if (!hasVisibility() && !_cavok && is_vis(el))
     {
       parse_vis(el);
     }
@@ -310,6 +316,10 @@ void Metar::parse_wind(const char *str)
     val[3] = '\0';
     _wind_dir = atoi(val);
   }
+  else
+  {
+    _vrb = true;
+  }
  
   strncpy(val, str + 3, 3);
   val[3] = '\0';
@@ -339,6 +349,12 @@ void Metar::parse_wind_var(const char *str)
 
 void Metar::parse_vis(const char *str)
 {
+  if (!strcmp(str, "CAVOK"))
+  {
+    _cavok = true;
+    return;
+  }
+
   const char *u = strstr(str, VIS_UNITS_SM);
   if (!u)
   {
@@ -360,6 +376,7 @@ void Metar::parse_vis(const char *str)
       if (str[0] == 'M')
       {
         strncpy(val, str + 1, len);
+        _vis_lt = true;
       }
       else
       {

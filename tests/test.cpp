@@ -213,6 +213,7 @@ BOOST_AUTO_TEST_CASE(wind_vrb_kt_3digit_gust)
 
   BOOST_CHECK(metar.hasWindSpeed());
   BOOST_CHECK(!metar.hasWindDirection());
+  BOOST_CHECK(metar.isVariableWindDirection());
 
   BOOST_CHECK(metar.WindSpeed() == 105);
   
@@ -228,6 +229,7 @@ BOOST_AUTO_TEST_CASE(wind_kt_gust)
 
   BOOST_CHECK(metar.hasWindSpeed());
   BOOST_CHECK(metar.hasWindDirection());
+  BOOST_CHECK(!metar.isVariableWindDirection());
 
   BOOST_CHECK(metar.WindDirection() == 250);
   BOOST_CHECK(metar.WindSpeed() == 5);
@@ -431,6 +433,7 @@ BOOST_AUTO_TEST_CASE(visibility_fraction_sm_1)
 
   BOOST_CHECK(metar.hasVisibilityUnits());
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  BOOST_CHECK(!metar.isVisibilityLessThan());
 }
 
 BOOST_AUTO_TEST_CASE(visibility_fraction_sm_2)
@@ -453,6 +456,28 @@ BOOST_AUTO_TEST_CASE(visibility_fraction_sm_3)
 
   BOOST_CHECK(metar.hasVisibilityUnits());
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+}
+
+BOOST_AUTO_TEST_CASE(visibility_LT)
+{
+  Metar metar("M1/4SM");
+
+  BOOST_CHECK(metar.hasVisibility());
+  BOOST_CHECK(metar.Visibility() == 0.25);
+
+  BOOST_CHECK(metar.hasVisibilityUnits());
+  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  BOOST_CHECK(metar.isVisibilityLessThan());
+  BOOST_CHECK(!metar.isCAVOK());
+}
+
+BOOST_AUTO_TEST_CASE(visibility_CAVOK)
+{
+  Metar metar("CAVOK");
+
+  BOOST_CHECK(!metar.hasVisibility());
+  BOOST_CHECK(!metar.hasVisibilityUnits());
+  BOOST_CHECK(metar.isCAVOK());
 }
 
 BOOST_AUTO_TEST_CASE(uninitialized_vert_visibility)
@@ -614,6 +639,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_4)
   BOOST_CHECK(metar.Minute() == 51);
 
   BOOST_CHECK(!metar.hasWindDirection());
+  BOOST_CHECK(metar.isVariableWindDirection());
   BOOST_CHECK(metar.WindSpeed() == 4);
   BOOST_CHECK(!metar.hasWindGust());
   BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
