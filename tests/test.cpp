@@ -109,9 +109,6 @@ BOOST_AUTO_TEST_CASE(temperature_no_dew_positive)
 
 BOOST_AUTO_TEST_CASE(temperature_no_dew_negative)
 {
-  char buffer[8];
-  strcpy(buffer, "15/");
-
   Metar metar("M07/");
 
   BOOST_CHECK(metar.hasTemperature());
