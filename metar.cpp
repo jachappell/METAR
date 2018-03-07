@@ -177,7 +177,9 @@ static inline bool is_temp(const char *str)
 {
   return match("##/##", str) 
     || match("##/M##", str) 
-    || match("M##/M##", str);
+    || match("M##/M##", str)
+    || match("##/", str)
+    || match("M##/", str);
 }
 
 static inline bool is_altA(const char *str)
@@ -417,11 +419,15 @@ void Metar::parse_temp(const char *str)
 
   const char *p = strstr(str, "/");
   strncpy(val, str, p - str);
+
   val[p - str] = '\0';
   _temp = temp(val);
 
-  strcpy(val, p + 1);
-  _dew = temp(val);
+  if (*(p + 1) != '\0')
+  {
+    strcpy(val, p + 1);
+    _dew = temp(val);
+  }
 }
 
 void Metar::parse_alt(const char *str)

@@ -97,6 +97,29 @@ BOOST_AUTO_TEST_CASE(temperature_both_positive2)
   BOOST_CHECK(metar.DewPoint() == 14);
 }
 
+BOOST_AUTO_TEST_CASE(temperature_no_dew_positive)
+{
+  Metar metar("15/");
+
+  BOOST_CHECK(metar.hasTemperature());
+  BOOST_CHECK(!metar.hasDewPoint());
+
+  BOOST_CHECK(metar.Temperature() == 15);
+}
+
+BOOST_AUTO_TEST_CASE(temperature_no_dew_negative)
+{
+  char buffer[8];
+  strcpy(buffer, "15/");
+
+  Metar metar("M07/");
+
+  BOOST_CHECK(metar.hasTemperature());
+  BOOST_CHECK(!metar.hasDewPoint());
+
+  BOOST_CHECK(metar.Temperature() == -7);
+}
+
 BOOST_AUTO_TEST_CASE(uninitialized_temperatureNA)
 {
   Metar metar("");
