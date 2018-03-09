@@ -757,3 +757,39 @@ BOOST_AUTO_TEST_CASE(real_METAR_6)
   BOOST_CHECK(metar.DewPointNA() == 5);
 }
 
+BOOST_AUTO_TEST_CASE(real_METAR_7)
+{
+  const char *metar_str = "KSTL 091651Z 10010KT 060V120 10SM FEW120 BKN250 07/M06 A2998 RMK AO2 SLP160 T00671056";
+
+  Metar metar(metar_str); 
+
+  BOOST_CHECK(strcmp(metar.ICAO(), "KSTL") == 0);
+
+  BOOST_CHECK(metar.Day() == 9);
+  BOOST_CHECK(metar.Hour() == 16);
+  BOOST_CHECK(metar.Minute() == 51);
+
+  BOOST_CHECK(metar.WindDirection() == 100);
+  BOOST_CHECK(metar.WindSpeed() == 10);
+  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
+
+  BOOST_CHECK(metar.MinWindDirection() == 60);
+  BOOST_CHECK(metar.MaxWindDirection() == 120);
+  
+  BOOST_CHECK(metar.Visibility() == 10);
+  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  
+  BOOST_CHECK(!metar.hasVerticalVisibility());
+
+  BOOST_CHECK(metar.Temperature() == 7);
+  BOOST_CHECK(metar.DewPoint() == -6);
+ 
+  BOOST_CHECK(metar.hasAltimeterA());
+  BOOST_CHECK(metar.AltimeterA() == 29.98);
+
+  BOOST_CHECK(metar.TemperatureNA() == 6.7);
+  BOOST_CHECK(metar.DewPointNA() == -5.6);
+  
+  BOOST_CHECK(metar.SeaLevelPressure() == 1016.0);
+}
+
