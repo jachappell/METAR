@@ -515,6 +515,129 @@ BOOST_AUTO_TEST_CASE(vert_visibility)
   BOOST_CHECK(metar.VerticalVisibility() == 10500);
 }
 
+BOOST_AUTO_TEST_CASE(uninitialized_cloud_layer)
+{
+  Metar metar("");
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 0);
+  BOOST_CHECK(metar.Layer(0) == nullptr);
+}
+
+BOOST_AUTO_TEST_CASE(cloud_layer_CLR)
+{
+  Metar metar("CLR");
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 1);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "CLR"));
+  BOOST_CHECK(!metar.Layer(0)->hasAltitude());
+  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+}
+
+BOOST_AUTO_TEST_CASE(cloud_layer_SKC)
+{
+  Metar metar("SKC");
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 1);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "SKC"));
+  BOOST_CHECK(!metar.Layer(0)->hasAltitude());
+  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+}
+
+BOOST_AUTO_TEST_CASE(cloud_layer_NSC)
+{
+  Metar metar("NSC");
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 1);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "NSC"));
+  BOOST_CHECK(!metar.Layer(0)->hasAltitude());
+  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+}
+
+BOOST_AUTO_TEST_CASE(cloud_layer_FEW)
+{
+  Metar metar("FEW105");
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 1);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "FEW"));
+  BOOST_CHECK(metar.Layer(0)->Altitude() == 10500);
+  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+}
+
+BOOST_AUTO_TEST_CASE(cloud_layer_SCT)
+{
+  Metar metar("SCT045");
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 1);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "SCT"));
+  BOOST_CHECK(metar.Layer(0)->Altitude() == 4500);
+  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+}
+
+BOOST_AUTO_TEST_CASE(cloud_layer_BKN)
+{
+  Metar metar("BKN005");
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 1);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "BKN"));
+  BOOST_CHECK(metar.Layer(0)->Altitude() == 500);
+  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+}
+
+BOOST_AUTO_TEST_CASE(cloud_layer_OVC)
+{
+  Metar metar("OVC050");
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 1);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "OVC"));
+  BOOST_CHECK(metar.Layer(0)->Altitude() == 5000);
+  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+}
+
+BOOST_AUTO_TEST_CASE(cloud_layer_2_layers)
+{
+  Metar metar("BKN004 OVC008");
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 2);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "BKN"));
+  BOOST_CHECK(metar.Layer(0)->Altitude() == 400);
+  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+  BOOST_CHECK(!strcmp(metar.Layer(1)->Condition(), "OVC"));
+  BOOST_CHECK(metar.Layer(1)->Altitude() == 800);
+  BOOST_CHECK(!metar.Layer(1)->hasCloudType());
+}
+
+BOOST_AUTO_TEST_CASE(cloud_layer_3_layers)
+{
+  Metar metar("FEW004 SCT080 OVC120");
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 3);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "FEW"));
+  BOOST_CHECK(metar.Layer(0)->Altitude() == 400);
+  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+  BOOST_CHECK(!strcmp(metar.Layer(1)->Condition(), "SCT"));
+  BOOST_CHECK(metar.Layer(1)->Altitude() == 8000);
+  BOOST_CHECK(!metar.Layer(1)->hasCloudType());
+  BOOST_CHECK(!strcmp(metar.Layer(2)->Condition(), "OVC"));
+  BOOST_CHECK(metar.Layer(2)->Altitude() == 12000);
+  BOOST_CHECK(!metar.Layer(2)->hasCloudType());
+}
+
+BOOST_AUTO_TEST_CASE(cloud_layer_3_layers_cloud_types)
+{
+  Metar metar("FEW004TCU SCT080CB OVC120ACC");
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 3);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "FEW"));
+  BOOST_CHECK(metar.Layer(0)->Altitude() == 400);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->CloudType(), "TCU"));
+  BOOST_CHECK(!strcmp(metar.Layer(1)->Condition(), "SCT"));
+  BOOST_CHECK(metar.Layer(1)->Altitude() == 8000);
+  BOOST_CHECK(!strcmp(metar.Layer(1)->CloudType(), "CB"));
+  BOOST_CHECK(!strcmp(metar.Layer(2)->Condition(), "OVC"));
+  BOOST_CHECK(metar.Layer(2)->Altitude() == 12000);
+  BOOST_CHECK(!strcmp(metar.Layer(2)->CloudType(), "ACC"));
+}
+
 BOOST_AUTO_TEST_CASE(real_METAR_1)
 {
   char buffer[100];
@@ -541,6 +664,10 @@ BOOST_AUTO_TEST_CASE(real_METAR_1)
   
   BOOST_CHECK(metar.Visibility() == 10);
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+
+  BOOST_CHECK(metar.NumCloudLayers() == 1);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "OVC"));
+  BOOST_CHECK(metar.Layer(0)->Altitude() == 1500);
   
   BOOST_CHECK(!metar.hasVerticalVisibility());
 
@@ -588,6 +715,12 @@ BOOST_AUTO_TEST_CASE(real_METAR_2)
   BOOST_CHECK(metar.Visibility() == 1400);
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "M") == 0);
   
+  BOOST_CHECK(metar.NumCloudLayers() == 2);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "BKN"));
+  BOOST_CHECK(metar.Layer(0)->Altitude() == 2200);
+  BOOST_CHECK(!strcmp(metar.Layer(1)->Condition(), "OVC"));
+  BOOST_CHECK(metar.Layer(1)->Altitude() == 5000);
+  
   BOOST_CHECK(!metar.hasVerticalVisibility());
 
   BOOST_CHECK(metar.Temperature() == -4);
@@ -630,6 +763,10 @@ BOOST_AUTO_TEST_CASE(real_METAR_3)
   BOOST_CHECK(metar.Visibility() == 2);
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
   
+  BOOST_CHECK(metar.NumCloudLayers() == 1);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "OVC"));
+  BOOST_CHECK(metar.Layer(0)->Altitude() == 500);
+  
   BOOST_CHECK(!metar.hasVerticalVisibility());
 
   BOOST_CHECK(metar.Temperature() == 2);
@@ -670,6 +807,10 @@ BOOST_AUTO_TEST_CASE(real_METAR_4)
   BOOST_CHECK(metar.Visibility() == 10);
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
   
+  BOOST_CHECK(metar.NumCloudLayers() == 1);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "CLR"));
+  BOOST_CHECK(!metar.Layer(0)->hasAltitude());
+  
   BOOST_CHECK(!metar.hasVerticalVisibility());
 
   BOOST_CHECK(metar.Temperature() == 16);
@@ -709,6 +850,8 @@ BOOST_AUTO_TEST_CASE(real_METAR_5)
   
   BOOST_CHECK(metar.Visibility() == 0.5);
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 0);
 
   BOOST_CHECK(metar.hasVerticalVisibility());
   BOOST_CHECK(metar.VerticalVisibility() == 700);
@@ -745,6 +888,11 @@ BOOST_AUTO_TEST_CASE(real_METAR_6)
   BOOST_CHECK(metar.Visibility() == 5);
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
   
+  BOOST_CHECK(metar.NumCloudLayers() == 1);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "OVC"));
+  BOOST_CHECK(metar.Layer(0)->Altitude() == 700);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->CloudType(), "CB"));
+  
   BOOST_CHECK(!metar.hasVerticalVisibility());
 
   BOOST_CHECK(metar.Temperature() == 6);
@@ -778,6 +926,12 @@ BOOST_AUTO_TEST_CASE(real_METAR_7)
   
   BOOST_CHECK(metar.Visibility() == 10);
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 2);
+  BOOST_CHECK(!strcmp(metar.Layer(0)->Condition(), "FEW"));
+  BOOST_CHECK(metar.Layer(0)->Altitude() == 12000);
+  BOOST_CHECK(!strcmp(metar.Layer(1)->Condition(), "BKN"));
+  BOOST_CHECK(metar.Layer(1)->Altitude() == 25000);
   
   BOOST_CHECK(!metar.hasVerticalVisibility());
 

@@ -22,7 +22,7 @@ public:
   //
   Metar(char *metar_str);
 
-  ~Metar() = default;
+  ~Metar();
 
   // no copy
   Metar(const Metar&) = delete;
@@ -131,6 +131,11 @@ public:
   bool isCAVOK() const { return _cavok; }
 
   //
+  // Number of Cloud Layers
+  //
+  unsigned int NumCloudLayers() const { return _num_layers; }
+
+  //
   // Vertical visibilty
   //    feet
   int VerticalVisibility() const { return _vert_vis; }
@@ -183,6 +188,26 @@ public:
   double DewPointNA() const { return _fdew; }
   bool hasDewPointNA() const { return _fdew != _DOUBLE_UNDEFINED; }
 
+  class SkyCondition
+  {
+  public:
+    virtual ~SkyCondition() {};
+
+    virtual const char *Condition() const = 0;
+    virtual int Altitude() const = 0;
+    virtual bool hasAltitude() const = 0;
+    virtual const char *CloudType() const = 0;
+    virtual bool hasCloudType() const = 0;
+  };
+
+  const SkyCondition *Layer(unsigned int idx) const
+  {
+    if (idx < _num_layers)
+      return _layers[idx];
+
+    return nullptr;
+  }
+
 private:
   Metar();
 
@@ -200,6 +225,8 @@ private:
   void parse_wind_var(const char *str);
 
   void parse_vis(const char *str);
+
+  void parse_cloud_layer(const char *str);
   
   void parse_vert_vis(const char *str);
   
@@ -233,6 +260,10 @@ private:
   bool _vis_lt;
   bool _cavok;
 
+  SkyCondition **_layers;
+
+  unsigned int _num_layers;
+
   int _vert_vis;
 
   int _temp;
@@ -249,8 +280,9 @@ private:
 
   const char *_previous_element;
 
-  static int _INTEGER_UNDEFINED;
-  static double _DOUBLE_UNDEFINED;
+  static const int _INTEGER_UNDEFINED;
+  static const double _DOUBLE_UNDEFINED;
+  static const unsigned int _MAX_CLOUD_LAYERS;
 };
 
 #endif

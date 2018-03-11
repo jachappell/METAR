@@ -122,6 +122,12 @@ int main(int argc, char **argv)
          << DEG_SIM << (fahrenheit_flag ? 'F' : 'C');
     cout << "\nHumidity:    " << humidity(temp, dew) << "%" << endl;
 
+    cout << "Pressure:    ";
+    if (metar.hasAltimeterA())
+      cout << metar.AltimeterA() << " inHg" << endl;
+    else if (metar.hasAltimeterQ())
+      cout << metar.AltimeterQ() << " hPa" << endl;
+
     if (metar.hasWindSpeed())
     {
       cout << "\nWind:        ";
@@ -153,6 +159,22 @@ int main(int argc, char **argv)
       {
         cout << "miles" << endl;
       }
+    }
+    
+    cout << endl;
+    for (unsigned int i = 0 ; i < metar.NumCloudLayers() ; i++)
+    {
+      auto layer = metar.Layer(i);
+      cout << layer->Condition();
+      if (layer->hasAltitude())
+      {
+        cout << ": " << layer->Altitude() << " feet";
+        if (layer->hasCloudType())
+        {
+          cout << " (" << layer->CloudType() << ")";
+        }
+      }
+      cout << endl;
     }
 
     return 0;

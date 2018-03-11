@@ -13,8 +13,9 @@
 #include <limits.h>
 #include <float.h>
 
-int Metar::_INTEGER_UNDEFINED = INT_MIN;
-double Metar::_DOUBLE_UNDEFINED = DBL_MAX;
+const int Metar::_INTEGER_UNDEFINED = INT_MIN;
+const double Metar::_DOUBLE_UNDEFINED = DBL_MAX;
+const unsigned int Metar::_MAX_CLOUD_LAYERS = 3;
 
 static const char *WIND_SPEED_KT = "KT";
 static const char *WIND_SPEED_MPS = "MPS";
@@ -22,6 +23,55 @@ static const char *WIND_SPEED_KPH = "KPH";
 
 static const char *VIS_UNITS_M = "M";
 static const char *VIS_UNITS_SM = "SM";
+
+static const char *sky_conditions[] =
+{
+  "SKC",
+  "CLR",
+  "NSC",
+  "FEW",
+  "SCT",
+  "BKN",
+  "OVC"
+};
+static const auto NUM_LAYERS =
+  sizeof(sky_conditions) / sizeof(sky_conditions[0]);
+
+static const char *cloud_types[] =
+{
+  "TCU",
+  "CB",
+  "ACC" 
+};
+static const auto NUM_CLOUDS =
+  sizeof(cloud_types) / sizeof(cloud_types[0]);
+
+class SkyConditionImpl : public Metar::SkyCondition
+{
+public:
+  SkyConditionImpl(const char *c = nullptr, int a = INT_MIN,
+                   const char *t = nullptr)
+    : _cond(c)
+    , _alt(a)
+    , _type(t)
+  {
+  }
+
+  SkyConditionImpl(const SkyConditionImpl&) = default;
+  
+  SkyConditionImpl& operator=(const SkyConditionImpl&) = default;
+
+  virtual const char *Condition() const { return _cond; } 
+  virtual int Altitude() const { return _alt; }
+  virtual bool hasAltitude() const { return _alt != INT_MIN; }
+  virtual const char *CloudType() const { return _type; }
+  virtual bool hasCloudType() const { return _type != nullptr; }
+
+private:
+    const char *_cond;
+    int _alt;
+    const char *_type;
+};
 
 Metar::Metar()
   : _day(_INTEGER_UNDEFINED)
@@ -38,6 +88,7 @@ Metar::Metar()
   , _vis_units(nullptr)
   , _vis_lt(false)
   , _cavok(false)
+  , _num_layers(0)
   , _vert_vis(_INTEGER_UNDEFINED)
   , _temp(_INTEGER_UNDEFINED) 
   , _dew(_INTEGER_UNDEFINED)
@@ -50,6 +101,8 @@ Metar::Metar()
 {
   _metar[0] = '\0';
   _icao[0] = '\0';
+
+  _layers = new SkyCondition*[_MAX_CLOUD_LAYERS]; 
 }
 
 Metar::Metar(const char *metar_str) : Metar()
@@ -62,34 +115,67 @@ Metar::Metar(char *metar_str) : Metar()
   parse(metar_str);
 }
 
-static bool match(const char *pattern, const char *str)
+Metar::~Metar()
+{
+  for (size_t i = 0 ; i < _num_layers ; i++)
+  {
+    delete _layers[i];
+  }
+  delete[] _layers;
+}
+
+static inline bool match_character(const char p, const char c)
+{
+  switch(p)
+  {
+    case '#':
+      if (!isdigit(c)) return false;
+      break;
+
+    case '$':
+      if (!isalpha(c)) return false;
+      break;
+
+    default:
+      if (p != c) return false;
+      break;
+  }
+
+  return true;
+}
+
+static bool match(const char *pattern, const char *str, size_t len)
+{
+  for (size_t i = 0 ; i < len ; i++)
+  {
+    if (!match_character(pattern[i], str[i]))
+      return false;
+  }
+
+  return true;
+}
+
+static inline bool match(const char *pattern, const char *str)
 {
   size_t pattern_len = strlen(pattern);
   if (str && (pattern_len == strlen(str)))
   {
-    for (size_t i = 0 ; i < pattern_len ; i++)
-    {
-      switch(pattern[i])
-      {
-        case '#':
-          if (!isdigit(str[i])) return false;
-          break;
-
-        case '$':
-          if (!isalpha(str[i])) return false;
-          break;
-
-        default:
-          if (pattern[i] != str[i]) return false;
-          break;
-      }
-    }
-
-    return true;
+    return match(pattern, str, pattern_len);
   }
 
   return false;
 }
+
+static inline bool starts_with(const char *pattern, const char *str)
+{
+  size_t pattern_len = strlen(pattern);
+  if (str && (pattern_len <= strlen(str)))
+  {
+    return match(pattern, str, pattern_len);
+  }
+
+  return false;
+}  
 
 static inline bool is_metar(const char *str)
 {
@@ -108,33 +194,10 @@ static inline bool is_ot(const char *str)
 
 static inline bool is_wind(const char *str)
 {
-  return match("#####KT", str) 
-    || match("#####G##KT", str) 
-    || match("VRB##KT", str)
-    || match("VRB##G##KT", str)
-    || match("VRB##G###KT", str)
-    || match("VRB###G###KT", str)
-    || match("######KT", str)
-    || match("#####G###KT", str)
-    || match("######G###KT", str)
-    || match("#####MPS", str)
-    || match("#####G##MPS", str)
-    || match("VRB##MPS", str)
-    || match("VRB##G##MPS", str)
-    || match("VRB##G###MPS", str)
-    || match("VRB###G###MPS", str)
-    || match("######MPS", str)
-    || match("#####G###MPS", str)
-    || match("######G###MPS", str)
-    || match("#####KPH", str)
-    || match("#####G##KPH", str)
-    || match("VRB##KPH", str)
-    || match("VRB##G##KPH", str)
-    || match("VRB##G###KPH", str)
-    || match("VRB###G###KPH", str)
-    || match("######KPH", str)
-    || match("#####G###KPH", str)
-    || match("######G###KPH", str);
+  return starts_with("#####", str) 
+      || starts_with("#####G##", str) 
+      || starts_with("######G###", str)
+      || starts_with("VRB", str);
 }
 
 static inline bool is_wind_var(const char *str)
@@ -163,6 +226,17 @@ static inline bool is_vis(const char *str)
     }
 
     return true;
+  }
+
+  return false;
+}
+
+static inline bool is_cloud_layer(const char *str)
+{
+  for (size_t i = 0 ; i < NUM_LAYERS ; i++)
+  {
+    if (starts_with(sky_conditions[i], str))
+        return true;
   }
 
   return false;
@@ -238,6 +312,10 @@ void Metar::parse(char *metar_str)
     {
       parse_vis(el);
     }
+    else if ((_num_layers < _MAX_CLOUD_LAYERS) && is_cloud_layer(el))
+    {
+      parse_cloud_layer(el);
+    } 
     else if (!hasVerticalVisibility() && is_vert_vis(el))
     {
       parse_vert_vis(el);
@@ -399,6 +477,41 @@ void Metar::parse_vis(const char *str)
       }
     }
     _vis_units = VIS_UNITS_SM;
+  }
+}
+
+void Metar::parse_cloud_layer(const char *str)
+{
+  for (size_t i = 0 ; i < NUM_LAYERS ; i++)
+  {
+    if (starts_with(sky_conditions[i], str))
+    {
+      if (str[3] == '\0')
+      {
+        _layers[_num_layers++] = new SkyConditionImpl(sky_conditions[i]);
+      }
+      else if (str[6] == '\0')
+      {
+        _layers[_num_layers++] =
+            new SkyConditionImpl(sky_conditions[i], atoi(str + 3) * 100);
+      }
+      else
+      {
+        const char *c =nullptr;
+        for (size_t j = 0 ; j < NUM_CLOUDS ; j++)
+        {
+          if (!strcmp(str + 6, cloud_types[j]))
+          {
+            c = cloud_types[j];
+            break;
+          }
+        } 
+        _layers[_num_layers++] =
+            new SkyConditionImpl(sky_conditions[i], 
+                                 atoi(str + 3) * 100,
+                                 c);
+      }
+    }
   }
 }
 
