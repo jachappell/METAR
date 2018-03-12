@@ -57,9 +57,8 @@ public:
   {
   }
 
-  SkyConditionImpl(const SkyConditionImpl&) = default;
-  
-  SkyConditionImpl& operator=(const SkyConditionImpl&) = default;
+  SkyConditionImpl(const SkyConditionImpl&) = delete;
+  SkyConditionImpl& operator=(const SkyConditionImpl&) = delete;
 
   virtual const char *Condition() const { return _cond; } 
   virtual int Altitude() const { return _alt; }
@@ -124,57 +123,44 @@ Metar::~Metar()
   delete[] _layers;
 }
 
-static inline bool match_character(const char p, const char c)
+static bool match(const char *pattern, const char *str,
+    bool (*f)(size_t, size_t))
 {
-  switch(p)
+  size_t len = strlen(pattern);
+  if (str && f(len, strlen(str)))
   {
-    case '#':
-      if (!isdigit(c)) return false;
-      break;
+    for (size_t i = 0 ; i < len ; i++)
+    {
+      switch(pattern[i])
+      {
+        case '#':
+          if (!isdigit(str[i])) return false;
+          break;
 
-    case '$':
-      if (!isalpha(c)) return false;
-      break;
+        case '$':
+          if (!isalpha(str[i])) return false;
+          break;
 
-    default:
-      if (p != c) return false;
-      break;
+        default:
+          if (pattern[i] != str[i]) return false;
+          break;
+      }
+    }
+
+    return true;
   }
 
-  return true;
-}
-
-static bool match(const char *pattern, const char *str, size_t len)
-{
-  for (size_t i = 0 ; i < len ; i++)
-  {
-    if (!match_character(pattern[i], str[i]))
-      return false;
-  }
-
-  return true;
+  return false;
 }
 
 static inline bool match(const char *pattern, const char *str)
 {
-  size_t pattern_len = strlen(pattern);
-  if (str && (pattern_len == strlen(str)))
-  {
-    return match(pattern, str, pattern_len);
-  }
-
-  return false;
-}
+  return match(pattern, str, [](size_t a, size_t b) { return a == b; });
+}  
 
 static inline bool starts_with(const char *pattern, const char *str)
 {
-  size_t pattern_len = strlen(pattern);
-  if (str && (pattern_len <= strlen(str)))
-  {
-    return match(pattern, str, pattern_len);
-  }
-
-  return false;
+  return match(pattern, str, [](size_t a, size_t b) { return a <= b; });
 }  
 
 static inline bool is_metar(const char *str)
