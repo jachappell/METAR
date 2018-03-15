@@ -4,7 +4,7 @@
 // METAR decoder tests
 //
 
-#include "metar.h"
+#include "Metar.h"
 
 #include <string>
 #include <iostream>

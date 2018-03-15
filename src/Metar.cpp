@@ -4,7 +4,7 @@
 // METAR decoder
 //
 
-#include "metar.h"
+#include "Metar.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -355,8 +355,7 @@ void Metar::parse_ot(const char *str)
   val[2] = '\0';
   _hour = atoi(val);
 
-  strcpy(val, str + 4);
-  _min = atoi(val);
+  _min = atoi(str + 4);
 }
 
 void Metar::parse_wind(const char *str)

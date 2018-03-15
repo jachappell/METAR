@@ -27,8 +27,6 @@
 *.exe
 *.out
 *.app
-weather
-test
 
 # vim
 *.swp

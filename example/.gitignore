@@ -2,4 +2,3 @@ weather
 Curl.h
 Fetch.cpp
 Fetch.h
-metar.cpp

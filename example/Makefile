@@ -2,12 +2,12 @@ PROG=weather
 OBJDIR=.obj
 CC=g++
 
-CFLAGS = -Wall --std=c++14 -I.. `pkg-config libcurl --libs`
-LDFLAGS = `pkg-config libcurl --libs`
+CFLAGS = -Wall --std=c++14 -I../include `pkg-config libcurl --libs`
+LDFLAGS = `pkg-config libcurl --libs` -L../lib -lMetar
 
 $(shell mkdir -p $(OBJDIR)) 
 
-OBJS = $(OBJDIR)/main.o $(OBJDIR)/metar.o $(OBJDIR)/Fetch.o
+OBJS = $(OBJDIR)/main.o $(OBJDIR)/Fetch.o
 
 $(PROG) : $(OBJS)
 	$(CC) $(OBJS) $(LDFLAGS) -o $(PROG)
@@ -23,9 +23,6 @@ Curl.h:
 Fetch.h: Curl.h
 	wget https://github.com/jachappell/Curlpp/raw/master/Fetch.h
 
-metar.cpp: ../metar.cpp
-	cp ../metar.cpp .
-
 main.cpp: Fetch.h Curl.h
 
 $(OBJDIR)/%.o: %.cpp
@@ -38,5 +35,5 @@ $(OBJDIR)/%.o: %.cpp
 	@rm -f $(OBJDIR)/$*.d.tmp
 
 clean:
-	rm -rf $(PROG) $(OBJDIR) metar.cpp Curl.h Fetch.h Fetch.cpp
+	rm -rf $(PROG) $(OBJDIR) Curl.h Fetch.h Fetch.cpp
 

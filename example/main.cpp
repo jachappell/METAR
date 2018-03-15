@@ -14,7 +14,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "metar.h"
+#include "Metar.h"
 #include "Fetch.h"
 
 using namespace std;

@@ -15,6 +15,9 @@ This is a work in progress.  So far, the following have been implemented:
   * Temperature
 
 Look <a href="https://github.com/jachappell/METAR/blob/master/example/main.cpp">here</a> to see an example.
+
+To build the library:<br />
+$ make
  
 To build the example:<br />
 $ cd example <br />
