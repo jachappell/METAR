@@ -1,4 +1,4 @@
-PROG=test
+PROG=metar_test
 OBJDIR=.obj
 CC=g++
 
