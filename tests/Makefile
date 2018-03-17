@@ -1,18 +1,26 @@
-PROG=metar_test
+PROG1=metar_test
+PROG2=conv_test
 OBJDIR=.obj
 CC=g++
 
 CFLAGS = -Wall -I../include 
 LDFLAGS = -L../lib -lMetar
 
+all: $(PROG1) $(PROG2)
+
 $(shell mkdir -p $(OBJDIR)) 
 
-OBJS = $(OBJDIR)/test.o
+OBJS1 = $(OBJDIR)/metar_test.o
+OBJS2 = $(OBJDIR)/conv_test.o
 
-$(PROG) : $(OBJS)
-	$(CC) $(OBJS) $(LDFLAGS) -o $(PROG)
+$(PROG1) : $(OBJS1)
+	$(CC) $(OBJS1) $(LDFLAGS) -o $(PROG1)
 
--include $(OBJS:.o=.d)
+$(PROG2) : $(OBJS2)
+	$(CC) $(OBJS2) $(LDFLAGS) -o $(PROG2)
+
+-include $(OBJS1:.o=.d)
+-include $(OBJS2:.o=.d)
 
 $(OBJDIR)/%.o: %.cpp
 	$(CC) -c $(CFLAGS) $*.cpp -o $(OBJDIR)/$*.o
@@ -24,5 +32,4 @@ $(OBJDIR)/%.o: %.cpp
 	@rm -f $(OBJDIR)/$*.d.tmp
 
 clean:
-	rm -rf $(PROG) $(OBJDIR)
-
+	rm -rf $(PROG1) $(PROG2) $(OBJDIR)

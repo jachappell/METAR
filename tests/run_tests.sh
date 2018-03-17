@@ -1,3 +1,3 @@
 #!/bin/bash
 cd .. && make && cd -
-make && ./metar_test
+make && ./metar_test && ./conv_test

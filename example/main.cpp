@@ -14,19 +14,16 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "Metar.h"
 #include "Fetch.h"
+
+#include "Metar.h"
+#include "Convert.h"
 
 using namespace std;
 using namespace Storage_B::Weather;
 
 static const string URL = 
   "http://tgftp.nws.noaa.gov//data/observations/metar/stations/";
-
-static double fahr(double temp)
-{
-  return (temp *1.8) + 32.0;
-}
 
 static double humidity(double t, double td) 
 {
@@ -117,9 +114,9 @@ int main(int argc, char **argv)
     
     cout << metar.ICAO() << endl;
     cout << setprecision(1) << fixed;
-    cout <<   "Temperature: " << (fahrenheit_flag ? fahr(temp) : temp) 
+    cout <<   "Temperature: " << (fahrenheit_flag ? Convert::c2f(temp) : temp) 
          << DEG_SIM << (fahrenheit_flag ? 'F' : 'C');
-    cout << "\nDew Point:   " << (fahrenheit_flag ? fahr(dew) : dew)
+    cout << "\nDew Point:   " << (fahrenheit_flag ? Convert::c2f(dew) : dew)
          << DEG_SIM << (fahrenheit_flag ? 'F' : 'C');
     cout << "\nHumidity:    " << humidity(temp, dew) << "%" << endl;
 
