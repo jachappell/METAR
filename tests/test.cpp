@@ -7,12 +7,11 @@
 #include "Metar.h"
 
 #include <string>
-#include <iostream>
 
 #define BOOST_TEST_MODULE METAR
 #include <boost/test/included/unit_test.hpp>
 
-using namespace std;
+using namespace Storage_B::Weather;
 
 BOOST_AUTO_TEST_CASE(uninitialized_observation_time)
 {
@@ -687,7 +686,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_1)
 
 BOOST_AUTO_TEST_CASE(real_METAR_2)
 {
-  string metar_str = "METAR LBBG 041600Z 12012MPS 090V150 1400 R04/P1500N R22/P1500U +SN BKN022 OVC050 M04/M07 Q1020 NOSIG 8849//91=";
+  std::string metar_str = "METAR LBBG 041600Z 12012MPS 090V150 1400 R04/P1500N R22/P1500U +SN BKN022 OVC050 M04/M07 Q1020 NOSIG 8849//91=";
 
   Metar metar(metar_str.c_str());
 
@@ -738,7 +737,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_2)
 
 BOOST_AUTO_TEST_CASE(real_METAR_3)
 {
-  string metar_str = "SPECI KSTL 221513Z 07005KT 2SM -RA BR OVC005 02/02 A3041 RMK AO2 P0001 T00220022";
+  std::string metar_str = "SPECI KSTL 221513Z 07005KT 2SM -RA BR OVC005 02/02 A3041 RMK AO2 P0001 T00220022";
 
   Metar metar(metar_str.c_str()); 
 

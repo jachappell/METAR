@@ -18,6 +18,7 @@
 #include "Fetch.h"
 
 using namespace std;
+using namespace Storage_B::Weather;
 
 static const string URL = 
   "http://tgftp.nws.noaa.gov//data/observations/metar/stations/";

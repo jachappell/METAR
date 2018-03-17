@@ -13,6 +13,8 @@
 #include <limits.h>
 #include <float.h>
 
+using namespace Storage_B::Weather;
+
 const int Metar::_INTEGER_UNDEFINED = INT_MIN;
 const double Metar::_DOUBLE_UNDEFINED = DBL_MAX;
 const unsigned int Metar::_MAX_CLOUD_LAYERS = 3;
