@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2018 James A. Chappell
 //
-// METAR decoder
+// Units conversion
 //
 
 #ifndef __CONVERT_H__

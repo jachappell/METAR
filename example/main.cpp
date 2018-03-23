@@ -18,18 +18,13 @@
 
 #include "Metar.h"
 #include "Convert.h"
+#include "Utils.h"
 
 using namespace std;
 using namespace Storage_B::Weather;
 
 static const string URL = 
   "http://tgftp.nws.noaa.gov//data/observations/metar/stations/";
-
-static double humidity(double t, double td) 
-{
-  return (100.0 * exp((17.625 * td) / (243.04 + td)) / 
-                          exp((17.625 * t) / (243.04 + t)));
-}
 
 static void usage(const string& command)
 {
@@ -38,6 +33,12 @@ static void usage(const string& command)
 }
 
 static const char *DEG_SIM = "\u00B0";
+
+static void print_temp(double temp, bool fahrenheit_flag)
+{
+  cout << (fahrenheit_flag ? Convert::c2f(temp) : temp) 
+         << DEG_SIM << (fahrenheit_flag ? 'F' : 'C');
+}
 
 int main(int argc, char **argv)
 {
@@ -114,11 +115,31 @@ int main(int argc, char **argv)
     
     cout << metar.ICAO() << endl;
     cout << setprecision(1) << fixed;
-    cout <<   "Temperature: " << (fahrenheit_flag ? Convert::c2f(temp) : temp) 
-         << DEG_SIM << (fahrenheit_flag ? 'F' : 'C');
-    cout << "\nDew Point:   " << (fahrenheit_flag ? Convert::c2f(dew) : dew)
-         << DEG_SIM << (fahrenheit_flag ? 'F' : 'C');
-    cout << "\nHumidity:    " << humidity(temp, dew) << "%" << endl;
+
+    cout <<   "Temperature: ";
+    print_temp(temp, fahrenheit_flag);  
+
+    if (metar.hasWindSpeed())
+    {
+      double wind_kph;
+      if (!strcmp(metar.WindSpeedUnits(), "KT"))
+        wind_kph = Convert::Kts2Kph(metar.WindSpeed());
+      else if (!strcmp(metar.WindSpeedUnits(), "MPS"))
+        wind_kph = metar.WindSpeed() / 1000.0;
+      else
+        wind_kph = metar.WindSpeed();
+      double twc = Utils::WindChill(temp, wind_kph);
+      if (twc != temp)
+      {
+        cout <<   "\nFeels Like:  ";
+        print_temp(twc, fahrenheit_flag);
+      }
+    }
+
+    cout << "\nDew Point:   ";
+    print_temp(dew, fahrenheit_flag);
+
+    cout << "\nHumidity:    " << Utils::Humidity(temp, dew) << "%" << endl;
 
     cout << "Pressure:    ";
     if (metar.hasAltimeterA())
