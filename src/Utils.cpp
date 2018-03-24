@@ -14,7 +14,7 @@ double Utils::WindChill(double temp, double wind_speed)
 {
   double twc(temp);
   
-  if ((wind_speed > 4.8) && (temp < 10.0))
+  if ((wind_speed > 4.8) && (temp <= 10.0))
   {
     double v16(pow(wind_speed, 0.16));
     twc = 13.12 + (0.6215 * temp) - (11.37 * v16) 
