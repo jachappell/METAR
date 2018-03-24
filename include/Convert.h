@@ -34,6 +34,11 @@ namespace Storage_B
 		    return (temp * 1.8) + 32.0;
 	    }
 
+      static double f2c(double temp)
+      {
+        return (temp - 32.0) / 1.8;
+      }
+
 	    static double f2m(double f)
       {
 		    return f * metersPerFoot;
