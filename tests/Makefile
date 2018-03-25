@@ -15,13 +15,13 @@ OBJS1 = $(OBJDIR)/metar_test.o
 OBJS2 = $(OBJDIR)/conv_test.o
 OBJS3 = $(OBJDIR)/utils_test.o
 
-$(PROG1) : $(OBJS1)
+$(PROG1) : $(OBJS1) ../lib/libMetar.a
 	$(CC) $(OBJS1) $(LDFLAGS) -o $(PROG1)
 
 $(PROG2) : $(OBJS2)
 	$(CC) $(OBJS2) $(LDFLAGS) -o $(PROG2)
 
-$(PROG3) : $(OBJS3)
+$(PROG3) : $(OBJS3) ../lib/libMetar.a
 	$(CC) $(OBJS3) $(LDFLAGS) -o $(PROG3)
 
 -include $(OBJS1:.o=.d)

@@ -119,6 +119,7 @@ int main(int argc, char **argv)
     cout <<   "Temperature: ";
     print_temp(temp, fahrenheit_flag);  
 
+    double feels_like(temp);
     if (metar.hasWindSpeed())
     {
       double wind_kph;
@@ -128,18 +129,25 @@ int main(int argc, char **argv)
         wind_kph = metar.WindSpeed() / 1000.0;
       else
         wind_kph = metar.WindSpeed();
-      double twc = Utils::WindChill(temp, wind_kph);
-      if (twc != temp)
-      {
-        cout <<   "\nFeels Like:  ";
-        print_temp(twc, fahrenheit_flag);
-      }
+      feels_like = Utils::WindChill(temp, wind_kph);
+    }
+
+    double humidity =  Utils::Humidity(temp, dew);
+    if (feels_like == temp)
+    {
+      feels_like = Utils::HeatIndex(temp, humidity, true);
+    }
+      
+    if (feels_like != temp)
+    {
+      cout <<   "\nFeels Like:  ";
+      print_temp(feels_like, fahrenheit_flag);
     }
 
     cout << "\nDew Point:   ";
     print_temp(dew, fahrenheit_flag);
 
-    cout << "\nHumidity:    " << Utils::Humidity(temp, dew) << "%" << endl;
+    cout << "\nHumidity:    " << humidity << "%" << endl;
 
     cout << "Pressure:    ";
     if (metar.hasAltimeterA())
