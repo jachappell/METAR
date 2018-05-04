@@ -58,6 +58,8 @@ public:
   {
   }
 
+  SkyConditionImpl() = delete;
+
   SkyConditionImpl(const SkyConditionImpl&) = delete;
   SkyConditionImpl& operator=(const SkyConditionImpl&) = delete;
 
