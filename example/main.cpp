@@ -34,6 +34,24 @@ static void usage(const string& command)
 
 static const char *DEG_SIM = "\u00B0";
 
+static const char *sky_conditions[] =
+{
+  "SKC",
+  "CLR",
+  "NSC",
+  "FEW",
+  "SCT",
+  "BKN",
+  "OVC"
+};
+
+static const char *cloud_types[] =
+{
+  "TCU",
+  "CB",
+  "ACC" 
+};
+
 static void print_temp(double temp, bool fahrenheit_flag)
 {
   cout << (fahrenheit_flag ? Convert::c2f(temp) : temp) 
@@ -192,13 +210,13 @@ int main(int argc, char **argv)
     for (unsigned int i = 0 ; i < metar.NumCloudLayers() ; i++)
     {
       auto layer = metar.Layer(i);
-      cout << layer->Condition();
+      cout << sky_conditions[layer->Cover()];
       if (layer->hasAltitude())
       {
         cout << ": " << layer->Altitude() << " feet";
         if (layer->hasCloudType())
         {
-          cout << " (" << layer->CloudType() << ")";
+          cout << " (" << cloud_types[layer->CloudType()] << ")";
         }
       }
       cout << endl;

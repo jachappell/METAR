@@ -195,12 +195,31 @@ namespace Storage_B
       class SkyCondition
       {
       public:
+        enum cover
+        {
+          SKC,
+          CLR,
+          NSC,
+          FEW,
+          SCT,
+          BKN,
+          OVC
+        };
+
+        enum type
+        {
+          undefined = -1,
+          TCU,
+          CB,
+          ACC 
+        };
+
         virtual ~SkyCondition() {};
 
-        virtual const char *Condition() const = 0;
+        virtual cover Cover() const = 0;
         virtual int Altitude() const = 0;
         virtual bool hasAltitude() const = 0;
-        virtual const char *CloudType() const = 0;
+        virtual type CloudType() const = 0;
         virtual bool hasCloudType() const = 0;
       };
 

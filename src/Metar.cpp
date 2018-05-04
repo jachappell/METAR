@@ -51,9 +51,8 @@ static const auto NUM_CLOUDS =
 class SkyConditionImpl : public Metar::SkyCondition
 {
 public:
-  SkyConditionImpl(const char *c = nullptr, int a = INT_MIN,
-                   const char *t = nullptr)
-    : _cond(c)
+  SkyConditionImpl(cover c, int a = INT_MIN, type t = type::undefined)
+    : _cover(c)
     , _alt(a)
     , _type(t)
   {
@@ -62,16 +61,16 @@ public:
   SkyConditionImpl(const SkyConditionImpl&) = delete;
   SkyConditionImpl& operator=(const SkyConditionImpl&) = delete;
 
-  virtual const char *Condition() const { return _cond; } 
+  virtual cover Cover() const { return _cover; } 
   virtual int Altitude() const { return _alt; }
   virtual bool hasAltitude() const { return _alt != INT_MIN; }
-  virtual const char *CloudType() const { return _type; }
-  virtual bool hasCloudType() const { return _type != nullptr; }
+  virtual type CloudType() const { return _type; }
+  virtual bool hasCloudType() const { return _type != type::undefined; }
 
 private:
-    const char *_cond;
+    cover _cover;
     int _alt;
-    const char *_type;
+    type _type;
 };
 
 Metar::Metar()
@@ -431,6 +430,7 @@ void Metar::parse_vis(const char *str)
   else
   {
     const char *p = strstr(str, "/");
+
     if (!p)
     {
       _vis = atof(str);
@@ -475,28 +475,29 @@ void Metar::parse_cloud_layer(const char *str)
     {
       if (str[3] == '\0')
       {
-        _layers[_num_layers++] = new SkyConditionImpl(sky_conditions[i]);
+        _layers[_num_layers++] =
+          new SkyConditionImpl(static_cast<SkyCondition::cover>(i));
       }
       else if (str[6] == '\0')
       {
         _layers[_num_layers++] =
-            new SkyConditionImpl(sky_conditions[i], atoi(str + 3) * 100);
+            new SkyConditionImpl(static_cast<SkyCondition::cover>(i), atoi(str + 3) * 100);
       }
       else
       {
-        const char *c =nullptr;
+        SkyCondition::type t = SkyCondition::type::undefined;
         for (size_t j = 0 ; j < NUM_CLOUDS ; j++)
         {
           if (!strcmp(str + 6, cloud_types[j]))
           {
-            c = cloud_types[j];
+            t = static_cast<SkyCondition::type>(j);
             break;
           }
         } 
         _layers[_num_layers++] =
-            new SkyConditionImpl(sky_conditions[i], 
+            new SkyConditionImpl(static_cast<SkyCondition::cover>(i), 
                                  atoi(str + 3) * 100,
-                                 c);
+                                 t);
       }
     }
   }
