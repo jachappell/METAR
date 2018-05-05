@@ -7,8 +7,14 @@
 #ifndef __METAR_H__
 #define __METAR_H__
 
+#ifdef ARDUINO
+#define NO_SHARED_PTR
+#endif
+
+#ifndef NO_SHARED_PTR
 #include <memory>
 #include <vector>
+#endif
 
 namespace Storage_B
 {
@@ -29,7 +35,11 @@ namespace Storage_B
       //
       Metar(char *metar_str);
 
+#ifdef NO_SHARED_PTR
+      ~Metar();
+#else
       ~Metar() = default;
+#endif
 
       // no copy
       Metar(const Metar&) = delete;
@@ -140,7 +150,14 @@ namespace Storage_B
       //
       // Number of Cloud Layers
       //
-      unsigned int NumCloudLayers() const { return _layers.size(); }
+      unsigned int NumCloudLayers() const
+      { 
+#ifdef NO_SHARED_PTR
+        return _num_layers;
+#else
+        return _layers.size(); 
+#endif
+      }
 
       //
       // Vertical visibilty
@@ -226,7 +243,12 @@ namespace Storage_B
         virtual bool hasCloudType() const = 0;
       };
 
-      std::shared_ptr<SkyCondition> Layer(unsigned int idx) const
+#ifndef NO_SHARED_PTR
+      std::shared_ptr<SkyCondition>
+#else
+      SkyCondition *
+#endif
+      Layer(unsigned int idx) const
       {
         if (idx < NumCloudLayers())
         {
@@ -288,7 +310,16 @@ namespace Storage_B
       bool _vis_lt;
       bool _cavok;
 
-      std::vector<std::shared_ptr<SkyCondition>> _layers;
+#ifndef NO_SHARED_PTR
+      std::vector<std::shared_ptr<SkyCondition>>
+#else
+      SkyCondition **
+#endif
+      _layers;
+
+#ifdef NO_SHARED_PTR
+      unsigned int _num_layers;
+#endif
 
       int _vert_vis;
 
@@ -308,6 +339,9 @@ namespace Storage_B
 
       static const int _INTEGER_UNDEFINED;
       static const double _DOUBLE_UNDEFINED;
+#ifdef NO_SHARED_PTR
+      static const unsigned int _MAX_CLOUD_LAYERS;
+#endif
     };
   }
 }

@@ -18,6 +18,10 @@ using namespace Storage_B::Weather;
 const int Metar::_INTEGER_UNDEFINED = INT_MIN;
 const double Metar::_DOUBLE_UNDEFINED = DBL_MAX;
 
+#ifdef NO_SHARED_PTR
+const unsigned int Metar::_MAX_CLOUD_LAYERS = 3;
+#endif
+
 static const char *WIND_SPEED_KT = "KT";
 static const char *WIND_SPEED_MPS = "MPS";
 static const char *WIND_SPEED_KPH = "KPH";
@@ -91,6 +95,9 @@ Metar::Metar()
   , _vis_units(nullptr)
   , _vis_lt(false)
   , _cavok(false)
+#ifdef NO_SHARED_PTR
+  , _num_layers(0)
+#endif
   , _vert_vis(_INTEGER_UNDEFINED)
   , _temp(_INTEGER_UNDEFINED) 
   , _dew(_INTEGER_UNDEFINED)
@@ -103,6 +110,10 @@ Metar::Metar()
 {
   _metar[0] = '\0';
   _icao[0] = '\0';
+
+#ifdef NO_SHARED_PTR
+  _layers = new SkyCondition*[_MAX_CLOUD_LAYERS];
+#endif
 }
 
 Metar::Metar(const char *metar_str) : Metar()
@@ -114,6 +125,17 @@ Metar::Metar(char *metar_str) : Metar()
 {
   parse(metar_str);
 }
+
+#ifdef NO_SHARED_PTR
+Metar::~Metar()
+{
+  for (size_t i = 0 ; i < _num_layers ; i++)
+  {
+    delete _layers[i];
+  }
+  delete[] _layers;
+}
+#endif
 
 static bool match(const char *pattern, const char *str,
     bool (*f)(size_t, size_t))
@@ -466,15 +488,26 @@ void Metar::parse_cloud_layer(const char *str)
     {
       if (str[3] == '\0')
       {
+#ifndef NO_SHARED_PTR
         _layers.push_back(
             std::make_shared<SkyConditionImpl>(
                 static_cast<SkyCondition::cover>(i)));
+#else
+        _layers[_num_layers++] =
+            new SkyConditionImpl(static_cast<SkyCondition::cover>(i)); 
+#endif
       }
       else if (str[6] == '\0')
       {
+#ifndef NO_SHARED_PTR
         _layers.push_back(
             std::make_shared<SkyConditionImpl>(
                 static_cast<SkyCondition::cover>(i), atoi(str + 3) * 100));
+#else
+        _layers[_num_layers++] =
+            new SkyConditionImpl(static_cast<SkyCondition::cover>(i), 
+                                 atoi(str + 3) * 100);
+#endif
       }
       else
       {
@@ -487,9 +520,15 @@ void Metar::parse_cloud_layer(const char *str)
             break;
           }
         } 
+#ifndef NO_SHARED_PTR
         _layers.push_back(
             std::make_shared<SkyConditionImpl>(
                 static_cast<SkyCondition::cover>(i), atoi(str + 3) * 100, t));
+#else
+        _layers[_num_layers++] =
+            new SkyConditionImpl(static_cast<SkyCondition::cover>(i), 
+                                 atoi(str + 3) * 100, t);
+#endif
       }
     }
   }
