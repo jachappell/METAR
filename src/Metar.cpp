@@ -17,7 +17,6 @@ using namespace Storage_B::Weather;
 
 const int Metar::_INTEGER_UNDEFINED = INT_MIN;
 const double Metar::_DOUBLE_UNDEFINED = DBL_MAX;
-const unsigned int Metar::_MAX_CLOUD_LAYERS = 3;
 
 static const char *WIND_SPEED_KT = "KT";
 static const char *WIND_SPEED_MPS = "MPS";
@@ -58,6 +57,8 @@ public:
   {
   }
 
+  virtual ~SkyConditionImpl() = default;
+
   SkyConditionImpl() = delete;
 
   SkyConditionImpl(const SkyConditionImpl&) = delete;
@@ -90,7 +91,6 @@ Metar::Metar()
   , _vis_units(nullptr)
   , _vis_lt(false)
   , _cavok(false)
-  , _num_layers(0)
   , _vert_vis(_INTEGER_UNDEFINED)
   , _temp(_INTEGER_UNDEFINED) 
   , _dew(_INTEGER_UNDEFINED)
@@ -103,8 +103,6 @@ Metar::Metar()
 {
   _metar[0] = '\0';
   _icao[0] = '\0';
-
-  _layers = new SkyCondition*[_MAX_CLOUD_LAYERS]; 
 }
 
 Metar::Metar(const char *metar_str) : Metar()
@@ -115,15 +113,6 @@ Metar::Metar(const char *metar_str) : Metar()
 Metar::Metar(char *metar_str) : Metar()
 {
   parse(metar_str);
-}
-
-Metar::~Metar()
-{
-  for (size_t i = 0 ; i < _num_layers ; i++)
-  {
-    delete _layers[i];
-  }
-  delete[] _layers;
 }
 
 static bool match(const char *pattern, const char *str,
@@ -301,7 +290,7 @@ void Metar::parse(char *metar_str)
     {
       parse_vis(el);
     }
-    else if ((_num_layers < _MAX_CLOUD_LAYERS) && is_cloud_layer(el))
+    else if (is_cloud_layer(el))
     {
       parse_cloud_layer(el);
     } 
@@ -477,13 +466,15 @@ void Metar::parse_cloud_layer(const char *str)
     {
       if (str[3] == '\0')
       {
-        _layers[_num_layers++] =
-          new SkyConditionImpl(static_cast<SkyCondition::cover>(i));
+        _layers.push_back(
+            std::make_shared<SkyConditionImpl>(
+                static_cast<SkyCondition::cover>(i)));
       }
       else if (str[6] == '\0')
       {
-        _layers[_num_layers++] =
-            new SkyConditionImpl(static_cast<SkyCondition::cover>(i), atoi(str + 3) * 100);
+        _layers.push_back(
+            std::make_shared<SkyConditionImpl>(
+                static_cast<SkyCondition::cover>(i), atoi(str + 3) * 100));
       }
       else
       {
@@ -496,10 +487,9 @@ void Metar::parse_cloud_layer(const char *str)
             break;
           }
         } 
-        _layers[_num_layers++] =
-            new SkyConditionImpl(static_cast<SkyCondition::cover>(i), 
-                                 atoi(str + 3) * 100,
-                                 t);
+        _layers.push_back(
+            std::make_shared<SkyConditionImpl>(
+                static_cast<SkyCondition::cover>(i), atoi(str + 3) * 100, t));
       }
     }
   }

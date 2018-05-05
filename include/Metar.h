@@ -7,6 +7,9 @@
 #ifndef __METAR_H__
 #define __METAR_H__
 
+#include <memory>
+#include <vector>
+
 namespace Storage_B
 {
   namespace Weather
@@ -26,7 +29,7 @@ namespace Storage_B
       //
       Metar(char *metar_str);
 
-      ~Metar();
+      ~Metar() = default;
 
       // no copy
       Metar(const Metar&) = delete;
@@ -137,7 +140,7 @@ namespace Storage_B
       //
       // Number of Cloud Layers
       //
-      unsigned int NumCloudLayers() const { return _num_layers; }
+      unsigned int NumCloudLayers() const { return _layers.size(); }
 
       //
       // Vertical visibilty
@@ -214,7 +217,7 @@ namespace Storage_B
           ACC 
         };
 
-        virtual ~SkyCondition() {};
+        virtual ~SkyCondition() = default;
 
         virtual cover Cover() const = 0;
         virtual int Altitude() const = 0;
@@ -223,10 +226,12 @@ namespace Storage_B
         virtual bool hasCloudType() const = 0;
       };
 
-      const SkyCondition *Layer(unsigned int idx) const
+      std::shared_ptr<SkyCondition> Layer(unsigned int idx) const
       {
-        if (idx < _num_layers)
+        if (idx < NumCloudLayers())
+        {
           return _layers[idx];
+        }
 
         return nullptr;
       }
@@ -283,9 +288,7 @@ namespace Storage_B
       bool _vis_lt;
       bool _cavok;
 
-      SkyCondition **_layers;
-
-      unsigned int _num_layers;
+      std::vector<std::shared_ptr<SkyCondition>> _layers;
 
       int _vert_vis;
 
@@ -305,7 +308,6 @@ namespace Storage_B
 
       static const int _INTEGER_UNDEFINED;
       static const double _DOUBLE_UNDEFINED;
-      static const unsigned int _MAX_CLOUD_LAYERS;
     };
   }
 }
