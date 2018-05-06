@@ -87,7 +87,7 @@ Metar::Metar()
   , _wind_dir(_INTEGER_UNDEFINED) 
   , _wind_spd(_INTEGER_UNDEFINED)
   , _gust(_INTEGER_UNDEFINED)
-  , _wind_speed_units(nullptr)
+  , _wind_speed_units(speed_units::undefined)
   , _min_wind_dir(_INTEGER_UNDEFINED)
   , _max_wind_dir(_INTEGER_UNDEFINED)
   , _vrb(false)
@@ -376,15 +376,15 @@ void Metar::parse_wind(const char *str)
 {
   if (strstr(str, WIND_SPEED_MPS))
   {
-    _wind_speed_units = WIND_SPEED_MPS;
+    _wind_speed_units = speed_units::MPS;
   }
   else if (strstr(str, WIND_SPEED_KPH))
   {
-    _wind_speed_units = WIND_SPEED_KPH;
+    _wind_speed_units = speed_units::KPH;
   }
-  else
+  else if (strstr(str, WIND_SPEED_KT))
   {
-    _wind_speed_units = WIND_SPEED_KT;
+    _wind_speed_units = speed_units::KT;
   }
 
   char val[4];

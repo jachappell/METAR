@@ -34,6 +34,13 @@ static void usage(const string& command)
 
 static const char *DEG_SIM = "\u00B0";
 
+static const char *speed_units[]
+{
+  "KT",
+  "MPS",
+  "KPH"
+};
+
 static const char *sky_conditions[] =
 {
   "SKC",
@@ -141,12 +148,21 @@ int main(int argc, char **argv)
     if (metar.hasWindSpeed())
     {
       double wind_kph;
-      if (!strcmp(metar.WindSpeedUnits(), "KT"))
-        wind_kph = Convert::Kts2Kph(metar.WindSpeed());
-      else if (!strcmp(metar.WindSpeedUnits(), "MPS"))
-        wind_kph = metar.WindSpeed() / 1000.0;
-      else
-        wind_kph = metar.WindSpeed();
+      switch(metar.WindSpeedUnits())
+      {
+        case Metar::speed_units::KT:
+          wind_kph = Convert::Kts2Kph(metar.WindSpeed());
+          break;
+
+        case Metar::speed_units::MPS:
+          wind_kph = metar.WindSpeed() / 1000.0;
+          break;
+
+        default:
+          wind_kph = metar.WindSpeed();
+          break;
+      }
+      
       feels_like = Utils::WindChill(temp, wind_kph);
     }
 
@@ -189,7 +205,8 @@ int main(int argc, char **argv)
       {
         cout << " (" << metar.WindGust() << ")";
       }
-      cout << " " << metar.WindSpeedUnits() << endl;
+      cout << " "
+           << speed_units[static_cast<int>(metar.WindSpeedUnits())] << endl;
     }
 
     cout << setprecision(2) << fixed;
@@ -210,13 +227,14 @@ int main(int argc, char **argv)
     for (unsigned int i = 0 ; i < metar.NumCloudLayers() ; i++)
     {
       auto layer = metar.Layer(i);
-      cout << sky_conditions[layer->Cover()];
+      cout << sky_conditions[static_cast<int>(layer->Cover())];
       if (layer->hasAltitude())
       {
         cout << ": " << layer->Altitude() << " feet";
         if (layer->hasCloudType())
         {
-          cout << " (" << cloud_types[layer->CloudType()] << ")";
+          cout << " (" << cloud_types[static_cast<int>(layer->CloudType())] 
+               << ")";
         }
       }
       cout << endl;

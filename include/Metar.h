@@ -23,6 +23,14 @@ namespace Storage_B
     class Metar
     {
     public:
+      enum class speed_units
+      {
+        undefined = -1,
+        KT,  // knots
+        MPS, // meters per second
+        KPH  // kilometer per hour
+      };
+
       //
       // Constructor
       //    metar_str - METAR to decode
@@ -119,8 +127,11 @@ namespace Storage_B
       //    MPS - meters per second
       //    KPH - kilometers per hour
       //
-      const char *WindSpeedUnits() const { return _wind_speed_units; }
-      int hasWindSpeedUnits() const { return _wind_speed_units != nullptr;  }
+      speed_units WindSpeedUnits() const { return _wind_speed_units; }
+      int hasWindSpeedUnits() const
+      {
+        return _wind_speed_units != speed_units::undefined;
+      }
 
       //
       // Visibility
@@ -215,7 +226,7 @@ namespace Storage_B
       class SkyCondition
       {
       public:
-        enum cover
+        enum class cover
         {
           SKC,
           CLR,
@@ -226,7 +237,7 @@ namespace Storage_B
           OVC
         };
 
-        enum type
+        enum class type
         {
           undefined = -1,
           TCU,
@@ -299,7 +310,7 @@ namespace Storage_B
       int _wind_dir;
       int _wind_spd;
       int _gust;
-      const char *_wind_speed_units;
+      speed_units _wind_speed_units;
 
       int _min_wind_dir;
       int _max_wind_dir;

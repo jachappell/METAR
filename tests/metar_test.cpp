@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE(wind_kt)
   BOOST_CHECK(metar.WindDirection() == 250);
   BOOST_CHECK(metar.WindSpeed() == 5);
 
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
   
   BOOST_CHECK(!metar.hasWindGust());
 }
@@ -205,7 +205,7 @@ BOOST_AUTO_TEST_CASE(wind_kt_3digit)
   BOOST_CHECK(metar.WindDirection() == 240);
   BOOST_CHECK(metar.WindSpeed() == 105);
 
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);;
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
   
   BOOST_CHECK(!metar.hasWindGust());
 }
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE(wind_kt_3digit_gust)
   BOOST_CHECK(metar.hasWindGust());
   BOOST_CHECK(metar.WindGust() == 121);
 
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() ==  Metar::speed_units::KT);
 }
 
 BOOST_AUTO_TEST_CASE(wind_vrb_kt_3digit_gust)
@@ -239,7 +239,7 @@ BOOST_AUTO_TEST_CASE(wind_vrb_kt_3digit_gust)
   BOOST_CHECK(metar.hasWindGust());
   BOOST_CHECK(metar.WindGust() == 121);
 
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
 }
 
 BOOST_AUTO_TEST_CASE(wind_kt_gust)
@@ -256,7 +256,7 @@ BOOST_AUTO_TEST_CASE(wind_kt_gust)
   BOOST_CHECK(metar.hasWindGust());
   BOOST_CHECK(metar.WindGust() == 12);
 
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
 }
 
 BOOST_AUTO_TEST_CASE(wind_mps)
@@ -272,7 +272,7 @@ BOOST_AUTO_TEST_CASE(wind_mps)
   BOOST_CHECK(metar.WindDirection() == 45);
   BOOST_CHECK(metar.WindSpeed() == 3);
 
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "MPS") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::MPS);
   
   BOOST_CHECK(!metar.hasWindGust());
 }
@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE(wind_mps_vrb)
 
   BOOST_CHECK(metar.WindSpeed() == 3);
 
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "MPS") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::MPS);
   
   BOOST_CHECK(!metar.hasWindGust());
 }
@@ -304,7 +304,7 @@ BOOST_AUTO_TEST_CASE(wind_mps_3digit_gust)
   BOOST_CHECK(metar.hasWindGust());
   BOOST_CHECK(metar.WindGust() == 102);
 
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "MPS") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::MPS);
 }
 
 BOOST_AUTO_TEST_CASE(wind_kph)
@@ -320,7 +320,7 @@ BOOST_AUTO_TEST_CASE(wind_kph)
   BOOST_CHECK(metar.WindDirection() == 40);
   BOOST_CHECK(metar.WindSpeed() == 5);
 
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KPH") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KPH);
   
   BOOST_CHECK(!metar.hasWindGust());
 }
@@ -337,7 +337,7 @@ BOOST_AUTO_TEST_CASE(wind_vrb_kph_2digit_gust)
   BOOST_CHECK(metar.hasWindGust());
   BOOST_CHECK(metar.WindGust() == 21);
 
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KPH") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KPH);
 }
 
 BOOST_AUTO_TEST_CASE(uninitialized_altA)
@@ -656,7 +656,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_1)
   BOOST_CHECK(metar.WindDirection() == 270);
   BOOST_CHECK(metar.WindSpeed() == 9);
   BOOST_CHECK(!metar.hasWindGust());
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
 
   BOOST_CHECK(!metar.hasMinWindDirection());
   BOOST_CHECK(!metar.hasMaxWindDirection());
@@ -703,7 +703,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_2)
   BOOST_CHECK(metar.WindDirection() == 120);
   BOOST_CHECK(metar.WindSpeed() == 12);
   BOOST_CHECK(!metar.hasWindGust());
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "MPS") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::MPS);
 
   BOOST_CHECK(metar.hasMinWindDirection());
   BOOST_CHECK(metar.hasMaxWindDirection());
@@ -754,7 +754,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_3)
   BOOST_CHECK(metar.WindDirection() == 70);
   BOOST_CHECK(metar.WindSpeed() == 5);
   BOOST_CHECK(!metar.hasWindGust());
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
 
   BOOST_CHECK(!metar.hasMinWindDirection());
   BOOST_CHECK(!metar.hasMaxWindDirection());
@@ -798,7 +798,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_4)
   BOOST_CHECK(metar.isVariableWindDirection());
   BOOST_CHECK(metar.WindSpeed() == 4);
   BOOST_CHECK(!metar.hasWindGust());
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
 
   BOOST_CHECK(!metar.hasMinWindDirection());
   BOOST_CHECK(!metar.hasMaxWindDirection());
@@ -842,7 +842,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_5)
   BOOST_CHECK(metar.WindDirection() == 280);
   BOOST_CHECK(metar.WindSpeed() == 9);
   BOOST_CHECK(!metar.hasWindGust());
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
 
   BOOST_CHECK(!metar.hasMinWindDirection());
   BOOST_CHECK(!metar.hasMaxWindDirection());
@@ -882,7 +882,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_6)
 
   BOOST_CHECK(metar.WindDirection() == 120);
   BOOST_CHECK(metar.WindSpeed() == 17);
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
   
   BOOST_CHECK(metar.Visibility() == 5);
   BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
@@ -918,7 +918,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_7)
 
   BOOST_CHECK(metar.WindDirection() == 100);
   BOOST_CHECK(metar.WindSpeed() == 10);
-  BOOST_CHECK(strcmp(metar.WindSpeedUnits(), "KT") == 0);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
 
   BOOST_CHECK(metar.MinWindDirection() == 60);
   BOOST_CHECK(metar.MaxWindDirection() == 120);
