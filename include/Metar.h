@@ -31,6 +31,13 @@ namespace Storage_B
         KPH  // kilometer per hour
       };
 
+      enum class distance_units
+      {
+        undefined = -1,
+        M,  // meters
+        SM  // statute miles
+      };
+
       //
       // Constructor
       //    metar_str - METAR to decode
@@ -143,8 +150,11 @@ namespace Storage_B
       // Visibility units
       //    SM - statute miles
       //    M  - meters
-      const char *VisibilityUnits() const { return _vis_units; }
-      bool hasVisibilityUnits() const { return _vis_units != nullptr;  }
+      distance_units VisibilityUnits() const { return _vis_units; }
+      bool hasVisibilityUnits() const
+      {
+        return _vis_units != distance_units::undefined;
+      }
 
       //
       // Visibility less than
@@ -317,7 +327,7 @@ namespace Storage_B
       bool _vrb;
 
       double _vis;
-      const char *_vis_units;
+      distance_units _vis_units;
       bool _vis_lt;
       bool _cavok;
 

@@ -429,7 +429,7 @@ BOOST_AUTO_TEST_CASE(visibility_meters)
   BOOST_CHECK(metar.Visibility() == 1500);
 
   BOOST_CHECK(metar.hasVisibilityUnits());
-  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "M") == 0);
+  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::M);
 }
 
 BOOST_AUTO_TEST_CASE(visibility_integer_sm)
@@ -440,7 +440,7 @@ BOOST_AUTO_TEST_CASE(visibility_integer_sm)
   BOOST_CHECK(metar.Visibility() == 10);
 
   BOOST_CHECK(metar.hasVisibilityUnits());
-  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
 }
 
 BOOST_AUTO_TEST_CASE(visibility_fraction_sm_1)
@@ -451,7 +451,7 @@ BOOST_AUTO_TEST_CASE(visibility_fraction_sm_1)
   BOOST_CHECK(metar.Visibility() == 0.25);
 
   BOOST_CHECK(metar.hasVisibilityUnits());
-  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  BOOST_CHECK(metar.VisibilityUnits() ==  Metar::distance_units::SM);
   BOOST_CHECK(!metar.isVisibilityLessThan());
 }
 
@@ -463,7 +463,7 @@ BOOST_AUTO_TEST_CASE(visibility_fraction_sm_2)
   BOOST_CHECK(metar.Visibility() == (5.0 / 16.0));
 
   BOOST_CHECK(metar.hasVisibilityUnits());
-  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
 }
 
 BOOST_AUTO_TEST_CASE(visibility_fraction_sm_3)
@@ -474,7 +474,7 @@ BOOST_AUTO_TEST_CASE(visibility_fraction_sm_3)
   BOOST_CHECK(metar.Visibility() == 2.5);
 
   BOOST_CHECK(metar.hasVisibilityUnits());
-  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
 }
 
 BOOST_AUTO_TEST_CASE(visibility_LT)
@@ -485,7 +485,7 @@ BOOST_AUTO_TEST_CASE(visibility_LT)
   BOOST_CHECK(metar.Visibility() == 0.25);
 
   BOOST_CHECK(metar.hasVisibilityUnits());
-  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
   BOOST_CHECK(metar.isVisibilityLessThan());
   BOOST_CHECK(!metar.isCAVOK());
 }
@@ -662,7 +662,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_1)
   BOOST_CHECK(!metar.hasMaxWindDirection());
   
   BOOST_CHECK(metar.Visibility() == 10);
-  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
 
   BOOST_CHECK(metar.NumCloudLayers() == 1);
   BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::OVC);
@@ -712,7 +712,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_2)
   BOOST_CHECK(metar.MaxWindDirection() == 150);
 
   BOOST_CHECK(metar.Visibility() == 1400);
-  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "M") == 0);
+  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::M);
   
   BOOST_CHECK(metar.NumCloudLayers() == 2);
   BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::BKN);
@@ -760,7 +760,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_3)
   BOOST_CHECK(!metar.hasMaxWindDirection());
   
   BOOST_CHECK(metar.Visibility() == 2);
-  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
   BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::OVC);
@@ -804,7 +804,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_4)
   BOOST_CHECK(!metar.hasMaxWindDirection());
   
   BOOST_CHECK(metar.Visibility() == 10);
-  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
   BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::CLR);
@@ -848,7 +848,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_5)
   BOOST_CHECK(!metar.hasMaxWindDirection());
   
   BOOST_CHECK(metar.Visibility() == 0.5);
-  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
   
   BOOST_CHECK(metar.NumCloudLayers() == 0);
 
@@ -885,7 +885,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_6)
   BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
   
   BOOST_CHECK(metar.Visibility() == 5);
-  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
   BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::OVC);
@@ -924,7 +924,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_7)
   BOOST_CHECK(metar.MaxWindDirection() == 120);
   
   BOOST_CHECK(metar.Visibility() == 10);
-  BOOST_CHECK(strcmp(metar.VisibilityUnits(), "SM") == 0);
+  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
   
   BOOST_CHECK(metar.NumCloudLayers() == 2);
   BOOST_CHECK(metar.Layer(0)->Cover() ==  Metar::SkyCondition::cover::FEW);
@@ -945,4 +945,3 @@ BOOST_AUTO_TEST_CASE(real_METAR_7)
   
   BOOST_CHECK(metar.SeaLevelPressure() == 1016.0);
 }
-

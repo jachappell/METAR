@@ -26,7 +26,6 @@ static const char *WIND_SPEED_KT = "KT";
 static const char *WIND_SPEED_MPS = "MPS";
 static const char *WIND_SPEED_KPH = "KPH";
 
-static const char *VIS_UNITS_M = "M";
 static const char *VIS_UNITS_SM = "SM";
 
 static const char *sky_conditions[] =
@@ -92,7 +91,7 @@ Metar::Metar()
   , _max_wind_dir(_INTEGER_UNDEFINED)
   , _vrb(false)
   , _vis(_DOUBLE_UNDEFINED)
-  , _vis_units(nullptr)
+  , _vis_units(distance_units::undefined)
   , _vis_lt(false)
   , _cavok(false)
 #ifdef NO_SHARED_PTR
@@ -438,7 +437,7 @@ void Metar::parse_vis(const char *str)
   if (!u)
   {
     _vis = atof(str);
-    _vis_units = VIS_UNITS_M;
+    _vis_units = distance_units::M;
   }
   else
   {
@@ -476,7 +475,7 @@ void Metar::parse_vis(const char *str)
         _vis += atof(_previous_element);
       }
     }
-    _vis_units = VIS_UNITS_SM;
+    _vis_units = distance_units::SM;
   }
 }
 

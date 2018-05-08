@@ -213,7 +213,7 @@ int main(int argc, char **argv)
     if (metar.hasVisibility())
     {
       cout << "\nVisibility:  " << metar.Visibility() << " ";
-      if (strcmp(metar.VisibilityUnits(), "SM"))
+      if (metar.VisibilityUnits() == Metar::distance_units::SM)
       {
         cout << "meters" << endl;
       }
