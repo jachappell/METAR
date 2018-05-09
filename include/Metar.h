@@ -23,6 +23,13 @@ namespace Storage_B
     class Metar
     {
     public:
+      enum class message_type
+      {
+        undefined = -1,
+        METAR,
+        SPECI
+      };
+
       enum class speed_units
       {
         undefined = -1,
@@ -63,8 +70,11 @@ namespace Storage_B
       //
       // Message type: METAR or SPECI
       //
-      const char *METAR() const { return _metar; }
-      bool hasMETAR() const { return _metar[0] != '\0'; }
+      message_type MessageType() const { return _message_type; }
+      bool hasMessageType() const
+      {
+        return _message_type != message_type::undefined;
+      }
 
       //
       // Location identifier
@@ -285,7 +295,7 @@ namespace Storage_B
       void parse(char *metar_str);
       void parse(const char *metar_str);
 
-      void parse_metar(const char *str);
+      void parse_message_type(const char *str);
 
       void parse_icao(const char *str);
 
@@ -309,7 +319,7 @@ namespace Storage_B
 
       void parse_tempNA(const char *str);
 
-      char _metar[6];
+      message_type _message_type;
 
       char _icao[5];
 

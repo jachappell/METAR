@@ -80,7 +80,8 @@ private:
 };
 
 Metar::Metar()
-  : _day(_INTEGER_UNDEFINED)
+  : _message_type(message_type::undefined)
+  , _day(_INTEGER_UNDEFINED)
   , _hour(_INTEGER_UNDEFINED)
   , _min(_INTEGER_UNDEFINED)
   , _wind_dir(_INTEGER_UNDEFINED) 
@@ -107,7 +108,6 @@ Metar::Metar()
   , _fdew(_DOUBLE_UNDEFINED)
   , _previous_element(nullptr)
 {
-  _metar[0] = '\0';
   _icao[0] = '\0';
 
 #ifdef NO_SHARED_PTR
@@ -176,7 +176,7 @@ static inline bool starts_with(const char *pattern, const char *str)
   return match(pattern, str, [](size_t a, size_t b) { return a <= b; });
 }  
 
-static inline bool is_metar(const char *str)
+static inline bool is_message_type(const char *str)
 {
   return !strcmp(str, "METAR") || !strcmp(str, "SPECI");
 }
@@ -287,9 +287,9 @@ void Metar::parse(char *metar_str)
   char *el = strtok(metar_str, " ");
   while (el)
   {
-    if (!hasMETAR() && is_metar(el))
+    if (!hasMessageType() && is_message_type(el))
     {
-      parse_metar(el);
+      parse_message_type(el);
     }
     else if (!hasICAO() && is_icao(el))
     {
@@ -346,9 +346,16 @@ void Metar::parse(char *metar_str)
   }
 }
 
-void Metar::parse_metar(const char *str)
+void Metar::parse_message_type(const char *str)
 {
-  strcpy(_metar, str);
+  if (strcmp(str, "SPECI") == 0)
+  {
+    _message_type = message_type::SPECI;
+  }
+  else
+  {
+    _message_type = message_type::METAR;
+  }
 }
 
 void Metar::parse_icao(const char *str)

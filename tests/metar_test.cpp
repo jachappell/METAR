@@ -644,7 +644,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_1)
 
   Metar metar(buffer);
   
-  BOOST_CHECK(!metar.hasMETAR());
+  BOOST_CHECK(!metar.hasMessageType());
 
   BOOST_CHECK(metar.hasICAO());
   BOOST_CHECK(strcmp(metar.ICAO(), "KSTL") == 0);
@@ -690,8 +690,8 @@ BOOST_AUTO_TEST_CASE(real_METAR_2)
 
   Metar metar(metar_str.c_str());
 
-  BOOST_CHECK(metar.hasMETAR());
-  BOOST_CHECK(strcmp(metar.METAR(), "METAR") == 0);
+  BOOST_CHECK(metar.hasMessageType());
+  BOOST_CHECK(metar.MessageType() == Metar::message_type::METAR);
 
   BOOST_CHECK(metar.hasICAO());
   BOOST_CHECK(strcmp(metar.ICAO(), "LBBG") == 0);
@@ -741,8 +741,8 @@ BOOST_AUTO_TEST_CASE(real_METAR_3)
 
   Metar metar(metar_str.c_str()); 
 
-  BOOST_CHECK(metar.hasMETAR());
-  BOOST_CHECK(strcmp(metar.METAR(), "SPECI") == 0);
+  BOOST_CHECK(metar.hasMessageType());
+  BOOST_CHECK(metar.MessageType() == Metar::message_type::SPECI);
 
   BOOST_CHECK(metar.hasICAO());
   BOOST_CHECK(strcmp(metar.ICAO(), "KSTL") == 0);
