@@ -19,7 +19,7 @@ const int Metar::_INTEGER_UNDEFINED = INT_MIN;
 const double Metar::_DOUBLE_UNDEFINED = DBL_MAX;
 
 #ifdef NO_SHARED_PTR
-const unsigned int Metar::_MAX_CLOUD_LAYERS = 3;
+const unsigned int Metar::_MAX_CLOUD_LAYERS = 6;
 #endif
 
 static const char *WIND_SPEED_KT = "KT";

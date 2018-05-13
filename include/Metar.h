@@ -277,7 +277,7 @@ namespace Storage_B
 #ifndef NO_SHARED_PTR
       std::shared_ptr<SkyCondition>
 #else
-      SkyCondition *
+      const SkyCondition *
 #endif
       Layer(unsigned int idx) const
       {
