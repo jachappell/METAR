@@ -869,7 +869,8 @@ BOOST_AUTO_TEST_CASE(real_METAR_5)
   BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
       Metar::Phenom::intensity::NORMAL);
   BOOST_CHECK(metar.Phenomenon(1).Phenomenon() ==
-      Metar::Phenom::phenom::FREEZING_FOG);
+      Metar::Phenom::phenom::FOG);
+  BOOST_CHECK(metar.Phenomenon(1).Freezing() == true);
   BOOST_CHECK(metar.Phenomenon(1).Intensity() ==
       Metar::Phenom::intensity::NORMAL);
   
@@ -915,7 +916,8 @@ BOOST_AUTO_TEST_CASE(real_METAR_6)
 
   BOOST_CHECK(metar.NumPhenomena() == 2);
   BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
-      Metar::Phenom::phenom::TS_RAIN);
+      Metar::Phenom::phenom::RAIN);
+  BOOST_CHECK(metar.Phenomenon(0).ThunderStorm() == true);
   BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
       Metar::Phenom::intensity::LIGHT);
   BOOST_CHECK(metar.Phenomenon(1).Phenomenon() ==

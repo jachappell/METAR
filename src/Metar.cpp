@@ -28,21 +28,13 @@ static const char *WIND_SPEED_KPH = "KPH";
 
 static const char *VIS_UNITS_SM = "SM";
 
-static const char *BLSA = "BLSA";
-static const char *BLSN = "BLSN"; 
 static const char *BR = "BR";
-static const char *DRDU = "DRDU";
-static const char *DRSA = "DRSA";
-static const char *DRSN = "DRSN";
 static const char *DS = "DS";
 static const char *DU = "DU";
 static const char *DZ = "DZ";
 static const char *FC = "FC";
 static const char *FG = "FG";
 static const char *FU = "FU";
-static const char *FZDZ = "FZDZ";
-static const char *FZFG = "FZFG";
-static const char *FZRA = "FZRA";
 static const char *GR = "GR";
 static const char *GS = "GS";
 static const char *HZ = "HZ";
@@ -54,31 +46,11 @@ static const char *PRFG = "PRFG";
 static const char *RA = "RA";
 static const char *SA = "SA";
 static const char *SG = "SG";
-static const char *SHGR = "SHGR";
-static const char *SHGS = "SHGS";
-static const char *SHPE = "SHPE";
-static const char *SHRA = "SHRA";
-static const char *SHSN = "SHSN";
 static const char *SN = "SN";
 static const char *SQ = "SQ";
 static const char *SS = "SS"; 
 static const char *TS = "TS";
-static const char *TSGR = "TSGR";
-static const char *TSGS = "TSGS";
-static const char *TSPE = "TSPE";
-static const char *TSRA = "TSRA";
-static const char *TSSN = "TSSN";
 static const char *VA = "VA";
-static const char *VCBLDU = "VCBLDU"; 
-static const char *VCBLSA = "VCBLSA";
-static const char *VCBLSN = "VCBLSN"; 
-static const char *VCDS = "VCDS";
-static const char *VCFC = "VCFC";
-static const char *VCFG = "VCFG";
-static const char *VCPO = "VCPO"; 
-static const char *VCSH = "VCSH";
-static const char *VCSS = "VCSS";
-static const char *VCTS = "VCTS";
 
 static const char *sky_conditions[] =
 {
@@ -647,6 +619,13 @@ void Metar::parse_phenom(const char *str)
 {
   Metar::Phenom::phenom p = Metar::Phenom::phenom::NONE;
   Metar::Phenom::intensity inten =  Metar::Phenom::intensity::NORMAL;
+  bool blowing = false;
+  bool freezing = false;
+  bool drifting = false;
+  bool vicinity = false;
+  bool shower = false;
+  bool ts = false;
+
   if (!isalpha(str[0]))
   {
     switch(str[0])
@@ -660,29 +639,45 @@ void Metar::parse_phenom(const char *str)
     str++;
   }
 
-  if (!strcmp(str, BLSA))
+  if (!strncmp(str, "VC", 2))
   {
-    p = Metar::Phenom::phenom::BLOWING_SAND;
+    vicinity = true;
+    str +=2;
   }
-  else if (!strcmp(str, BLSN)) 
+
+  if (!strncmp(str, "BL", 2))
   {
-    p = Metar::Phenom::phenom::BLOWING_SNOW;
+    blowing = true;
+    str +=2;
   }
-  else if (!strcmp(str, BR))
+
+  if (!strncmp(str, "DR", 2))
+  {
+    drifting = true;
+    str +=2;
+  }
+
+  if (!strncmp(str, "FZ", 2))
+  {
+    freezing = true;
+    str +=2;
+  }
+
+  if (!strncmp(str, "SH", 2))
+  {
+    shower = true;
+    str +=2;
+  }
+
+  if (!strncmp(str, "TS", 2) && (strlen(str) > 2))
+  {
+    ts = true;
+    str +=2;
+  }
+
+  if (!strcmp(str, BR))
   {
     p = Metar::Phenom::phenom::MIST;
-  }
-  else if (!strcmp(str, DRDU))
-  {
-    p = Metar::Phenom::phenom::DRIFTING_DUST;
-  }
-  else if (!strcmp(str, DRSA))
-  {
-    p = Metar::Phenom::phenom::DRIFTING_SAND;
-  }
-  else if (!strcmp(str, DRSN))
-  {
-    p = Metar::Phenom::phenom::DRIFTING_SNOW;
   }
   else if (!strcmp(str, DS))
   {
@@ -707,18 +702,6 @@ void Metar::parse_phenom(const char *str)
   else if (!strcmp(str, FU))
   {
     p = Metar::Phenom::phenom::SMOKE;
-  }
-  else if (!strcmp(str, FZDZ))
-  {
-    p = Metar::Phenom::phenom::FREEZING_DRIZZLE;
-  }
-  else if (!strcmp(str, FZFG))
-  {
-    p = Metar::Phenom::phenom::FREEZING_FOG;
-  }
-  else if (!strcmp(str, FZRA))
-  {
-    p = Metar::Phenom::phenom::FREEZING_RAIN;
   }
   else if (!strcmp(str, GR))
   {
@@ -764,26 +747,6 @@ void Metar::parse_phenom(const char *str)
   {
     p = Metar::Phenom::phenom::SNOW_GRAINS;
   }
-  else if (!strcmp(str, SHGR))
-  {
-    p = Metar::Phenom::phenom::HAIL_SHOWER;
-  }
-  else if (!strcmp(str, SHGS))
-  {
-    p = Metar::Phenom::phenom::SMALL_HAIL_SHOWER;
-  }
-  else if (!strcmp(str, SHPE))
-  {
-    p = Metar::Phenom::phenom::ICE_PELLET_SHOWER;
-  }
-  else if (!strcmp(str, SHRA))
-  {
-    p = Metar::Phenom::phenom::RAIN_SHOWER;
-  }
-  else if (!strcmp(str, SHSN))
-  {
-    p = Metar::Phenom::phenom::SNOW_SHOWER;
-  }
   else if (!strcmp(str, SN))
   {
     p = Metar::Phenom::phenom::SNOW;
@@ -800,75 +763,21 @@ void Metar::parse_phenom(const char *str)
   {
     p = Metar::Phenom::phenom::THUNDER_STORM;
   }
-  else if (!strcmp(str, TSGR))
-  {
-    p = Metar::Phenom::phenom::TS_HAIL;
-  }
-  else if (!strcmp(str, TSGS))
-  {
-    p = Metar::Phenom::phenom::TS_SMALL_HAIL;
-  }
-  else if (!strcmp(str, TSPE))
-  {
-    p = Metar::Phenom::phenom::TS_ICE_PELLET;
-  }
-  else if (!strcmp(str, TSRA))
-  {
-    p = Metar::Phenom::phenom::TS_RAIN;
-  }
-  else if (!strcmp(str, TSSN))
-  {
-    p = Metar::Phenom::phenom::TS_SNOW;
-  }
   else if (!strcmp(str, VA))
   {
     p = Metar::Phenom::phenom::VOLCANIC_ASH;
-  }
-  else if (!strcmp(str, VCBLDU)) 
-  {
-    p = Metar::Phenom::phenom::VICINITY_BLDU;
-  }
-  else if (!strcmp(str, VCBLSA))
-  {
-    p = Metar::Phenom::phenom::VICINITY_BLSA;
-  }
-  else if (!strcmp(str, VCBLSN)) 
-  {
-    p = Metar::Phenom::phenom::VICINITY_BLSN;
-  }
-  else if (!strcmp(str, VCDS))
-  {
-    p = Metar::Phenom::phenom::VICINITY_DS;
-  }
-  else if (!strcmp(str, VCFC))
-  {
-    p = Metar::Phenom::phenom::VICINITY_FC;
-  }
-  else if (!strcmp(str, VCFG))
-  {
-    p = Metar::Phenom::phenom::VICINITY_FG;
-  }
-  else if (!strcmp(str, VCPO)) 
-  {
-    p = Metar::Phenom::phenom::VICINITY_PO;
-  }
-  else if (!strcmp(str, VCSH))
-  {
-    p = Metar::Phenom::phenom::VICINITY_SH;
-  }
-  else if (!strcmp(str, VCSS))
-  {
-    p = Metar::Phenom::phenom::VICINITY_SS;
-  }
-  else if (!strcmp(str, VCTS))
-  {
-    p = Metar::Phenom::phenom::VICINITY_TS;
   }
 
   if (p != Metar::Phenom::phenom::NONE)
   {
 #ifndef NO_SHARED_PTR
-    _phenomena.push_back(Metar::Phenom(p, inten));
+    _phenomena.push_back(Metar::Phenom(p, inten,
+                                       blowing,
+                                       freezing,
+                                       drifting,
+                                       vicinity,
+                                       shower,
+                                       ts));
 #endif
   }
 }

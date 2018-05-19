@@ -51,21 +51,13 @@ namespace Storage_B
         enum class phenom
         {
           NONE,
-          BLOWING_SAND,           // BLSA
-          BLOWING_SNOW,           // BLSN
           MIST,                   // BR
-          DRIFTING_DUST,          // DRDU
-          DRIFTING_SAND,          // DRSA
-          DRIFTING_SNOW,          // DRSN
           DUST_STORM,             // DS
           DUST,                   // DU
           DRIZZLE,                // DZ
           FUNNEL_CLOUD,           // FC
           FOG,                    // FG 
           SMOKE,                  // FU
-          FREEZING_DRIZZLE,       // FZDZ
-          FREEZING_FOG,           // FZFG
-          FREEZING_RAIN,          // FZRA
           HAIL,                   // GR
           SMALL_HAIL,             // GS
           HAZE,                   // HZ
@@ -77,31 +69,11 @@ namespace Storage_B
           RAIN,                   // RA
           SAND,                   // SA
           SNOW_GRAINS,            // SG
-          HAIL_SHOWER,            // SHGR
-          SMALL_HAIL_SHOWER,      // SHGS
-          ICE_PELLET_SHOWER,      // SHPE
-          RAIN_SHOWER,            // SHRA
-          SNOW_SHOWER,            // SHSN
           SNOW,                   // SN
           SQUALLS,                // SQ
           SAND_STORM,             // SS,
           THUNDER_STORM,          // TS,
-          TS_HAIL,                // TSGR
-          TS_SMALL_HAIL,          // TSGS
-          TS_ICE_PELLET,          // TSPE
-          TS_RAIN,                // TSRA
-          TS_SNOW,                // TSSN
-          VOLCANIC_ASH,           // VA
-          VICINITY_BLDU,          // VCBLDU
-          VICINITY_BLSA,          // VCBLSA
-          VICINITY_BLSN,          // VCBLSN
-          VICINITY_DS,            // VCDS
-          VICINITY_FC,            // VCFC
-          VICINITY_FG,            // VCFG
-          VICINITY_PO,            // VCPO
-          VICINITY_SH,            // VCSH
-          VICINITY_SS,            // VCSS
-          VICINITY_TS             // VCTS
+          VOLCANIC_ASH            // VA
         };
 
         enum class intensity
@@ -111,9 +83,22 @@ namespace Storage_B
           HEAVY
         };
 
-        Phenom(phenom p = phenom::NONE, intensity i = intensity::NORMAL)
+        Phenom(phenom p = phenom::NONE,
+               intensity i = intensity::NORMAL,
+               bool blowing = false,
+               bool freezing = false,
+               bool drifting = false,
+               bool vicinity = false,
+               bool shower = false,
+               bool ts = false)
           : _phenom(p)
           , _intensity(i)
+          , _blowing(blowing)
+          , _freezing(freezing)
+          , _drifting(drifting)
+          , _vicinity(vicinity)
+          , _shower(shower)
+          , _ts(ts)
         {}
 
         Phenom(const Phenom&) = default;
@@ -123,10 +108,22 @@ namespace Storage_B
 
         phenom Phenomenon() const { return _phenom; }
         intensity Intensity() const { return _intensity; }
+        bool Blowing() const { return _blowing; }
+        bool Freezing() const { return _freezing; }
+        bool Drifting() const { return _drifting; }
+        bool Vicinity() const { return _vicinity; }
+        bool Shower() const { return _shower; }
+        bool ThunderStorm() const { return _ts; }
 
       private:
         phenom _phenom;
         intensity _intensity;
+        bool _blowing;
+        bool _freezing;
+        bool _drifting;
+        bool _vicinity;
+        bool _shower;
+        bool _ts;
       };
 
       //
