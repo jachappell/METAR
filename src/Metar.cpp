@@ -39,10 +39,8 @@ static const char *GR = "GR";
 static const char *GS = "GS";
 static const char *HZ = "HZ";
 static const char *IC = "IC";
-static const char *MIFG = "MIFG";
 static const char *PE = "PE";
 static const char *PO = "PO"; 
-static const char *PRFG = "PRFG";
 static const char *RA = "RA";
 static const char *SA = "SA";
 static const char *SG = "SG";
@@ -624,6 +622,8 @@ void Metar::parse_phenom(const char *str)
   bool drifting = false;
   bool vicinity = false;
   bool shower = false;
+  bool partial = false;
+  bool shallow = false;
   bool ts = false;
 
   if (!isalpha(str[0]))
@@ -666,6 +666,18 @@ void Metar::parse_phenom(const char *str)
   if (!strncmp(str, "SH", 2))
   {
     shower = true;
+    str +=2;
+  }
+
+  if (!strncmp(str, "PR", 2))
+  {
+    partial = true;
+    str +=2;
+  }
+
+  if (!strncmp(str, "MI", 2))
+  {
+    shallow = true;
     str +=2;
   }
 
@@ -719,10 +731,6 @@ void Metar::parse_phenom(const char *str)
   {
     p = Metar::Phenom::phenom::ICE_CRYSTALS;
   }
-  else if (!strcmp(str, MIFG))
-  {
-    p = Metar::Phenom::phenom::SHALLOW_FOG;
-  }
   else if (!strcmp(str, PE))
   {
     p = Metar::Phenom::phenom::ICE_PELLETS;
@@ -730,10 +738,6 @@ void Metar::parse_phenom(const char *str)
   else if (!strcmp(str, PO)) 
   {
     p = Metar::Phenom::phenom::DUST_SAND_WHORLS;
-  }
-  else if (!strcmp(str, PRFG))
-  {
-    p = Metar::Phenom::phenom::PARTIAL_FOG;
   }
   else if (!strcmp(str, RA))
   {
@@ -777,6 +781,8 @@ void Metar::parse_phenom(const char *str)
                                        drifting,
                                        vicinity,
                                        shower,
+                                       partial,
+                                       shallow,
                                        ts));
 #endif
   }

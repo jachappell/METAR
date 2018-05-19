@@ -983,3 +983,48 @@ BOOST_AUTO_TEST_CASE(real_METAR_7)
   
   BOOST_CHECK(metar.SeaLevelPressure() == 1016.0);
 }
+
+BOOST_AUTO_TEST_CASE(real_METAR_8)
+{
+  const char *metar_str = "KSTL 192051Z 20004KT 10SM -RA FEW034 SCT048 OVC110 22/18 A2993 RMK AO2 PK WND 27032/2004 LTG DSNT E AND SE RAB06 TSB03E42 PRESFR SLP129 OCNL LTGIC DSNT E CB DSNT E MOV E P0003 60003 T02220178 58006 $";
+
+  Metar metar(metar_str); 
+
+  BOOST_CHECK(strcmp(metar.ICAO(), "KSTL") == 0);
+
+  BOOST_CHECK(metar.Day() == 19);
+  BOOST_CHECK(metar.Hour() == 20);
+  BOOST_CHECK(metar.Minute() == 51);
+
+  BOOST_CHECK(metar.WindDirection() == 200);
+  BOOST_CHECK(metar.WindSpeed() == 4);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
+  
+  BOOST_CHECK(metar.Visibility() == 10);
+  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+  
+  BOOST_CHECK(metar.NumPhenomena() == 1);
+  BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+      Metar::Phenom::phenom::RAIN);
+  BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+      Metar::Phenom::intensity::LIGHT);
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 3);
+  BOOST_CHECK(metar.Layer(0)->Cover() ==  Metar::SkyCondition::cover::FEW);
+  BOOST_CHECK(metar.Layer(0)->Altitude() == 3400);
+  BOOST_CHECK(metar.Layer(1)->Cover() ==  Metar::SkyCondition::cover::SCT);
+  BOOST_CHECK(metar.Layer(1)->Altitude() == 4800);
+  BOOST_CHECK(metar.Layer(2)->Cover() == Metar::SkyCondition::cover::OVC);
+  BOOST_CHECK(metar.Layer(2)->Altitude() == 11000);
+  
+  BOOST_CHECK(metar.Temperature() == 22);
+  BOOST_CHECK(metar.DewPoint() == 18);
+ 
+  BOOST_CHECK(metar.hasAltimeterA());
+  BOOST_CHECK(metar.AltimeterA() == 29.93);
+
+  BOOST_CHECK(metar.TemperatureNA() == 22.2);
+  BOOST_CHECK(metar.DewPointNA() == 17.8);
+  
+  BOOST_CHECK(metar.SeaLevelPressure() == 1012.9);
+}

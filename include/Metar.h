@@ -62,17 +62,15 @@ namespace Storage_B
           SMALL_HAIL,             // GS
           HAZE,                   // HZ
           ICE_CRYSTALS,           // IC
-          SHALLOW_FOG,            // MIFG
           ICE_PELLETS,            // PE
           DUST_SAND_WHORLS,       // PO
-          PARTIAL_FOG,            // PRFG
           RAIN,                   // RA
           SAND,                   // SA
           SNOW_GRAINS,            // SG
           SNOW,                   // SN
           SQUALLS,                // SQ
-          SAND_STORM,             // SS,
-          THUNDER_STORM,          // TS,
+          SAND_STORM,             // SS
+          THUNDER_STORM,          // TS
           VOLCANIC_ASH            // VA
         };
 
@@ -90,6 +88,8 @@ namespace Storage_B
                bool drifting = false,
                bool vicinity = false,
                bool shower = false,
+               bool partial = false,
+               bool shallow = false,
                bool ts = false)
           : _phenom(p)
           , _intensity(i)
@@ -98,6 +98,8 @@ namespace Storage_B
           , _drifting(drifting)
           , _vicinity(vicinity)
           , _shower(shower)
+          , _partial(partial)
+          , _shallow(shallow)
           , _ts(ts)
         {}
 
@@ -113,6 +115,8 @@ namespace Storage_B
         bool Drifting() const { return _drifting; }
         bool Vicinity() const { return _vicinity; }
         bool Shower() const { return _shower; }
+        bool Partial() const { return _partial; }
+        bool Shallow() const { return _shallow; }
         bool ThunderStorm() const { return _ts; }
 
       private:
@@ -123,6 +127,8 @@ namespace Storage_B
         bool _drifting;
         bool _vicinity;
         bool _shower;
+        bool _partial;
+        bool _shallow;
         bool _ts;
       };
 
