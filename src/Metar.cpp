@@ -28,6 +28,58 @@ static const char *WIND_SPEED_KPH = "KPH";
 
 static const char *VIS_UNITS_SM = "SM";
 
+static const char *BLSA = "BLSA";
+static const char *BLSN = "BLSN"; 
+static const char *BR = "BR";
+static const char *DRDU = "DRDU";
+static const char *DRSA = "DRSA";
+static const char *DRSN = "DRSN";
+static const char *DS = "DS";
+static const char *DU = "DU";
+static const char *DZ = "DZ";
+static const char *FC = "FC";
+static const char *FG = "FG";
+static const char *FU = "FU";
+static const char *FZDZ = "FZDZ";
+static const char *FZFG = "FZFG";
+static const char *FZRA = "FZRA";
+static const char *GR = "GR";
+static const char *GS = "GS";
+static const char *HZ = "HZ";
+static const char *IC = "IC";
+static const char *MIFG = "MIFG";
+static const char *PE = "PE";
+static const char *PO = "PO"; 
+static const char *PRFG = "PRFG";
+static const char *RA = "RA";
+static const char *SA = "SA";
+static const char *SG = "SG";
+static const char *SHGR = "SHGR";
+static const char *SHGS = "SHGS";
+static const char *SHPE = "SHPE";
+static const char *SHRA = "SHRA";
+static const char *SHSN = "SHSN";
+static const char *SN = "SN";
+static const char *SQ = "SQ";
+static const char *SS = "SS"; 
+static const char *TS = "TS";
+static const char *TSGR = "TSGR";
+static const char *TSGS = "TSGS";
+static const char *TSPE = "TSPE";
+static const char *TSRA = "TSRA";
+static const char *TSSN = "TSSN";
+static const char *VA = "VA";
+static const char *VCBLDU = "VCBLDU"; 
+static const char *VCBLSA = "VCBLSA";
+static const char *VCBLSN = "VCBLSN"; 
+static const char *VCDS = "VCDS";
+static const char *VCFC = "VCFC";
+static const char *VCFG = "VCFG";
+static const char *VCPO = "VCPO"; 
+static const char *VCSH = "VCSH";
+static const char *VCSS = "VCSS";
+static const char *VCTS = "VCTS";
+
 static const char *sky_conditions[] =
 {
   "SKC",
@@ -103,6 +155,7 @@ Metar::Metar()
   , _dew(_INTEGER_UNDEFINED)
   , _altimeterA(_DOUBLE_UNDEFINED)
   , _altimeterQ(_INTEGER_UNDEFINED)
+  , _rmk(false)
   , _slp(_DOUBLE_UNDEFINED)
   , _ftemp(_DOUBLE_UNDEFINED) 
   , _fdew(_DOUBLE_UNDEFINED)
@@ -265,6 +318,11 @@ static inline bool is_altQ(const char *str)
   return match("Q####", str);
 }
 
+static inline bool is_rmk(const char *str)
+{
+  return strcmp(str, "RMK") == 0;
+}
+
 static inline bool is_slp(const char *str)
 {
   return match("SLP###", str);
@@ -331,6 +389,10 @@ void Metar::parse(char *metar_str)
     {
       parse_alt(el);
     }
+    else if (!_rmk && is_rmk(el))
+    {
+      _rmk = true;
+    }
     else if (!hasSeaLevelPressure() && is_slp(el))
     {
       parse_slp(el);
@@ -338,6 +400,10 @@ void Metar::parse(char *metar_str)
     else if (!hasTemperatureNA() && is_tempNA(el))
     {
       parse_tempNA(el);
+    }
+    else if (!_rmk)
+    {
+      parse_phenom(el);
     }
 
     _previous_element = el;
@@ -575,6 +641,236 @@ void Metar::parse_alt(const char *str)
     _altimeterQ = val;
   else
     _altimeterA = static_cast<double>(val) / 100.0;
+}
+
+void Metar::parse_phenom(const char *str)
+{
+  Metar::Phenom::phenom p = Metar::Phenom::phenom::NONE;
+  Metar::Phenom::intensity inten =  Metar::Phenom::intensity::NORMAL;
+  if (!isalpha(str[0]))
+  {
+    switch(str[0])
+    {
+      case '-':
+        inten =  Metar::Phenom::intensity::LIGHT;
+        break;
+      case '+':
+        inten =  Metar::Phenom::intensity::HEAVY;
+    }
+    str++;
+  }
+
+  if (!strcmp(str, BLSA))
+  {
+    p = Metar::Phenom::phenom::BLOWING_SAND;
+  }
+  else if (!strcmp(str, BLSN)) 
+  {
+    p = Metar::Phenom::phenom::BLOWING_SNOW;
+  }
+  else if (!strcmp(str, BR))
+  {
+    p = Metar::Phenom::phenom::MIST;
+  }
+  else if (!strcmp(str, DRDU))
+  {
+    p = Metar::Phenom::phenom::DRIFTING_DUST;
+  }
+  else if (!strcmp(str, DRSA))
+  {
+    p = Metar::Phenom::phenom::DRIFTING_SAND;
+  }
+  else if (!strcmp(str, DRSN))
+  {
+    p = Metar::Phenom::phenom::DRIFTING_SNOW;
+  }
+  else if (!strcmp(str, DS))
+  {
+    p = Metar::Phenom::phenom::DUST_STORM;
+  }
+  else if (!strcmp(str, DU))
+  {
+    p = Metar::Phenom::phenom::DUST;
+  }
+  else if (!strcmp(str, DZ))
+  {
+    p = Metar::Phenom::phenom::DRIZZLE;
+  }
+  else if (!strcmp(str, FC))
+  {
+    p = Metar::Phenom::phenom::FUNNEL_CLOUD;
+  }
+  else if (!strcmp(str, FG))
+  {
+    p = Metar::Phenom::phenom::FOG;
+  }
+  else if (!strcmp(str, FU))
+  {
+    p = Metar::Phenom::phenom::SMOKE;
+  }
+  else if (!strcmp(str, FZDZ))
+  {
+    p = Metar::Phenom::phenom::FREEZING_DRIZZLE;
+  }
+  else if (!strcmp(str, FZFG))
+  {
+    p = Metar::Phenom::phenom::FREEZING_FOG;
+  }
+  else if (!strcmp(str, FZRA))
+  {
+    p = Metar::Phenom::phenom::FREEZING_RAIN;
+  }
+  else if (!strcmp(str, GR))
+  {
+    p = Metar::Phenom::phenom::HAIL;
+  }
+  else if (!strcmp(str, GS))
+  {
+    p = Metar::Phenom::phenom::SMALL_HAIL;
+  }
+  else if (!strcmp(str, HZ))
+  {
+    p = Metar::Phenom::phenom::HAZE;
+  }
+  else if (!strcmp(str, IC))
+  {
+    p = Metar::Phenom::phenom::ICE_CRYSTALS;
+  }
+  else if (!strcmp(str, MIFG))
+  {
+    p = Metar::Phenom::phenom::SHALLOW_FOG;
+  }
+  else if (!strcmp(str, PE))
+  {
+    p = Metar::Phenom::phenom::ICE_PELLETS;
+  }
+  else if (!strcmp(str, PO)) 
+  {
+    p = Metar::Phenom::phenom::DUST_SAND_WHORLS;
+  }
+  else if (!strcmp(str, PRFG))
+  {
+    p = Metar::Phenom::phenom::PARTIAL_FOG;
+  }
+  else if (!strcmp(str, RA))
+  {
+    p = Metar::Phenom::phenom::RAIN;
+  }
+  else if (!strcmp(str, SA))
+  {
+    p = Metar::Phenom::phenom::SAND;
+  }
+  else if (!strcmp(str, SG))
+  {
+    p = Metar::Phenom::phenom::SNOW_GRAINS;
+  }
+  else if (!strcmp(str, SHGR))
+  {
+    p = Metar::Phenom::phenom::HAIL_SHOWER;
+  }
+  else if (!strcmp(str, SHGS))
+  {
+    p = Metar::Phenom::phenom::SMALL_HAIL_SHOWER;
+  }
+  else if (!strcmp(str, SHPE))
+  {
+    p = Metar::Phenom::phenom::ICE_PELLET_SHOWER;
+  }
+  else if (!strcmp(str, SHRA))
+  {
+    p = Metar::Phenom::phenom::RAIN_SHOWER;
+  }
+  else if (!strcmp(str, SHSN))
+  {
+    p = Metar::Phenom::phenom::SNOW_SHOWER;
+  }
+  else if (!strcmp(str, SN))
+  {
+    p = Metar::Phenom::phenom::SNOW;
+  }
+  else if (!strcmp(str, SQ))
+  {
+    p = Metar::Phenom::phenom::SQUALLS;
+  }
+  else if (!strcmp(str, SS)) 
+  {
+    p = Metar::Phenom::phenom::SAND_STORM;
+  }
+  else if (!strcmp(str, TS))
+  {
+    p = Metar::Phenom::phenom::THUNDER_STORM;
+  }
+  else if (!strcmp(str, TSGR))
+  {
+    p = Metar::Phenom::phenom::TS_HAIL;
+  }
+  else if (!strcmp(str, TSGS))
+  {
+    p = Metar::Phenom::phenom::TS_SMALL_HAIL;
+  }
+  else if (!strcmp(str, TSPE))
+  {
+    p = Metar::Phenom::phenom::TS_ICE_PELLET;
+  }
+  else if (!strcmp(str, TSRA))
+  {
+    p = Metar::Phenom::phenom::TS_RAIN;
+  }
+  else if (!strcmp(str, TSSN))
+  {
+    p = Metar::Phenom::phenom::TS_SNOW;
+  }
+  else if (!strcmp(str, VA))
+  {
+    p = Metar::Phenom::phenom::VOLCANIC_ASH;
+  }
+  else if (!strcmp(str, VCBLDU)) 
+  {
+    p = Metar::Phenom::phenom::VICINITY_BLDU;
+  }
+  else if (!strcmp(str, VCBLSA))
+  {
+    p = Metar::Phenom::phenom::VICINITY_BLSA;
+  }
+  else if (!strcmp(str, VCBLSN)) 
+  {
+    p = Metar::Phenom::phenom::VICINITY_BLSN;
+  }
+  else if (!strcmp(str, VCDS))
+  {
+    p = Metar::Phenom::phenom::VICINITY_DS;
+  }
+  else if (!strcmp(str, VCFC))
+  {
+    p = Metar::Phenom::phenom::VICINITY_FC;
+  }
+  else if (!strcmp(str, VCFG))
+  {
+    p = Metar::Phenom::phenom::VICINITY_FG;
+  }
+  else if (!strcmp(str, VCPO)) 
+  {
+    p = Metar::Phenom::phenom::VICINITY_PO;
+  }
+  else if (!strcmp(str, VCSH))
+  {
+    p = Metar::Phenom::phenom::VICINITY_SH;
+  }
+  else if (!strcmp(str, VCSS))
+  {
+    p = Metar::Phenom::phenom::VICINITY_SS;
+  }
+  else if (!strcmp(str, VCTS))
+  {
+    p = Metar::Phenom::phenom::VICINITY_TS;
+  }
+
+  if (p != Metar::Phenom::phenom::NONE)
+  {
+#ifndef NO_SHARED_PTR
+    _phenomena.push_back(Metar::Phenom(p, inten));
+#endif
+  }
 }
 
 void Metar::parse_slp(const char *str)

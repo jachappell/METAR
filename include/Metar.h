@@ -45,6 +45,90 @@ namespace Storage_B
         SM  // statute miles
       };
 
+      class Phenom
+      {
+      public:
+        enum class phenom
+        {
+          NONE,
+          BLOWING_SAND,           // BLSA
+          BLOWING_SNOW,           // BLSN
+          MIST,                   // BR
+          DRIFTING_DUST,          // DRDU
+          DRIFTING_SAND,          // DRSA
+          DRIFTING_SNOW,          // DRSN
+          DUST_STORM,             // DS
+          DUST,                   // DU
+          DRIZZLE,                // DZ
+          FUNNEL_CLOUD,           // FC
+          FOG,                    // FG 
+          SMOKE,                  // FU
+          FREEZING_DRIZZLE,       // FZDZ
+          FREEZING_FOG,           // FZFG
+          FREEZING_RAIN,          // FZRA
+          HAIL,                   // GR
+          SMALL_HAIL,             // GS
+          HAZE,                   // HZ
+          ICE_CRYSTALS,           // IC
+          SHALLOW_FOG,            // MIFG
+          ICE_PELLETS,            // PE
+          DUST_SAND_WHORLS,       // PO
+          PARTIAL_FOG,            // PRFG
+          RAIN,                   // RA
+          SAND,                   // SA
+          SNOW_GRAINS,            // SG
+          HAIL_SHOWER,            // SHGR
+          SMALL_HAIL_SHOWER,      // SHGS
+          ICE_PELLET_SHOWER,      // SHPE
+          RAIN_SHOWER,            // SHRA
+          SNOW_SHOWER,            // SHSN
+          SNOW,                   // SN
+          SQUALLS,                // SQ
+          SAND_STORM,             // SS,
+          THUNDER_STORM,          // TS,
+          TS_HAIL,                // TSGR
+          TS_SMALL_HAIL,          // TSGS
+          TS_ICE_PELLET,          // TSPE
+          TS_RAIN,                // TSRA
+          TS_SNOW,                // TSSN
+          VOLCANIC_ASH,           // VA
+          VICINITY_BLDU,          // VCBLDU
+          VICINITY_BLSA,          // VCBLSA
+          VICINITY_BLSN,          // VCBLSN
+          VICINITY_DS,            // VCDS
+          VICINITY_FC,            // VCFC
+          VICINITY_FG,            // VCFG
+          VICINITY_PO,            // VCPO
+          VICINITY_SH,            // VCSH
+          VICINITY_SS,            // VCSS
+          VICINITY_TS             // VCTS
+        };
+
+        enum class intensity
+        {
+          LIGHT = -1,
+          NORMAL,
+          HEAVY
+        };
+
+        Phenom(phenom p = phenom::NONE, intensity i = intensity::NORMAL)
+          : _phenom(p)
+          , _intensity(i)
+        {}
+
+        Phenom(const Phenom&) = default;
+        Phenom& operator=(const Phenom&) = default;
+
+        ~Phenom() = default;
+
+        phenom Phenomenon() const { return _phenom; }
+        intensity Intensity() const { return _intensity; }
+
+      private:
+        phenom _phenom;
+        intensity _intensity;
+      };
+
       //
       // Constructor
       //    metar_str - METAR to decode
@@ -179,18 +263,6 @@ namespace Storage_B
       bool isCAVOK() const { return _cavok; }
 
       //
-      // Number of Cloud Layers
-      //
-      unsigned int NumCloudLayers() const
-      { 
-#ifdef NO_SHARED_PTR
-        return _num_layers;
-#else
-        return _layers.size(); 
-#endif
-      }
-
-      //
       // Vertical visibilty
       //    feet
       int VerticalVisibility() const { return _vert_vis; }
@@ -274,6 +346,18 @@ namespace Storage_B
         virtual bool hasCloudType() const = 0;
       };
 
+      //
+      // Number of Cloud Layers
+      //
+      auto NumCloudLayers() const
+      { 
+#ifdef NO_SHARED_PTR
+        return _num_layers;
+#else
+        return _layers.size(); 
+#endif
+      }
+
 #ifndef NO_SHARED_PTR
       std::shared_ptr<SkyCondition>
 #else
@@ -287,6 +371,26 @@ namespace Storage_B
         }
 
         return nullptr;
+      }
+
+      auto NumPhenomena() const
+      {
+#ifdef NO_SHARED_PTR
+        return 0;
+#else
+        return _phenomena.size();
+#endif
+      }
+
+      Phenom Phenomenon(unsigned int idx) const
+      {
+#ifndef NO_SHARED_PTR
+        return _phenomena.at(idx);
+#else
+        // for now
+        Phenom p;
+        return p;
+#endif
       }
 
     private:
@@ -318,6 +422,8 @@ namespace Storage_B
       void parse_slp(const char *str);
 
       void parse_tempNA(const char *str);
+
+      void parse_phenom(const char *str);
 
       message_type _message_type;
 
@@ -352,6 +458,10 @@ namespace Storage_B
       unsigned int _num_layers;
 #endif
 
+#ifndef NO_SHARED_PTR
+      std::vector<Phenom> _phenomena;
+#endif
+
       int _vert_vis;
 
       int _temp;
@@ -360,6 +470,8 @@ namespace Storage_B
       double _altimeterA;
 
       int _altimeterQ;
+
+      bool _rmk;
 
       double _slp;
 

@@ -713,6 +713,12 @@ BOOST_AUTO_TEST_CASE(real_METAR_2)
 
   BOOST_CHECK(metar.Visibility() == 1400);
   BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::M);
+
+  BOOST_CHECK(metar.NumPhenomena() == 1);
+  BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+      Metar::Phenom::phenom::SNOW);
+  BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+      Metar::Phenom::intensity::HEAVY);
   
   BOOST_CHECK(metar.NumCloudLayers() == 2);
   BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::BKN);
@@ -761,6 +767,16 @@ BOOST_AUTO_TEST_CASE(real_METAR_3)
   
   BOOST_CHECK(metar.Visibility() == 2);
   BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+
+  BOOST_CHECK(metar.NumPhenomena() == 2);
+  BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+      Metar::Phenom::phenom::RAIN);
+  BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+      Metar::Phenom::intensity::LIGHT);
+  BOOST_CHECK(metar.Phenomenon(1).Phenomenon() ==
+      Metar::Phenom::phenom::MIST);
+  BOOST_CHECK(metar.Phenomenon(1).Intensity() ==
+      Metar::Phenom::intensity::NORMAL);
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
   BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::OVC);
@@ -846,6 +862,16 @@ BOOST_AUTO_TEST_CASE(real_METAR_5)
 
   BOOST_CHECK(!metar.hasMinWindDirection());
   BOOST_CHECK(!metar.hasMaxWindDirection());
+
+  BOOST_CHECK(metar.NumPhenomena() == 2);
+  BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+      Metar::Phenom::phenom::SNOW);
+  BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+      Metar::Phenom::intensity::NORMAL);
+  BOOST_CHECK(metar.Phenomenon(1).Phenomenon() ==
+      Metar::Phenom::phenom::FREEZING_FOG);
+  BOOST_CHECK(metar.Phenomenon(1).Intensity() ==
+      Metar::Phenom::intensity::NORMAL);
   
   BOOST_CHECK(metar.Visibility() == 0.5);
   BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
@@ -886,6 +912,16 @@ BOOST_AUTO_TEST_CASE(real_METAR_6)
   
   BOOST_CHECK(metar.Visibility() == 5);
   BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+
+  BOOST_CHECK(metar.NumPhenomena() == 2);
+  BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+      Metar::Phenom::phenom::TS_RAIN);
+  BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+      Metar::Phenom::intensity::LIGHT);
+  BOOST_CHECK(metar.Phenomenon(1).Phenomenon() ==
+      Metar::Phenom::phenom::MIST);
+  BOOST_CHECK(metar.Phenomenon(1).Intensity() ==
+      Metar::Phenom::intensity::NORMAL);
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
   BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::OVC);
