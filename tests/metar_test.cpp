@@ -637,6 +637,393 @@ BOOST_AUTO_TEST_CASE(cloud_layer_3_layers_cloud_types)
   BOOST_CHECK(metar.Layer(2)->CloudType() == Metar::SkyCondition::type::ACC);
 }
 
+BOOST_AUTO_TEST_CASE(phenoms)
+{
+  {
+    Metar metar("BR");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::MIST);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+    BOOST_CHECK(metar.Phenomenon(0).Blowing() == false);
+    BOOST_CHECK(metar.Phenomenon(0).Freezing() == false);
+    BOOST_CHECK(metar.Phenomenon(0).Drifting() == false);
+    BOOST_CHECK(metar.Phenomenon(0).Vicinity() == false);
+    BOOST_CHECK(metar.Phenomenon(0).Shower() == false);
+    BOOST_CHECK(metar.Phenomenon(0).Partial() == false);
+    BOOST_CHECK(metar.Phenomenon(0).Shallow() == false);
+    BOOST_CHECK(metar.Phenomenon(0).Patches() == false);
+    BOOST_CHECK(metar.Phenomenon(0).ThunderStorm() == false);
+  }
+
+  {
+    Metar metar("DS");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::DUST_STORM);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("DU");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::DUST);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("DZ");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::DRIZZLE);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("FC");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::FUNNEL_CLOUD);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("FG");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::FOG);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("FU");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::SMOKE);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("GR");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::HAIL);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("GS");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::SMALL_HAIL);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("HZ");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::HAZE);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("IC");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::ICE_CRYSTALS);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("PE");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::ICE_PELLETS);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("PL");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::ICE_PELLETS);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("PO");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::DUST_SAND_WHORLS);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("PY");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::SPRAY);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("RA");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::RAIN);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("SA");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::SAND);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("SG");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::SNOW_GRAINS);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("SN");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::SNOW);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("SQ");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::SQUALLS);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("SS");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::SAND_STORM);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("TS");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::THUNDER_STORM);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("UP");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::UNKNOWN_PRECIP);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("VA");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::VOLCANIC_ASH);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(phenom_intensity)
+{
+  {
+    Metar metar("RA");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::RAIN);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
+
+  {
+    Metar metar("-RA");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::RAIN);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::LIGHT);
+  }
+
+  {
+    Metar metar("+RA");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::RAIN);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::HEAVY);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(phenom_proximity)
+{
+    Metar metar("KSTL VCFG");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::FOG);
+    BOOST_CHECK(metar.Phenomenon(0).Vicinity() == true);
+}
+
+BOOST_AUTO_TEST_CASE(phenom_blowing)
+{
+    Metar metar("KSTL BLSN");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::SNOW);
+    BOOST_CHECK(metar.Phenomenon(0).Blowing() == true);
+}
+
+BOOST_AUTO_TEST_CASE(phenom_drifting)
+{
+    Metar metar("KSTL DRSA");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::SAND);
+    BOOST_CHECK(metar.Phenomenon(0).Drifting() == true);
+}
+
+BOOST_AUTO_TEST_CASE(phenom_freezing)
+{
+    Metar metar("KSTL FZDZ");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::DRIZZLE);
+    BOOST_CHECK(metar.Phenomenon(0).Freezing() == true);
+}
+
+BOOST_AUTO_TEST_CASE(phenom_shower)
+{
+    Metar metar("KSTL SHRA");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::RAIN);
+    BOOST_CHECK(metar.Phenomenon(0).Shower() == true);
+}
+
+BOOST_AUTO_TEST_CASE(phenom_shower_vicinity)
+{
+    Metar metar("KSTL VCSH");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::SHOWER);
+    BOOST_CHECK(metar.Phenomenon(0).Shower() == true);
+    BOOST_CHECK(metar.Phenomenon(0).Vicinity() == true);
+}
+
+BOOST_AUTO_TEST_CASE(phenom_partial)
+{
+    Metar metar("KSTL PRFG");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::FOG);
+    BOOST_CHECK(metar.Phenomenon(0).Partial() == true);
+}
+
+BOOST_AUTO_TEST_CASE(phenom_shallow)
+{
+    Metar metar("KSTL MIFG");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::FOG);
+    BOOST_CHECK(metar.Phenomenon(0).Shallow() == true);
+}
+
+BOOST_AUTO_TEST_CASE(phenom_patches)
+{
+    Metar metar("KSTL BCFG");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::FOG);
+    BOOST_CHECK(metar.Phenomenon(0).Patches() == true);
+}
+
+BOOST_AUTO_TEST_CASE(phenom_vicinity_blowing)
+{
+    Metar metar("VCBLSN");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::SNOW);
+    BOOST_CHECK(metar.Phenomenon(0).Vicinity() == true);
+    BOOST_CHECK(metar.Phenomenon(0).Blowing() == true);
+}
+
 BOOST_AUTO_TEST_CASE(real_METAR_1)
 {
   char buffer[100];
@@ -821,6 +1208,8 @@ BOOST_AUTO_TEST_CASE(real_METAR_4)
   
   BOOST_CHECK(metar.Visibility() == 10);
   BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+  
+  BOOST_CHECK(metar.NumPhenomena() == 0);
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
   BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::CLR);
@@ -1027,4 +1416,48 @@ BOOST_AUTO_TEST_CASE(real_METAR_8)
   BOOST_CHECK(metar.DewPointNA() == 17.8);
   
   BOOST_CHECK(metar.SeaLevelPressure() == 1012.9);
+}
+
+
+BOOST_AUTO_TEST_CASE(real_METAR_9)
+{
+  const char *metar_str = "KSTL 261605Z 10006KT 7SM -TSRA FEW050CB OVC090 06/01 A3014 RMK AO2 LTG DSNT S AND SW TSB05 OCNL LTGIC SW-W TS SW-W MOV NE P0001 T00610006";
+
+  Metar metar(metar_str); 
+
+  BOOST_CHECK(strcmp(metar.ICAO(), "KSTL") == 0);
+
+  BOOST_CHECK(metar.Day() == 26);
+  BOOST_CHECK(metar.Hour() == 16);
+  BOOST_CHECK(metar.Minute() == 5);
+
+  BOOST_CHECK(metar.WindDirection() == 100);
+  BOOST_CHECK(metar.WindSpeed() == 6);
+  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
+  
+  BOOST_CHECK(metar.Visibility() == 7);
+  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+  
+  BOOST_CHECK(metar.NumPhenomena() == 1);
+  BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+      Metar::Phenom::phenom::RAIN);
+  BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+      Metar::Phenom::intensity::LIGHT);
+  BOOST_CHECK(metar.Phenomenon(0).ThunderStorm() == true);
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 2);
+  BOOST_CHECK(metar.Layer(0)->Cover() ==  Metar::SkyCondition::cover::FEW);
+  BOOST_CHECK(metar.Layer(0)->Altitude() == 5000);
+  BOOST_CHECK(metar.Layer(0)->CloudType() == Metar::SkyCondition::type::CB);
+  BOOST_CHECK(metar.Layer(1)->Cover() ==  Metar::SkyCondition::cover::OVC);
+  BOOST_CHECK(metar.Layer(1)->Altitude() == 9000);
+  
+  BOOST_CHECK(metar.Temperature() == 6);
+  BOOST_CHECK(metar.DewPoint() == 1);
+ 
+  BOOST_CHECK(metar.hasAltimeterA());
+  BOOST_CHECK(metar.AltimeterA() == 30.14);
+
+  BOOST_CHECK(metar.TemperatureNA() == 6.1);
+  BOOST_CHECK(metar.DewPointNA() == 0.6);
 }

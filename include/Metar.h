@@ -64,13 +64,16 @@ namespace Storage_B
           ICE_CRYSTALS,           // IC
           ICE_PELLETS,            // PE
           DUST_SAND_WHORLS,       // PO
+          SPRAY,                  // PY
           RAIN,                   // RA
           SAND,                   // SA
           SNOW_GRAINS,            // SG
+          SHOWER,                 // SH
           SNOW,                   // SN
           SQUALLS,                // SQ
           SAND_STORM,             // SS
           THUNDER_STORM,          // TS
+          UNKNOWN_PRECIP,         // UP
           VOLCANIC_ASH            // VA
         };
 

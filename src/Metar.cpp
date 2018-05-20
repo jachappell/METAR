@@ -40,14 +40,18 @@ static const char *GS = "GS";
 static const char *HZ = "HZ";
 static const char *IC = "IC";
 static const char *PE = "PE";
+static const char *PL = "PL"; 
 static const char *PO = "PO"; 
+static const char *PY = "PY";
 static const char *RA = "RA";
 static const char *SA = "SA";
 static const char *SG = "SG";
+static const char *SH = "SH";
 static const char *SN = "SN";
 static const char *SQ = "SQ";
 static const char *SS = "SS"; 
 static const char *TS = "TS";
+static const char *UP = "UP";
 static const char *VA = "VA";
 
 static const char *sky_conditions[] =
@@ -634,10 +638,20 @@ void Metar::parse_phenom(const char *str)
       case '-':
         inten =  Metar::Phenom::intensity::LIGHT;
         break;
+
       case '+':
         inten =  Metar::Phenom::intensity::HEAVY;
+        break;
+
+      default:
+        return;
     }
     str++;
+  }
+
+  if (!starts_with("$$", str))
+  {
+    return;
   }
 
   if (!strncmp(str, "VC", 2))
@@ -664,10 +678,11 @@ void Metar::parse_phenom(const char *str)
     str +=2;
   }
 
-  if (!strncmp(str, "SH", 2))
+  if (!strncmp(str, SH, 2))
   {
     shower = true;
-    str +=2;
+    p = Metar::Phenom::phenom::SHOWER;
+      str +=2;
   }
 
   if (!strncmp(str, "PR", 2))
@@ -688,9 +703,11 @@ void Metar::parse_phenom(const char *str)
     str +=2;
   }
 
-  if (!strncmp(str, TS, 2) && (strlen(str) > 2))
+  if (!strncmp(str, TS, 2))
   {
     ts = true;
+    p = Metar::Phenom::phenom::THUNDER_STORM;
+
     str +=2;
   }
 
@@ -738,13 +755,17 @@ void Metar::parse_phenom(const char *str)
   {
     p = Metar::Phenom::phenom::ICE_CRYSTALS;
   }
-  else if (!strcmp(str, PE))
+  else if (!strcmp(str, PE) || !strcmp(str, PL))
   {
     p = Metar::Phenom::phenom::ICE_PELLETS;
   }
   else if (!strcmp(str, PO)) 
   {
     p = Metar::Phenom::phenom::DUST_SAND_WHORLS;
+  }
+  else if (!strcmp(str, PY)) 
+  {
+    p = Metar::Phenom::phenom::SPRAY;
   }
   else if (!strcmp(str, RA))
   {
@@ -770,9 +791,9 @@ void Metar::parse_phenom(const char *str)
   {
     p = Metar::Phenom::phenom::SAND_STORM;
   }
-  else if (!strcmp(str, TS))
+  else if (!strcmp(str, UP))
   {
-    p = Metar::Phenom::phenom::THUNDER_STORM;
+    p = Metar::Phenom::phenom::UNKNOWN_PRECIP;
   }
   else if (!strcmp(str, VA))
   {
