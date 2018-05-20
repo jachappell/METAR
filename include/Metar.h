@@ -90,6 +90,7 @@ namespace Storage_B
                bool shower = false,
                bool partial = false,
                bool shallow = false,
+               bool patches = false,
                bool ts = false)
           : _phenom(p)
           , _intensity(i)
@@ -100,6 +101,7 @@ namespace Storage_B
           , _shower(shower)
           , _partial(partial)
           , _shallow(shallow)
+          , _patches(patches)
           , _ts(ts)
         {}
 
@@ -117,6 +119,7 @@ namespace Storage_B
         bool Shower() const { return _shower; }
         bool Partial() const { return _partial; }
         bool Shallow() const { return _shallow; }
+        bool Patches() const { return _patches; }
         bool ThunderStorm() const { return _ts; }
 
       private:
@@ -129,6 +132,7 @@ namespace Storage_B
         bool _shower;
         bool _partial;
         bool _shallow;
+        bool _patches;
         bool _ts;
       };
 

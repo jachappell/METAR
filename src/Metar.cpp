@@ -616,7 +616,7 @@ void Metar::parse_alt(const char *str)
 void Metar::parse_phenom(const char *str)
 {
   Metar::Phenom::phenom p = Metar::Phenom::phenom::NONE;
-  Metar::Phenom::intensity inten =  Metar::Phenom::intensity::NORMAL;
+  Metar::Phenom::intensity inten = Metar::Phenom::intensity::NORMAL;
   bool blowing = false;
   bool freezing = false;
   bool drifting = false;
@@ -624,6 +624,7 @@ void Metar::parse_phenom(const char *str)
   bool shower = false;
   bool partial = false;
   bool shallow = false;
+  bool patches = false;
   bool ts = false;
 
   if (!isalpha(str[0]))
@@ -681,7 +682,13 @@ void Metar::parse_phenom(const char *str)
     str +=2;
   }
 
-  if (!strncmp(str, "TS", 2) && (strlen(str) > 2))
+  if (!strncmp(str, "BC", 2))
+  {
+    patches = true;
+    str +=2;
+  }
+
+  if (!strncmp(str, TS, 2) && (strlen(str) > 2))
   {
     ts = true;
     str +=2;
@@ -783,6 +790,7 @@ void Metar::parse_phenom(const char *str)
                                        shower,
                                        partial,
                                        shallow,
+                                       patches,
                                        ts));
 #endif
   }
