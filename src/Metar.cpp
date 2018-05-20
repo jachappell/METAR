@@ -711,93 +711,96 @@ void Metar::parse_phenom(const char *str)
     str +=2;
   }
 
-  if (!strcmp(str, BR))
+  if (strlen(str) > 1)
   {
-    p = Metar::Phenom::phenom::MIST;
-  }
-  else if (!strcmp(str, DS))
-  {
-    p = Metar::Phenom::phenom::DUST_STORM;
-  }
-  else if (!strcmp(str, DU))
-  {
-    p = Metar::Phenom::phenom::DUST;
-  }
-  else if (!strcmp(str, DZ))
-  {
-    p = Metar::Phenom::phenom::DRIZZLE;
-  }
-  else if (!strcmp(str, FC))
-  {
-    p = Metar::Phenom::phenom::FUNNEL_CLOUD;
-  }
-  else if (!strcmp(str, FG))
-  {
-    p = Metar::Phenom::phenom::FOG;
-  }
-  else if (!strcmp(str, FU))
-  {
-    p = Metar::Phenom::phenom::SMOKE;
-  }
-  else if (!strcmp(str, GR))
-  {
-    p = Metar::Phenom::phenom::HAIL;
-  }
-  else if (!strcmp(str, GS))
-  {
-    p = Metar::Phenom::phenom::SMALL_HAIL;
-  }
-  else if (!strcmp(str, HZ))
-  {
-    p = Metar::Phenom::phenom::HAZE;
-  }
-  else if (!strcmp(str, IC))
-  {
-    p = Metar::Phenom::phenom::ICE_CRYSTALS;
-  }
-  else if (!strcmp(str, PE) || !strcmp(str, PL))
-  {
-    p = Metar::Phenom::phenom::ICE_PELLETS;
-  }
-  else if (!strcmp(str, PO)) 
-  {
-    p = Metar::Phenom::phenom::DUST_SAND_WHORLS;
-  }
-  else if (!strcmp(str, PY)) 
-  {
-    p = Metar::Phenom::phenom::SPRAY;
-  }
-  else if (!strcmp(str, RA))
-  {
-    p = Metar::Phenom::phenom::RAIN;
-  }
-  else if (!strcmp(str, SA))
-  {
-    p = Metar::Phenom::phenom::SAND;
-  }
-  else if (!strcmp(str, SG))
-  {
-    p = Metar::Phenom::phenom::SNOW_GRAINS;
-  }
-  else if (!strcmp(str, SN))
-  {
-    p = Metar::Phenom::phenom::SNOW;
-  }
-  else if (!strcmp(str, SQ))
-  {
-    p = Metar::Phenom::phenom::SQUALLS;
-  }
-  else if (!strcmp(str, SS)) 
-  {
-    p = Metar::Phenom::phenom::SAND_STORM;
-  }
-  else if (!strcmp(str, UP))
-  {
-    p = Metar::Phenom::phenom::UNKNOWN_PRECIP;
-  }
-  else if (!strcmp(str, VA))
-  {
-    p = Metar::Phenom::phenom::VOLCANIC_ASH;
+    if (!strcmp(str, BR))
+    {
+      p = Metar::Phenom::phenom::MIST;
+    }
+    else if (!strcmp(str, DS))
+    {
+      p = Metar::Phenom::phenom::DUST_STORM;
+    }
+    else if (!strcmp(str, DU))
+    {
+      p = Metar::Phenom::phenom::DUST;
+    }
+    else if (!strcmp(str, DZ))
+    {
+      p = Metar::Phenom::phenom::DRIZZLE;
+    }
+    else if (!strcmp(str, FC))
+    {
+      p = Metar::Phenom::phenom::FUNNEL_CLOUD;
+    }
+    else if (!strcmp(str, FG))
+    {
+      p = Metar::Phenom::phenom::FOG;
+    }
+    else if (!strcmp(str, FU))
+    {
+      p = Metar::Phenom::phenom::SMOKE;
+    }
+    else if (!strcmp(str, GR))
+    {
+      p = Metar::Phenom::phenom::HAIL;
+    }
+    else if (!strcmp(str, GS))
+    {
+      p = Metar::Phenom::phenom::SMALL_HAIL;
+    }
+    else if (!strcmp(str, HZ))
+    {
+      p = Metar::Phenom::phenom::HAZE;
+    }
+    else if (!strcmp(str, IC))
+    {
+      p = Metar::Phenom::phenom::ICE_CRYSTALS;
+    }
+    else if (!strcmp(str, PE) || !strcmp(str, PL))
+    {
+      p = Metar::Phenom::phenom::ICE_PELLETS;
+    }
+    else if (!strcmp(str, PO)) 
+    {
+      p = Metar::Phenom::phenom::DUST_SAND_WHORLS;
+    }
+    else if (!strcmp(str, PY)) 
+    {
+      p = Metar::Phenom::phenom::SPRAY;
+    }
+    else if (!strcmp(str, RA))
+    {
+      p = Metar::Phenom::phenom::RAIN;
+    }
+    else if (!strcmp(str, SA))
+    {
+      p = Metar::Phenom::phenom::SAND;
+    }
+    else if (!strcmp(str, SG))
+    {
+      p = Metar::Phenom::phenom::SNOW_GRAINS;
+    }
+    else if (!strcmp(str, SN))
+    {
+      p = Metar::Phenom::phenom::SNOW;
+    }
+    else if (!strcmp(str, SQ))
+    {
+      p = Metar::Phenom::phenom::SQUALLS;
+    }
+    else if (!strcmp(str, SS)) 
+    {
+      p = Metar::Phenom::phenom::SAND_STORM;
+    }
+    else if (!strcmp(str, UP))
+    {
+      p = Metar::Phenom::phenom::UNKNOWN_PRECIP;
+    }
+    else if (!strcmp(str, VA))
+    {
+      p = Metar::Phenom::phenom::VOLCANIC_ASH;
+    }
   }
 
   if (p != Metar::Phenom::phenom::NONE)
