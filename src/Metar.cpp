@@ -53,6 +53,7 @@ static const char *SS = "SS";
 static const char *TS = "TS";
 static const char *UP = "UP";
 static const char *VA = "VA";
+static const char *RASN = "RASN";
 
 static const char *sky_conditions[] =
 {
@@ -800,6 +801,10 @@ void Metar::parse_phenom(const char *str)
     else if (!strcmp(str, VA))
     {
       p = Metar::Phenom::phenom::VOLCANIC_ASH;
+    }
+    else if (!strcmp(str, RASN))
+    {
+      p = Metar::Phenom::phenom::SLEET;
     }
   }
 

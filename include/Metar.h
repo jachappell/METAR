@@ -74,7 +74,8 @@ namespace Storage_B
           SAND_STORM,             // SS
           THUNDER_STORM,          // TS
           UNKNOWN_PRECIP,         // UP
-          VOLCANIC_ASH            // VA
+          VOLCANIC_ASH,           // VA
+          SLEET                   // RASN
         };
 
         enum class intensity

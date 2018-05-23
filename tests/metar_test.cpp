@@ -887,6 +887,16 @@ BOOST_AUTO_TEST_CASE(phenoms)
     BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
         Metar::Phenom::intensity::NORMAL);
   }
+
+  {
+    Metar metar("KORD RASN");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar.Phenomenon(0).Phenomenon() ==
+    Metar::Phenom::phenom::SLEET);
+    BOOST_CHECK(metar.Phenomenon(0).Intensity() ==
+        Metar::Phenom::intensity::NORMAL);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(phenom_intensity)
