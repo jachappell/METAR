@@ -13,6 +13,7 @@
 #include <limits.h>
 #include <float.h>
 
+using namespace std;
 using namespace Storage_B::Weather;
 
 const int Metar::_INTEGER_UNDEFINED = INT_MIN;
@@ -20,6 +21,7 @@ const double Metar::_DOUBLE_UNDEFINED = DBL_MAX;
 
 #ifdef NO_SHARED_PTR
 const unsigned int Metar::_MAX_CLOUD_LAYERS = 6;
+const unsigned int Metar::_MAX_PHENOM = 16;
 #endif
 
 static const char *WIND_SPEED_KT = "KT";
@@ -53,7 +55,6 @@ static const char *SS = "SS";
 static const char *TS = "TS";
 static const char *UP = "UP";
 static const char *VA = "VA";
-static const char *RASN = "RASN";
 
 static const char *sky_conditions[] =
 {
@@ -124,6 +125,7 @@ Metar::Metar()
   , _cavok(false)
 #ifdef NO_SHARED_PTR
   , _num_layers(0)
+  , _num_phenomena(0)
 #endif
   , _vert_vis(_INTEGER_UNDEFINED)
   , _temp(_INTEGER_UNDEFINED) 
@@ -140,6 +142,7 @@ Metar::Metar()
 
 #ifdef NO_SHARED_PTR
   _layers = new SkyCondition*[_MAX_CLOUD_LAYERS];
+  _phenomena = new Phenom[_MAX_PHENOM];
 #endif
 }
 
@@ -161,6 +164,7 @@ Metar::~Metar()
     delete _layers[i];
   }
   delete[] _layers;
+  delete[] _phenomena;
 }
 #endif
 
@@ -620,17 +624,20 @@ void Metar::parse_alt(const char *str)
 
 void Metar::parse_phenom(const char *str)
 {
-  Metar::Phenom::phenom p = Metar::Phenom::phenom::NONE;
+#ifndef NO_SHARED_PTR
+  vector<Metar::Phenom::phenom> p;
+#else
+  unsigned int idx = 0;
+  Metar::Phenom::phenom p[4];
+#endif
   Metar::Phenom::intensity inten = Metar::Phenom::intensity::NORMAL;
   bool blowing = false;
   bool freezing = false;
   bool drifting = false;
   bool vicinity = false;
-  bool shower = false;
   bool partial = false;
   bool shallow = false;
   bool patches = false;
-  bool ts = false;
 
   if (!isalpha(str[0]))
   {
@@ -654,173 +661,257 @@ void Metar::parse_phenom(const char *str)
   {
     return;
   }
-
-  if (!strncmp(str, "VC", 2))
+  
+  while (strlen(str) > 1)
   {
-    vicinity = true;
-    str +=2;
-  }
-
-  if (!strncmp(str, "BL", 2))
-  {
-    blowing = true;
-    str +=2;
-  }
-
-  if (!strncmp(str, "DR", 2))
-  {
-    drifting = true;
-    str +=2;
-  }
-
-  if (!strncmp(str, "FZ", 2))
-  {
-    freezing = true;
-    str +=2;
-  }
-
-  if (!strncmp(str, SH, 2))
-  {
-    shower = true;
-    p = Metar::Phenom::phenom::SHOWER;
-      str +=2;
-  }
-
-  if (!strncmp(str, "PR", 2))
-  {
-    partial = true;
-    str +=2;
-  }
-
-  if (!strncmp(str, "MI", 2))
-  {
-    shallow = true;
-    str +=2;
-  }
-
-  if (!strncmp(str, "BC", 2))
-  {
-    patches = true;
-    str +=2;
-  }
-
-  if (!strncmp(str, TS, 2))
-  {
-    ts = true;
-    p = Metar::Phenom::phenom::THUNDER_STORM;
-
-    str +=2;
-  }
-
-  if (strlen(str) > 1)
-  {
-    if (!strcmp(str, BR))
+    if (!strncmp(str, "VC", 2))
     {
-      p = Metar::Phenom::phenom::MIST;
+      vicinity = true;
     }
-    else if (!strcmp(str, DS))
+    else if (!strncmp(str, "BL", 2))
     {
-      p = Metar::Phenom::phenom::DUST_STORM;
+      blowing = true;
     }
-    else if (!strcmp(str, DU))
+    else if (!strncmp(str, "DR", 2))
     {
-      p = Metar::Phenom::phenom::DUST;
+      drifting = true;
     }
-    else if (!strcmp(str, DZ))
+    else if (!strncmp(str, "FZ", 2))
     {
-      p = Metar::Phenom::phenom::DRIZZLE;
+      freezing = true;
     }
-    else if (!strcmp(str, FC))
+    else if (!strncmp(str, "PR", 2))
     {
-      p = Metar::Phenom::phenom::FUNNEL_CLOUD;
+      partial = true;
     }
-    else if (!strcmp(str, FG))
+    else if (!strncmp(str, "MI", 2))
     {
-      p = Metar::Phenom::phenom::FOG;
+      shallow = true;
     }
-    else if (!strcmp(str, FU))
+    else if (!strncmp(str, "BC", 2))
     {
-      p = Metar::Phenom::phenom::SMOKE;
+      patches = true;
     }
-    else if (!strcmp(str, GR))
+    else if (!strncmp(str, TS, 2))
     {
-      p = Metar::Phenom::phenom::HAIL;
-    }
-    else if (!strcmp(str, GS))
-    {
-      p = Metar::Phenom::phenom::SMALL_HAIL;
-    }
-    else if (!strcmp(str, HZ))
-    {
-      p = Metar::Phenom::phenom::HAZE;
-    }
-    else if (!strcmp(str, IC))
-    {
-      p = Metar::Phenom::phenom::ICE_CRYSTALS;
-    }
-    else if (!strcmp(str, PE) || !strcmp(str, PL))
-    {
-      p = Metar::Phenom::phenom::ICE_PELLETS;
-    }
-    else if (!strcmp(str, PO)) 
-    {
-      p = Metar::Phenom::phenom::DUST_SAND_WHORLS;
-    }
-    else if (!strcmp(str, PY)) 
-    {
-      p = Metar::Phenom::phenom::SPRAY;
-    }
-    else if (!strcmp(str, RA))
-    {
-      p = Metar::Phenom::phenom::RAIN;
-    }
-    else if (!strcmp(str, SA))
-    {
-      p = Metar::Phenom::phenom::SAND;
-    }
-    else if (!strcmp(str, SG))
-    {
-      p = Metar::Phenom::phenom::SNOW_GRAINS;
-    }
-    else if (!strcmp(str, SN))
-    {
-      p = Metar::Phenom::phenom::SNOW;
-    }
-    else if (!strcmp(str, SQ))
-    {
-      p = Metar::Phenom::phenom::SQUALLS;
-    }
-    else if (!strcmp(str, SS)) 
-    {
-      p = Metar::Phenom::phenom::SAND_STORM;
-    }
-    else if (!strcmp(str, UP))
-    {
-      p = Metar::Phenom::phenom::UNKNOWN_PRECIP;
-    }
-    else if (!strcmp(str, VA))
-    {
-      p = Metar::Phenom::phenom::VOLCANIC_ASH;
-    }
-    else if (!strcmp(str, RASN))
-    {
-      p = Metar::Phenom::phenom::SLEET;
-    }
-  }
-
-  if (p != Metar::Phenom::phenom::NONE)
-  {
 #ifndef NO_SHARED_PTR
-    _phenomena.push_back(Metar::Phenom(p, inten,
+      p.push_back(Metar::Phenom::phenom::THUNDER_STORM);
+#else
+      p[idx++] = Metar::Phenom::phenom::THUNDER_STORM;
+#endif
+    }
+    else if (!strncmp(str, SH, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::SHOWER);
+#else
+      p[idx++] = Metar::Phenom::phenom::SHOWER;
+#endif
+    }
+    else if (!strncmp(str, BR, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::MIST);
+#else
+      p[idx++] = Metar::Phenom::phenom::MIST;
+#endif
+    }
+    else if (!strncmp(str, DS, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::DUST_STORM);
+#else
+      p[idx++] = Metar::Phenom::phenom::DUST_STORM;
+#endif
+    }
+    else if (!strncmp(str, DU, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::DUST);
+#else
+      p[idx++] = Metar::Phenom::phenom::DUST;
+#endif
+    }
+    else if (!strncmp(str, DZ, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::DRIZZLE);
+#else
+      p[idx++] = Metar::Phenom::phenom::DRIZZLE;
+#endif
+    }
+    else if (!strncmp(str, FC, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::FUNNEL_CLOUD);
+#else
+      p[idx++] = Metar::Phenom::phenom::FUNNEL_CLOUD;
+#endif
+    }
+    else if (!strncmp(str, FG, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::FOG);
+#else
+      p[idx++] = Metar::Phenom::phenom::FOG;
+#endif
+    }
+    else if (!strncmp(str, FU, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::SMOKE);
+#else
+      p[idx++] = Metar::Phenom::phenom::SMOKE;
+#endif
+    }
+    else if (!strncmp(str, GR, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::HAIL);
+#else
+      p[idx++] = Metar::Phenom::phenom::HAIL;
+#endif
+    }
+    else if (!strncmp(str, GS, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::SMALL_HAIL);
+#else
+      p[idx++] = Metar::Phenom::phenom::SMALL_HAIL;
+#endif
+    }
+    else if (!strncmp(str, HZ, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::HAZE);
+#else
+      p[idx++] = Metar::Phenom::phenom::HAZE;
+#endif
+    }
+    else if (!strncmp(str, IC, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::ICE_CRYSTALS);
+#else
+      p[idx++] = Metar::Phenom::phenom::ICE_CRYSTALS;
+#endif
+    }
+    else if (!strncmp(str, PE, 2) || !strncmp(str, PL, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::ICE_PELLETS);
+#else
+      p[idx++] = Metar::Phenom::phenom::ICE_PELLETS;
+#endif
+    }
+    else if (!strncmp(str, PO, 2)) 
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::DUST_SAND_WHORLS);
+#else
+      p[idx++] = Metar::Phenom::phenom::DUST_SAND_WHORLS;
+#endif
+    }
+    else if (!strncmp(str, PY, 2)) 
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::SPRAY);
+#else
+      p[idx++] = Metar::Phenom::phenom::SPRAY;
+#endif
+    }
+    else if (!strncmp(str, RA, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::RAIN);
+#else
+      p[idx++] = Metar::Phenom::phenom::RAIN;
+#endif
+    }
+    else if (!strncmp(str, SA, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::SAND);
+#else
+      p[idx++] = Metar::Phenom::phenom::SAND;
+#endif
+    }
+    else if (!strncmp(str, SG, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::SNOW_GRAINS);
+#else
+      p[idx++] = Metar::Phenom::phenom::SNOW_GRAINS;
+#endif
+    }
+    else if (!strncmp(str, SN, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::SNOW);
+#else
+      p[idx++] = Metar::Phenom::phenom::SNOW;
+#endif
+    }
+    else if (!strncmp(str, SQ, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::SQUALLS);
+#else
+      p[idx++] = Metar::Phenom::phenom::SQUALLS;
+#endif
+    }
+    else if (!strncmp(str, SS, 2)) 
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::SAND_STORM);
+#else
+      p[idx++] = Metar::Phenom::phenom::SAND_STORM;
+#endif
+    }
+    else if (!strncmp(str, UP, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::UNKNOWN_PRECIP);
+#else
+      p[idx++] = Metar::Phenom::phenom::UNKNOWN_PRECIP;
+#endif
+    }
+    else if (!strncmp(str, VA, 2))
+    {
+#ifndef NO_SHARED_PTR
+      p.push_back(Metar::Phenom::phenom::VOLCANIC_ASH);
+#else
+      p[idx++] = Metar::Phenom::phenom::VOLCANIC_ASH;
+#endif
+    }
+    str += 2;
+  }
+
+#ifndef NO_SHARED_PTR
+  if (p.size() > 0)
+  {
+    _phenomena.push_back(Metar::Phenom(p,
+                                       inten,
                                        blowing,
                                        freezing,
                                        drifting,
                                        vicinity,
-                                       shower,
                                        partial,
                                        shallow,
-                                       patches,
-                                       ts));
+                                       patches));
+#else
+  if (idx > 0)
+  {
+    _phenomena[_num_phenomena++] = Metar::Phenom(p,
+                                                 idx,
+                                                 inten,
+                                                 blowing,
+                                                 freezing,
+                                                 drifting,
+                                                 vicinity,
+                                                 partial,
+                                                 shallow,
+                                                 patches);
 #endif
   }
 }

@@ -75,7 +75,6 @@ namespace Storage_B
           THUNDER_STORM,          // TS
           UNKNOWN_PRECIP,         // UP
           VOLCANIC_ASH,           // VA
-          SLEET                   // RASN
         };
 
         enum class intensity
@@ -85,49 +84,144 @@ namespace Storage_B
           HEAVY
         };
 
-        Phenom(phenom p = phenom::NONE,
+        Phenom(
+#ifndef NO_SHARED_PTR
+               std::vector<phenom>& p,
+#else
+               const phenom *p,
+               unsigned int num_phenom,
+#endif
                intensity i = intensity::NORMAL,
                bool blowing = false,
                bool freezing = false,
                bool drifting = false,
                bool vicinity = false,
-               bool shower = false,
                bool partial = false,
                bool shallow = false,
-               bool patches = false,
-               bool ts = false)
-          : _phenom(p)
+               bool patches = false)
+#ifndef NO_SHARED_PTR
+          : _phenoms(p)
+#else
+          : _num_phenom(num_phenom)
+#endif
           , _intensity(i)
           , _blowing(blowing)
           , _freezing(freezing)
           , _drifting(drifting)
           , _vicinity(vicinity)
-          , _shower(shower)
           , _partial(partial)
           , _shallow(shallow)
           , _patches(patches)
-          , _ts(ts)
-        {}
+        {
+#ifdef NO_SHARED_PTR
+          for (unsigned int i = 0 ; i < _num_phenom ; i++)
+          {
+            _phenoms[i] = p[i];
+          }
+#endif
+        }
 
+#ifndef NO_SHARED_PTR
         Phenom(const Phenom&) = default;
         Phenom& operator=(const Phenom&) = default;
+#else
+        Phenom()
+          : _num_phenom(0)
+          , _intensity(intensity::NORMAL)
+          , _blowing(false)
+          , _freezing(false)
+          , _drifting(false)
+          , _vicinity(false)
+          , _partial(false)
+          , _shallow(false)
+          , _patches(false)
+        {
+        }
+
+        Phenom(const Phenom& p)
+          : _num_phenom(p._num_phenom)
+          , _intensity(p._intensity)
+          , _blowing(p._blowing)
+          , _freezing(p._freezing)
+          , _drifting(p._drifting)
+          , _vicinity(p._vicinity)
+          , _partial(p._partial)
+          , _shallow(p._shallow)
+          , _patches(p._patches)
+        {
+          for (unsigned int i = 0 ; i < _num_phenom ; i++)
+          {
+            _phenoms[i] = p._phenoms[i];
+          }
+        }
+
+        Phenom& operator=(const Phenom& p)
+        {
+          if (&p != this)
+          {
+            _num_phenom = p._num_phenom;
+            _intensity = p._intensity;
+            _blowing = p._blowing;
+            _freezing = p._freezing;
+            _drifting = p._drifting;
+            _vicinity = p._vicinity;
+            _partial = p._partial;
+            _shallow = p._shallow;
+            _patches = p._patches;
+
+            for (unsigned int i = 0 ; i < _num_phenom ; i++)
+            {
+              _phenoms[i] = p._phenoms[i];
+            }
+          }
+          
+          return *this;
+        }
+#endif
 
         ~Phenom() = default;
 
-        phenom Phenomenon() const { return _phenom; }
-        intensity Intensity() const { return _intensity; }
+        auto NumPhenom() const 
+        { 
+#ifdef NO_SHARED_PTR
+          return _num_phenom;
+#else
+          return _phenoms.size();
+#endif
+        }
+
+        auto operator[](
+#ifndef NO_SHARED_PTR
+            typename std::vector<Phenom>::size_type
+#else
+            unsigned int
+#endif
+                        idx) const
+        {
+          if (idx < NumPhenom())
+          {
+            return _phenoms[idx];
+          }
+
+          return phenom::NONE;
+        }
+
+        auto Intensity() const { return _intensity; }
         bool Blowing() const { return _blowing; }
         bool Freezing() const { return _freezing; }
         bool Drifting() const { return _drifting; }
         bool Vicinity() const { return _vicinity; }
-        bool Shower() const { return _shower; }
         bool Partial() const { return _partial; }
         bool Shallow() const { return _shallow; }
         bool Patches() const { return _patches; }
-        bool ThunderStorm() const { return _ts; }
 
       private:
-        phenom _phenom;
+#ifndef NO_SHARED_PTR
+        std::vector<phenom> _phenoms;
+#else
+        phenom _phenoms[4];
+        unsigned int _num_phenom;
+#endif
         intensity _intensity;
         bool _blowing;
         bool _freezing;
@@ -387,7 +481,7 @@ namespace Storage_B
       auto NumPhenomena() const
       {
 #ifdef NO_SHARED_PTR
-        return 0;
+        return _num_phenomena;
 #else
         return _phenomena.size();
 #endif
@@ -399,8 +493,7 @@ namespace Storage_B
         return _phenomena.at(idx);
 #else
         // for now
-        Phenom p;
-        return p;
+        return _phenomena[idx];
 #endif
       }
 
@@ -471,6 +564,9 @@ namespace Storage_B
 
 #ifndef NO_SHARED_PTR
       std::vector<Phenom> _phenomena;
+#else
+      Phenom *_phenomena;
+      unsigned int _num_phenomena;
 #endif
 
       int _vert_vis;
@@ -495,6 +591,7 @@ namespace Storage_B
       static const double _DOUBLE_UNDEFINED;
 #ifdef NO_SHARED_PTR
       static const unsigned int _MAX_CLOUD_LAYERS;
+      static const unsigned int _MAX_PHENOM;
 #endif
     };
   }
