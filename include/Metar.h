@@ -181,7 +181,12 @@ namespace Storage_B
 
         ~Phenom() = default;
 
-        auto NumPhenom() const 
+#ifdef NO_SHARED_PTR
+        unsigned int
+#else
+        auto 
+#endif
+        NumPhenom() const 
         { 
 #ifdef NO_SHARED_PTR
           return _num_phenom;
@@ -190,11 +195,10 @@ namespace Storage_B
 #endif
         }
 
-        auto operator[](
 #ifndef NO_SHARED_PTR
-            typename std::vector<Phenom>::size_type
+        auto operator[](typename std::vector<Phenom>::size_type
 #else
-            unsigned int
+        phenom operator[](unsigned int
 #endif
                         idx) const
         {
@@ -206,7 +210,7 @@ namespace Storage_B
           return phenom::NONE;
         }
 
-        auto Intensity() const { return _intensity; }
+        intensity Intensity() const { return _intensity; }
         bool Blowing() const { return _blowing; }
         bool Freezing() const { return _freezing; }
         bool Drifting() const { return _drifting; }
@@ -454,7 +458,12 @@ namespace Storage_B
       //
       // Number of Cloud Layers
       //
-      auto NumCloudLayers() const
+#ifdef NO_SHARED_PTR
+      unsigned int
+#else
+      auto
+#endif
+      NumCloudLayers() const
       { 
 #ifdef NO_SHARED_PTR
         return _num_layers;
@@ -478,7 +487,12 @@ namespace Storage_B
         return nullptr;
       }
 
-      auto NumPhenomena() const
+#ifdef NO_SHARED_PTR
+      unsigned int
+#else
+      auto
+#endif
+      NumPhenomena() const
       {
 #ifdef NO_SHARED_PTR
         return _num_phenomena;
