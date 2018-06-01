@@ -77,11 +77,15 @@ int main(int argc, char **argv)
   bool fahrenheit_flag(false);
   int option_index(0);
   int c;
+  bool dflag(false);
+
+  string metar_str;
   
   string command = basename(argv[0]);
 
   opterr = 0;
-  while((c = getopt_long(argc, argv, "hf", long_options, &option_index)) != -1)
+  while((c = getopt_long(argc, argv, "hfd:", long_options,
+             &option_index)) != -1)
   {
     switch(c)
     {
@@ -93,13 +97,18 @@ int main(int argc, char **argv)
         fahrenheit_flag = true;
         break;
 
+      case 'd':
+        dflag = true;
+        metar_str = optarg;
+        break;
+
       default:
         usage(command);
         return 1;
     }
   }
 
-  if (argv[optind])
+  if (argv[optind] && !dflag)
   {
     string url(URL + argv[optind] + ".TXT");
     
@@ -114,8 +123,6 @@ int main(int argc, char **argv)
       return 1;
     }
 
-    cout << data << endl;
-    
     //
     // This METAR source returns 2 lines of text.
     //   * The first line is the observation time and date (UTC)
@@ -124,7 +131,14 @@ int main(int argc, char **argv)
     vector<string> list;
     boost::split(list, data, boost::is_any_of("\n"));
 
-    Metar metar(list[1].c_str());
+    metar_str = list[1].c_str();
+  }
+
+  if (!metar_str.empty())
+  {
+    cout << metar_str << endl;
+
+    Metar metar(metar_str.c_str());
 
     double temp, dew;
     if (metar.hasTemperatureNA())
