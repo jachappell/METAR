@@ -81,9 +81,11 @@ static const auto NUM_CLOUDS =
 class SkyConditionImpl : public Metar::SkyCondition
 {
 public:
-  SkyConditionImpl(cover c, int a = INT_MIN, type t = type::undefined)
+  SkyConditionImpl(bool temp, cover c, int a = INT_MIN,
+                   type t = type::undefined)
     : _cover(c)
     , _alt(a)
+    , _tempo(temp)
     , _type(t)
   {
   }
@@ -100,10 +102,12 @@ public:
   virtual bool hasAltitude() const { return _alt != INT_MIN; }
   virtual type CloudType() const { return _type; }
   virtual bool hasCloudType() const { return _type != type::undefined; }
+  virtual bool Temporary() const { return _tempo; }
 
 private:
     cover _cover;
     int _alt;
+    bool _tempo;
     type _type;
 };
 
@@ -133,6 +137,7 @@ Metar::Metar()
   , _altimeterA(_DOUBLE_UNDEFINED)
   , _altimeterQ(_INTEGER_UNDEFINED)
   , _rmk(false)
+  , _tempo(false)
   , _slp(_DOUBLE_UNDEFINED)
   , _ftemp(_DOUBLE_UNDEFINED) 
   , _fdew(_DOUBLE_UNDEFINED)
@@ -302,6 +307,11 @@ static inline bool is_rmk(const char *str)
   return strcmp(str, "RMK") == 0;
 }
 
+static inline bool is_tempo(const char *str)
+{
+  return strcmp(str, "TEMPO") == 0;
+}
+
 static inline bool is_slp(const char *str)
 {
   return match("SLP###", str);
@@ -367,6 +377,10 @@ void Metar::parse(char *metar_str)
     else if (!hasAltimeterQ() && is_altQ(el))
     {
       parse_alt(el);
+    }
+    else if (!_tempo && is_tempo(el))
+    {
+      _tempo = true;
     }
     else if (!_rmk && is_rmk(el))
     {
@@ -541,22 +555,23 @@ void Metar::parse_cloud_layer(const char *str)
       {
 #ifndef NO_SHARED_PTR
         _layers.push_back(
-            std::make_shared<SkyConditionImpl>(
+            std::make_shared<SkyConditionImpl>(_tempo,
                 static_cast<SkyCondition::cover>(i)));
 #else
         _layers[_num_layers++] =
-            new SkyConditionImpl(static_cast<SkyCondition::cover>(i)); 
+            new SkyConditionImpl(_tempo,
+                static_cast<SkyCondition::cover>(i)); 
 #endif
       }
       else if (str[6] == '\0')
       {
 #ifndef NO_SHARED_PTR
         _layers.push_back(
-            std::make_shared<SkyConditionImpl>(
+            std::make_shared<SkyConditionImpl>(_tempo,
                 static_cast<SkyCondition::cover>(i), atoi(str + 3) * 100));
 #else
         _layers[_num_layers++] =
-            new SkyConditionImpl(static_cast<SkyCondition::cover>(i), 
+            new SkyConditionImpl(_tempo, static_cast<SkyCondition::cover>(i), 
                                  atoi(str + 3) * 100);
 #endif
       }
@@ -573,11 +588,11 @@ void Metar::parse_cloud_layer(const char *str)
         } 
 #ifndef NO_SHARED_PTR
         _layers.push_back(
-            std::make_shared<SkyConditionImpl>(
+            std::make_shared<SkyConditionImpl>(_tempo,
                 static_cast<SkyCondition::cover>(i), atoi(str + 3) * 100, t));
 #else
         _layers[_num_layers++] =
-            new SkyConditionImpl(static_cast<SkyCondition::cover>(i), 
+            new SkyConditionImpl(_temp, static_cast<SkyCondition::cover>(i), 
                                  atoi(str + 3) * 100, t);
 #endif
       }
@@ -890,7 +905,8 @@ void Metar::parse_phenom(const char *str)
 #ifndef NO_SHARED_PTR
   if (p.size() > 0)
   {
-    _phenomena.push_back(Metar::Phenom(p,
+    _phenomena.push_back(Metar::Phenom(_tempo,
+                                       p,
                                        inten,
                                        blowing,
                                        freezing,
@@ -902,7 +918,8 @@ void Metar::parse_phenom(const char *str)
 #else
   if (idx > 0)
   {
-    _phenomena[_num_phenomena++] = Metar::Phenom(p,
+    _phenomena[_num_phenomena++] = Metar::Phenom(_temp,
+                                                 p,
                                                  idx,
                                                  inten,
                                                  blowing,

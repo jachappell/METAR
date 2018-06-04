@@ -84,7 +84,7 @@ namespace Storage_B
           HEAVY
         };
 
-        Phenom(
+        Phenom(bool tempo,
 #ifndef NO_SHARED_PTR
                std::vector<phenom>& p,
 #else
@@ -112,6 +112,7 @@ namespace Storage_B
           , _partial(partial)
           , _shallow(shallow)
           , _patches(patches)
+          , _tempo(tempo)
         {
 #ifdef NO_SHARED_PTR
           for (unsigned int i = 0 ; i < _num_phenom ; i++)
@@ -135,6 +136,7 @@ namespace Storage_B
           , _partial(false)
           , _shallow(false)
           , _patches(false)
+          , _tempo(false)
         {
         }
 
@@ -148,6 +150,7 @@ namespace Storage_B
           , _partial(p._partial)
           , _shallow(p._shallow)
           , _patches(p._patches)
+          , _tempo(p._patches)
         {
           for (unsigned int i = 0 ; i < _num_phenom ; i++)
           {
@@ -168,6 +171,7 @@ namespace Storage_B
             _partial = p._partial;
             _shallow = p._shallow;
             _patches = p._patches;
+            _tempo = p._patches;
 
             for (unsigned int i = 0 ; i < _num_phenom ; i++)
             {
@@ -218,6 +222,7 @@ namespace Storage_B
         bool Partial() const { return _partial; }
         bool Shallow() const { return _shallow; }
         bool Patches() const { return _patches; }
+        bool Temporary() const { return _tempo; }
 
       private:
 #ifndef NO_SHARED_PTR
@@ -235,7 +240,7 @@ namespace Storage_B
         bool _partial;
         bool _shallow;
         bool _patches;
-        bool _ts;
+        bool _tempo;
       };
 
       //
@@ -453,6 +458,7 @@ namespace Storage_B
         virtual bool hasAltitude() const = 0;
         virtual type CloudType() const = 0;
         virtual bool hasCloudType() const = 0;
+        virtual bool Temporary() const = 0;
       };
 
       //
@@ -593,6 +599,7 @@ namespace Storage_B
       int _altimeterQ;
 
       bool _rmk;
+      bool _tempo;
 
       double _slp;
 

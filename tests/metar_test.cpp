@@ -560,6 +560,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_FEW)
   BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::FEW);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 10500);
   BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+  BOOST_CHECK(!metar.Layer(0)->Temporary());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_SCT)
@@ -621,6 +622,25 @@ BOOST_AUTO_TEST_CASE(cloud_layer_3_layers)
   BOOST_CHECK(!metar.Layer(2)->hasCloudType());
 }
 
+BOOST_AUTO_TEST_CASE(cloud_layer_3_layers_tempo)
+{
+  Metar metar("KSTL FEW004 SCT080 TEMPO OVC120");
+  
+  BOOST_CHECK(metar.NumCloudLayers() == 3);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::FEW);
+  BOOST_CHECK(metar.Layer(0)->Altitude() == 400);
+  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+  BOOST_CHECK(!metar.Layer(0)->Temporary());
+  BOOST_CHECK(metar.Layer(1)->Cover() == Metar::SkyCondition::cover::SCT);
+  BOOST_CHECK(metar.Layer(1)->Altitude() == 8000);
+  BOOST_CHECK(!metar.Layer(1)->hasCloudType());
+  BOOST_CHECK(!metar.Layer(1)->Temporary());
+  BOOST_CHECK(metar.Layer(2)->Cover() == Metar::SkyCondition::cover::OVC);
+  BOOST_CHECK(metar.Layer(2)->Altitude() == 12000);
+  BOOST_CHECK(!metar.Layer(2)->hasCloudType());
+  BOOST_CHECK(metar.Layer(2)->Temporary());
+}
+
 BOOST_AUTO_TEST_CASE(cloud_layer_3_layers_cloud_types)
 {
   Metar metar("FEW004TCU SCT080CB OVC120ACC");
@@ -654,6 +674,7 @@ BOOST_AUTO_TEST_CASE(phenoms)
     BOOST_CHECK(metar.Phenomenon(0).Partial() == false);
     BOOST_CHECK(metar.Phenomenon(0).Shallow() == false);
     BOOST_CHECK(metar.Phenomenon(0).Patches() == false);
+    BOOST_CHECK(metar.Phenomenon(0).Temporary() == false);
     
     BOOST_CHECK(metar.Phenomenon(0)[1] == Metar::Phenom::phenom::NONE);
   }
@@ -1041,6 +1062,21 @@ BOOST_AUTO_TEST_CASE(phenom_vicinity_blowing)
     Metar::Phenom::phenom::SNOW);
     BOOST_CHECK(metar.Phenomenon(0).Vicinity() == true);
     BOOST_CHECK(metar.Phenomenon(0).Blowing() == true);
+}
+
+BOOST_AUTO_TEST_CASE(phenom_tempo)
+{
+    Metar metar("EDDH VCBLSN TEMPO SHSN");
+  
+    BOOST_CHECK(metar.NumPhenomena() == 2);
+    BOOST_CHECK(metar.Phenomenon(0)[0] == Metar::Phenom::phenom::SNOW);
+    BOOST_CHECK(metar.Phenomenon(0).Vicinity() == true);
+    BOOST_CHECK(metar.Phenomenon(0).Blowing() == true);
+    BOOST_CHECK(metar.Phenomenon(0).Temporary() == false);
+    
+    BOOST_CHECK(metar.Phenomenon(1)[0] == Metar::Phenom::phenom::SHOWER);
+    BOOST_CHECK(metar.Phenomenon(1)[1] == Metar::Phenom::phenom::SNOW);
+    BOOST_CHECK(metar.Phenomenon(1).Temporary() == true);
 }
 
 BOOST_AUTO_TEST_CASE(real_METAR_1)

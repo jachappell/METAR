@@ -241,17 +241,20 @@ int main(int argc, char **argv)
     for (unsigned int i = 0 ; i < metar.NumCloudLayers() ; i++)
     {
       auto layer = metar.Layer(i);
-      cout << sky_conditions[static_cast<int>(layer->Cover())];
-      if (layer->hasAltitude())
+      if (!layer->Temporary())
       {
-        cout << ": " << layer->Altitude() << " feet";
-        if (layer->hasCloudType())
+        cout << sky_conditions[static_cast<int>(layer->Cover())];
+        if (layer->hasAltitude())
         {
-          cout << " (" << cloud_types[static_cast<int>(layer->CloudType())] 
-               << ")";
+          cout << ": " << layer->Altitude() << " feet";
+          if (layer->hasCloudType())
+          {
+            cout << " (" << cloud_types[static_cast<int>(layer->CloudType())] 
+                 << ")";
+          }
         }
+        cout << endl;
       }
-      cout << endl;
     }
 
     return 0;
