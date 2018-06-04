@@ -111,6 +111,106 @@ private:
     type _type;
 };
 
+class PhenomImpl : public Metar::Phenom 
+{
+public:
+  PhenomImpl(bool tempo,
+#ifndef NO_SHARED_PTR
+             vector<phenom>& p,
+#else
+             const phenom *p,
+             unsigned int num_phenom,
+#endif
+             intensity i = intensity::NORMAL,
+             bool blowing = false,
+             bool freezing = false,
+             bool drifting = false,
+             bool vicinity = false,
+             bool partial = false,
+             bool shallow = false,
+             bool patches = false)
+#ifndef NO_SHARED_PTR
+    : _phenoms(p)
+#else
+    : _num_phenom(num_phenom)
+#endif
+    , _intensity(i)
+    , _blowing(blowing)
+    , _freezing(freezing)
+    , _drifting(drifting)
+    , _vicinity(vicinity)
+    , _partial(partial)
+    , _shallow(shallow)
+    , _patches(patches)
+    , _tempo(tempo)
+  {
+#ifdef NO_SHARED_PTR
+    for (unsigned int i = 0 ; i < _num_phenom ; i++)
+    {
+      _phenoms[i] = p[i];
+    }
+#endif
+  }
+
+  PhenomImpl(const Phenom&) = delete;
+  PhenomImpl& operator=(const Phenom&) = delete;
+
+  ~PhenomImpl() = default;
+
+  size_t NumPhenom() const 
+  { 
+#ifdef NO_SHARED_PTR
+    return _num_phenom;
+#else
+    return _phenoms.size();
+#endif
+  }
+
+  virtual phenom
+#ifndef NO_SHARED_PTR
+  operator[](typename vector<Phenom>::size_type
+#else
+  operator[](unsigned int
+#endif
+                        idx) const
+  {
+    if (idx < NumPhenom())
+    {
+      return _phenoms[idx];
+    }
+
+    return phenom::NONE;
+  }
+
+  virtual intensity Intensity() const { return _intensity; }
+  virtual bool Blowing() const { return _blowing; }
+  virtual bool Freezing() const { return _freezing; }
+  virtual bool Drifting() const { return _drifting; }
+  virtual bool Vicinity() const { return _vicinity; }
+  virtual bool Partial() const { return _partial; }
+  virtual bool Shallow() const { return _shallow; }
+  virtual bool Patches() const { return _patches; }
+  virtual bool Temporary() const { return _tempo; }
+
+private:
+#ifndef NO_SHARED_PTR
+  vector<phenom> _phenoms;
+#else
+  phenom _phenoms[4];
+  size_t _num_phenom;
+#endif
+  intensity _intensity;
+  bool _blowing;
+  bool _freezing;
+  bool _drifting;
+  bool _vicinity;
+  bool _shower;
+  bool _partial;
+  bool _shallow;
+  bool _patches;
+  bool _tempo;
+};
+
 Metar::Metar()
   : _message_type(message_type::undefined)
   , _day(_INTEGER_UNDEFINED)
@@ -147,7 +247,7 @@ Metar::Metar()
 
 #ifdef NO_SHARED_PTR
   _layers = new SkyCondition*[_MAX_CLOUD_LAYERS];
-  _phenomena = new Phenom[_MAX_PHENOM];
+  _phenomena = new Phenom*[_MAX_PHENOM];
 #endif
 }
 
@@ -169,6 +269,12 @@ Metar::~Metar()
     delete _layers[i];
   }
   delete[] _layers;
+
+  for (size_t i = 0 ; i < _num_phenomena ; i++)
+  {
+    delete _phenomena[i];
+  }
+
   delete[] _phenomena;
 }
 #endif
@@ -555,7 +661,7 @@ void Metar::parse_cloud_layer(const char *str)
       {
 #ifndef NO_SHARED_PTR
         _layers.push_back(
-            std::make_shared<SkyConditionImpl>(_tempo,
+            make_shared<SkyConditionImpl>(_tempo,
                 static_cast<SkyCondition::cover>(i)));
 #else
         _layers[_num_layers++] =
@@ -567,7 +673,7 @@ void Metar::parse_cloud_layer(const char *str)
       {
 #ifndef NO_SHARED_PTR
         _layers.push_back(
-            std::make_shared<SkyConditionImpl>(_tempo,
+            make_shared<SkyConditionImpl>(_tempo,
                 static_cast<SkyCondition::cover>(i), atoi(str + 3) * 100));
 #else
         _layers[_num_layers++] =
@@ -588,7 +694,7 @@ void Metar::parse_cloud_layer(const char *str)
         } 
 #ifndef NO_SHARED_PTR
         _layers.push_back(
-            std::make_shared<SkyConditionImpl>(_tempo,
+            make_shared<SkyConditionImpl>(_tempo,
                 static_cast<SkyCondition::cover>(i), atoi(str + 3) * 100, t));
 #else
         _layers[_num_layers++] =
@@ -905,7 +1011,7 @@ void Metar::parse_phenom(const char *str)
 #ifndef NO_SHARED_PTR
   if (p.size() > 0)
   {
-    _phenomena.push_back(Metar::Phenom(_tempo,
+    _phenomena.push_back(make_shared<PhenomImpl>(_tempo,
                                        p,
                                        inten,
                                        blowing,
@@ -918,7 +1024,7 @@ void Metar::parse_phenom(const char *str)
 #else
   if (idx > 0)
   {
-    _phenomena[_num_phenomena++] = Metar::Phenom(_temp,
+    _phenomena[_num_phenomena++] = new PhenomImpl(_temp,
                                                  p,
                                                  idx,
                                                  inten,
