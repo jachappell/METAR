@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2018 James A. Chappell
+// Copyright (c) 2018 James A. Chappell (rlrrlrll@gmail.com)
 //
 // METAR decoder
 //
@@ -26,220 +26,194 @@ const unsigned int Metar::_MAX_PHENOM = 16;
 
 namespace
 {
-    const char *WIND_SPEED_KT = "KT";
-    const char *WIND_SPEED_MPS = "MPS";
-    const char *WIND_SPEED_KPH = "KPH";
+  const char *WIND_SPEED_KT = "KT";
+  const char *WIND_SPEED_MPS = "MPS";
+  const char *WIND_SPEED_KPH = "KPH";
 
-    const char *VIS_UNITS_SM = "SM";
+  const char *VIS_UNITS_SM = "SM";
 
-    const char *BR = "BR";
-    const char *DS = "DS";
-    const char *DU = "DU";
-    const char *DZ = "DZ";
-    const char *FC = "FC";
-    const char *FG = "FG";
-    const char *FU = "FU";
-    const char *GR = "GR";
-    const char *GS = "GS";
-    const char *HZ = "HZ";
-    const char *IC = "IC";
-    const char *PE = "PE";
-    const char *PL = "PL"; 
-    const char *PO = "PO"; 
-    const char *PY = "PY";
-    const char *RA = "RA";
-    const char *SA = "SA";
-    const char *SG = "SG";
-    const char *SH = "SH";
-    const char *SN = "SN";
-    const char *SQ = "SQ";
-    const char *SS = "SS"; 
-    const char *TS = "TS";
-    const char *UP = "UP";
-    const char *VA = "VA";
-
-    const char *sky_conditions[] =
-    {
-      "SKC",
-      "CLR",
-      "NSC",
-      "FEW",
-      "SCT",
-      "BKN",
-      "OVC"
-    };
-    const auto NUM_LAYERS =
+  const char *sky_conditions[] =
+  {
+    "SKC",
+    "CLR",
+    "NSC",
+    "FEW",
+    "SCT",
+    "BKN",
+    "OVC"
+  };
+  const auto NUM_LAYERS =
       sizeof(sky_conditions) / sizeof(sky_conditions[0]);
 
-    const char *cloud_types[] =
-    {
-      "TCU",
-      "CB",
-      "ACC" 
-    };
-    const auto NUM_CLOUDS =
+  const char *cloud_types[] =
+  {
+    "TCU",
+    "CB",
+    "ACC" 
+  };
+  const auto NUM_CLOUDS =
       sizeof(cloud_types) / sizeof(cloud_types[0]);
     
-        bool match(const char *pattern, const char *str,
-        bool (*f)(size_t, size_t))
+  bool match(const char *pattern, const char *str,
+      bool (*f)(size_t, size_t))
+  {
+    size_t len = strlen(pattern);
+    if (str && f(len, strlen(str)))
     {
-      size_t len = strlen(pattern);
-      if (str && f(len, strlen(str)))
+      for (size_t i = 0 ; i < len ; i++)
       {
-        for (size_t i = 0 ; i < len ; i++)
+        switch(pattern[i])
         {
-          switch(pattern[i])
-          {
-            case '#':
-              if (!isdigit(str[i])) return false;
-              break;
+          case '#':
+            if (!isdigit(str[i])) return false;
+            break;
 
-            case '$':
-              if (!isalpha(str[i])) return false;
-              break;
+          case '$':
+            if (!isalpha(str[i])) return false;
+            break;
 
-            default:
-              if (pattern[i] != str[i]) return false;
-              break;
-          }
+          default:
+            if (pattern[i] != str[i]) return false;
+            break;
         }
-
-        return true;
       }
 
-      return false;
+      return true;
     }
 
-    inline bool match(const char *pattern, const char *str)
-    {
-      return match(pattern, str, [](size_t a, size_t b) { return a == b; });
-    }  
+    return false;
+  }
 
-    inline bool starts_with(const char *pattern, const char *str)
-    {
-      return match(pattern, str, [](size_t a, size_t b) { return a <= b; });
-    }  
+  inline bool match(const char *pattern, const char *str)
+  {
+    return match(pattern, str, [](size_t a, size_t b) { return a == b; });
+  }  
 
-    inline bool is_message_type(const char *str)
-    {
-      return !strcmp(str, "METAR") || !strcmp(str, "SPECI");
+  inline bool starts_with(const char *pattern, const char *str)
+  {
+    return match(pattern, str, [](size_t a, size_t b) { return a <= b; });
+  }  
+
+  inline bool is_message_type(const char *str)
+  {
+    return !strcmp(str, "METAR") || !strcmp(str, "SPECI");
+  }
+
+  inline bool is_icao(const char *str)
+  {
+    return match("$$$$", str);
+  }
+
+  inline bool is_ot(const char *str)
+  {
+    return match("######Z", str);
+  }
+
+  inline bool is_wind(const char *str)
+  {
+    return starts_with("#####", str) 
+        || starts_with("#####G##", str) 
+        || starts_with("######G###", str)
+        || starts_with("VRB", str);
+  }
+
+  inline bool is_wind_var(const char *str)
+  {
+    return match("###V###", str);
+  }
+
+  inline bool is_vis(const char *str)
+  {
+    if (!strcmp(str, "CAVOK"))
+      return true;
+
+    const char *p = strstr(str, VIS_UNITS_SM);
+    if (!p)
+    {  
+      return match("####", str);
     }
 
-    inline bool is_icao(const char *str)
+    auto len = strlen(str); 
+    if ((str + len - p) == 2)
     {
-      return match("$$$$", str);
-    }
-
-    inline bool is_ot(const char *str)
-    {
-      return match("######Z", str);
-    }
-
-    inline bool is_wind(const char *str)
-    {
-      return starts_with("#####", str) 
-          || starts_with("#####G##", str) 
-          || starts_with("######G###", str)
-          || starts_with("VRB", str);
-    }
-
-    inline bool is_wind_var(const char *str)
-    {
-      return match("###V###", str);
-    }
-
-    inline bool is_vis(const char *str)
-    {
-      if (!strcmp(str, "CAVOK"))
-        return true;
-
-      const char *p = strstr(str, VIS_UNITS_SM);
-      if (!p)
-      {  
-        return match("####", str);
-      }
-
-      auto len = strlen(str); 
-      if ((str + len - p) == 2)
+      if (!isdigit(str[0]) && (str[0] != 'M')) return false;
+      for (size_t i = 1 ; i < len - 2 ; i++)
       {
-        if (!isdigit(str[0]) && (str[0] != 'M')) return false;
-        for (size_t i = 1 ; i < len - 2 ; i++)
-        {
-          if (!isdigit(str[i]) && str[i] != '/') return false;
-        }
+        if (!isdigit(str[i]) && str[i] != '/') return false;
+      }
 
+      return true;
+    }
+
+    return false;
+  }
+
+  inline bool is_cloud_layer(const char *str)
+  {
+    for (size_t i = 0 ; i < NUM_LAYERS ; i++)
+    {
+      if (starts_with(sky_conditions[i], str))
         return true;
-      }
-
-      return false;
     }
 
-    inline bool is_cloud_layer(const char *str)
-    {
-      for (size_t i = 0 ; i < NUM_LAYERS ; i++)
-      {
-        if (starts_with(sky_conditions[i], str))
-            return true;
-      }
+    return false;
+  }
 
-      return false;
-    }
+  inline bool is_vert_vis(const char *str)
+  {
+    return match("VV###", str);
+  }
 
-    inline bool is_vert_vis(const char *str)
-    {
-      return match("VV###", str);
-    }
+  inline bool is_temp(const char *str)
+  {
+    return match("##/##", str) 
+      || match("##/M##", str) 
+      || match("M##/M##", str)
+      || match("##/", str)
+      || match("M##/", str);
+  }
 
-    inline bool is_temp(const char *str)
-    {
-      return match("##/##", str) 
-        || match("##/M##", str) 
-        || match("M##/M##", str)
-        || match("##/", str)
-        || match("M##/", str);
-    }
+  inline bool is_altA(const char *str)
+  {
+    return match("A####", str);
+  }
 
-    inline bool is_altA(const char *str)
-    {
-      return match("A####", str);
-    }
+  inline bool is_altQ(const char *str)
+  {
+    return match("Q####", str);
+  }
 
-    inline bool is_altQ(const char *str)
-    {
-      return match("Q####", str);
-    }
+  inline bool is_rmk(const char *str)
+  {
+    return strcmp(str, "RMK") == 0;
+  }
 
-    inline bool is_rmk(const char *str)
-    {
-      return strcmp(str, "RMK") == 0;
-    }
+  inline bool is_tempo(const char *str)
+  {
+    return strcmp(str, "TEMPO") == 0;
+  }
 
-    inline bool is_tempo(const char *str)
-    {
-      return strcmp(str, "TEMPO") == 0;
-    }
+  inline bool is_slp(const char *str)
+  {
+    return match("SLP###", str);
+  }
 
-    inline bool is_slp(const char *str)
-    {
-      return match("SLP###", str);
-    }
-
-    inline bool is_tempNA(const char *str)
-    {
-      return match("T########", str);
-    }
+  inline bool is_tempNA(const char *str)
+  {
+    return match("T########", str);
+  }
     
-    inline int temp(char *val)
-    {
-      if (val[0] == 'M') val[0] = '-';
-      return atoi(val);
-    }
+  inline int temp(char *val)
+  {
+    if (val[0] == 'M') val[0] = '-';
+    return atoi(val);
+  }
     
-    inline double tempNA(char *val)
-    {
-      if (val[0] == '1') val[0] = '-';
-      return atof(val) / 10.0;
-    }
+  inline double tempNA(char *val)
+  {
+    if (val[0] == '1') val[0] = '-';
+    return atof(val) / 10.0;
+  }
 }
 
 class SkyConditionImpl : public Metar::SkyCondition
@@ -275,105 +249,6 @@ private:
     type _type;
 };
 
-class PhenomImpl : public Metar::Phenom 
-{
-public:
-  PhenomImpl(bool tempo,
-#ifndef NO_SHARED_PTR
-             vector<phenom>& p,
-#else
-             const phenom *p,
-             unsigned int num_phenom,
-#endif
-             intensity i = intensity::NORMAL,
-             bool blowing = false,
-             bool freezing = false,
-             bool drifting = false,
-             bool vicinity = false,
-             bool partial = false,
-             bool shallow = false,
-             bool patches = false)
-#ifndef NO_SHARED_PTR
-    : _phenoms(p)
-#else
-    : _num_phenom(num_phenom)
-#endif
-    , _intensity(i)
-    , _blowing(blowing)
-    , _freezing(freezing)
-    , _drifting(drifting)
-    , _vicinity(vicinity)
-    , _partial(partial)
-    , _shallow(shallow)
-    , _patches(patches)
-    , _tempo(tempo)
-  {
-#ifdef NO_SHARED_PTR
-    for (unsigned int i = 0 ; i < _num_phenom ; i++)
-    {
-      _phenoms[i] = p[i];
-    }
-#endif
-  }
-
-  PhenomImpl(const Phenom&) = delete;
-  PhenomImpl& operator=(const Phenom&) = delete;
-
-  ~PhenomImpl() = default;
-
-  unsigned int NumPhenom() const 
-  { 
-#ifdef NO_SHARED_PTR
-    return _num_phenom;
-#else
-    return _phenoms.size();
-#endif
-  }
-
-  virtual phenom
-#ifndef NO_SHARED_PTR
-  operator[](typename vector<Phenom>::size_type
-#else
-  operator[](unsigned int
-#endif
-                        idx) const
-  {
-    if (idx < NumPhenom())
-    {
-      return _phenoms[idx];
-    }
-
-    return phenom::NONE;
-  }
-
-  virtual intensity Intensity() const { return _intensity; }
-  virtual bool Blowing() const { return _blowing; }
-  virtual bool Freezing() const { return _freezing; }
-  virtual bool Drifting() const { return _drifting; }
-  virtual bool Vicinity() const { return _vicinity; }
-  virtual bool Partial() const { return _partial; }
-  virtual bool Shallow() const { return _shallow; }
-  virtual bool Patches() const { return _patches; }
-  virtual bool Temporary() const { return _tempo; }
-
-private:
-#ifndef NO_SHARED_PTR
-  vector<phenom> _phenoms;
-#else
-  phenom _phenoms[4];
-  size_t _num_phenom;
-#endif
-  intensity _intensity;
-  bool _blowing;
-  bool _freezing;
-  bool _drifting;
-  bool _vicinity;
-  bool _shower;
-  bool _partial;
-  bool _shallow;
-  bool _patches;
-  bool _tempo;
-};
 
 Metar::Metar()
   : _message_type(message_type::undefined)
@@ -754,296 +629,15 @@ void Metar::parse_alt(const char *str)
 
 void Metar::parse_phenom(const char *str)
 {
-#ifndef NO_SHARED_PTR
-  vector<Metar::Phenom::phenom> p;
-#else
-  unsigned int idx = 0;
-  Metar::Phenom::phenom p[4];
-#endif
-  Metar::Phenom::intensity inten = Metar::Phenom::intensity::NORMAL;
-  bool blowing = false;
-  bool freezing = false;
-  bool drifting = false;
-  bool vicinity = false;
-  bool partial = false;
-  bool shallow = false;
-  bool patches = false;
 
-  if (!isalpha(str[0]))
-  {
-    switch(str[0])
-    {
-      case '-':
-        inten =  Metar::Phenom::intensity::LIGHT;
-        break;
+  auto p = Phenom::Create(str, _tempo);
 
-      case '+':
-        inten =  Metar::Phenom::intensity::HEAVY;
-        break;
-
-      default:
-        return;
-    }
-    str++;
-  }
-
-  if (!starts_with("$$", str))
+  if (p != nullptr)
   {
-    return;
-  }
-  
-  while (strlen(str) > 1)
-  {
-    if (!strncmp(str, "VC", 2))
-    {
-      vicinity = true;
-    }
-    else if (!strncmp(str, "BL", 2))
-    {
-      blowing = true;
-    }
-    else if (!strncmp(str, "DR", 2))
-    {
-      drifting = true;
-    }
-    else if (!strncmp(str, "FZ", 2))
-    {
-      freezing = true;
-    }
-    else if (!strncmp(str, "PR", 2))
-    {
-      partial = true;
-    }
-    else if (!strncmp(str, "MI", 2))
-    {
-      shallow = true;
-    }
-    else if (!strncmp(str, "BC", 2))
-    {
-      patches = true;
-    }
-    else if (!strncmp(str, TS, 2))
-    {
 #ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::THUNDER_STORM);
+    _phenomena.push_back(p);
 #else
-      p[idx++] = Metar::Phenom::phenom::THUNDER_STORM;
-#endif
-    }
-    else if (!strncmp(str, SH, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::SHOWER);
-#else
-      p[idx++] = Metar::Phenom::phenom::SHOWER;
-#endif
-    }
-    else if (!strncmp(str, BR, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::MIST);
-#else
-      p[idx++] = Metar::Phenom::phenom::MIST;
-#endif
-    }
-    else if (!strncmp(str, DS, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::DUST_STORM);
-#else
-      p[idx++] = Metar::Phenom::phenom::DUST_STORM;
-#endif
-    }
-    else if (!strncmp(str, DU, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::DUST);
-#else
-      p[idx++] = Metar::Phenom::phenom::DUST;
-#endif
-    }
-    else if (!strncmp(str, DZ, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::DRIZZLE);
-#else
-      p[idx++] = Metar::Phenom::phenom::DRIZZLE;
-#endif
-    }
-    else if (!strncmp(str, FC, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::FUNNEL_CLOUD);
-#else
-      p[idx++] = Metar::Phenom::phenom::FUNNEL_CLOUD;
-#endif
-    }
-    else if (!strncmp(str, FG, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::FOG);
-#else
-      p[idx++] = Metar::Phenom::phenom::FOG;
-#endif
-    }
-    else if (!strncmp(str, FU, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::SMOKE);
-#else
-      p[idx++] = Metar::Phenom::phenom::SMOKE;
-#endif
-    }
-    else if (!strncmp(str, GR, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::HAIL);
-#else
-      p[idx++] = Metar::Phenom::phenom::HAIL;
-#endif
-    }
-    else if (!strncmp(str, GS, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::SMALL_HAIL);
-#else
-      p[idx++] = Metar::Phenom::phenom::SMALL_HAIL;
-#endif
-    }
-    else if (!strncmp(str, HZ, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::HAZE);
-#else
-      p[idx++] = Metar::Phenom::phenom::HAZE;
-#endif
-    }
-    else if (!strncmp(str, IC, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::ICE_CRYSTALS);
-#else
-      p[idx++] = Metar::Phenom::phenom::ICE_CRYSTALS;
-#endif
-    }
-    else if (!strncmp(str, PE, 2) || !strncmp(str, PL, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::ICE_PELLETS);
-#else
-      p[idx++] = Metar::Phenom::phenom::ICE_PELLETS;
-#endif
-    }
-    else if (!strncmp(str, PO, 2)) 
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::DUST_SAND_WHORLS);
-#else
-      p[idx++] = Metar::Phenom::phenom::DUST_SAND_WHORLS;
-#endif
-    }
-    else if (!strncmp(str, PY, 2)) 
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::SPRAY);
-#else
-      p[idx++] = Metar::Phenom::phenom::SPRAY;
-#endif
-    }
-    else if (!strncmp(str, RA, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::RAIN);
-#else
-      p[idx++] = Metar::Phenom::phenom::RAIN;
-#endif
-    }
-    else if (!strncmp(str, SA, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::SAND);
-#else
-      p[idx++] = Metar::Phenom::phenom::SAND;
-#endif
-    }
-    else if (!strncmp(str, SG, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::SNOW_GRAINS);
-#else
-      p[idx++] = Metar::Phenom::phenom::SNOW_GRAINS;
-#endif
-    }
-    else if (!strncmp(str, SN, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::SNOW);
-#else
-      p[idx++] = Metar::Phenom::phenom::SNOW;
-#endif
-    }
-    else if (!strncmp(str, SQ, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::SQUALLS);
-#else
-      p[idx++] = Metar::Phenom::phenom::SQUALLS;
-#endif
-    }
-    else if (!strncmp(str, SS, 2)) 
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::SAND_STORM);
-#else
-      p[idx++] = Metar::Phenom::phenom::SAND_STORM;
-#endif
-    }
-    else if (!strncmp(str, UP, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::UNKNOWN_PRECIP);
-#else
-      p[idx++] = Metar::Phenom::phenom::UNKNOWN_PRECIP;
-#endif
-    }
-    else if (!strncmp(str, VA, 2))
-    {
-#ifndef NO_SHARED_PTR
-      p.push_back(Metar::Phenom::phenom::VOLCANIC_ASH);
-#else
-      p[idx++] = Metar::Phenom::phenom::VOLCANIC_ASH;
-#endif
-    }
-    str += 2;
-  }
-
-#ifndef NO_SHARED_PTR
-  if (p.size() > 0)
-  {
-    _phenomena.push_back(make_shared<PhenomImpl>(_tempo,
-                                       p,
-                                       inten,
-                                       blowing,
-                                       freezing,
-                                       drifting,
-                                       vicinity,
-                                       partial,
-                                       shallow,
-                                       patches));
-#else
-  if (idx > 0)
-  {
-    _phenomena[_num_phenomena++] = new PhenomImpl(_temp,
-                                                 p,
-                                                 idx,
-                                                 inten,
-                                                 blowing,
-                                                 freezing,
-                                                 drifting,
-                                                 vicinity,
-                                                 partial,
-                                                 shallow,
-                                                 patches);
+    _phenomena[_num_phenomena++] = p;
 #endif
   }
 }

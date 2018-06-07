@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2018 James A. Chappell
+// Copyright (c) 2018 James A. Chappell (rlrrlrll@gmail.com)
 //
 // Units conversion
 //

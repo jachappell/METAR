@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2018 James A. Chappell
+// Copyright (c) 2018 James A. Chappell (rlrrlrll@gmail.com)
 //
 // METAR decoder
 //
@@ -15,6 +15,8 @@
 #include <memory>
 #include <vector>
 #endif
+
+#include "Phenom.h"
 
 namespace Storage_B
 {
@@ -43,68 +45,6 @@ namespace Storage_B
         undefined = -1,
         M,  // meters
         SM  // statute miles
-      };
-
-      class Phenom
-      {
-      public:
-        enum class phenom
-        {
-          NONE,
-          MIST,                   // BR
-          DUST_STORM,             // DS
-          DUST,                   // DU
-          DRIZZLE,                // DZ
-          FUNNEL_CLOUD,           // FC
-          FOG,                    // FG 
-          SMOKE,                  // FU
-          HAIL,                   // GR
-          SMALL_HAIL,             // GS
-          HAZE,                   // HZ
-          ICE_CRYSTALS,           // IC
-          ICE_PELLETS,            // PE
-          DUST_SAND_WHORLS,       // PO
-          SPRAY,                  // PY
-          RAIN,                   // RA
-          SAND,                   // SA
-          SNOW_GRAINS,            // SG
-          SHOWER,                 // SH
-          SNOW,                   // SN
-          SQUALLS,                // SQ
-          SAND_STORM,             // SS
-          THUNDER_STORM,          // TS
-          UNKNOWN_PRECIP,         // UP
-          VOLCANIC_ASH,           // VA
-        };
-
-        enum class intensity
-        {
-          LIGHT = -1,
-          NORMAL,
-          HEAVY
-        };
-
-        virtual ~Phenom() = default;
-
-        virtual unsigned int NumPhenom() const = 0;
-
-        virtual phenom
-#ifndef NO_SHARED_PTR
-        operator[](typename std::vector<Phenom>::size_type
-#else
-        operator[](unsigned int
-#endif
-                        idx) const = 0;
-        
-        virtual intensity Intensity() const = 0;
-        virtual bool Blowing() const = 0;
-        virtual bool Freezing() const = 0;
-        virtual bool Drifting() const = 0;
-        virtual bool Vicinity() const = 0;
-        virtual bool Partial() const = 0;
-        virtual bool Shallow() const = 0;
-        virtual bool Patches() const = 0;
-        virtual bool Temporary() const = 0;
       };
 
       //

@@ -9,7 +9,7 @@ CFLAGS = -Wall -I include
 $(shell mkdir -p $(LIBDIR)) 
 $(shell mkdir -p $(OBJDIR)) 
 
-OBJS = $(OBJDIR)/Metar.o $(OBJDIR)/Utils.o
+OBJS = $(OBJDIR)/Metar.o $(OBJDIR)/Phenom.o $(OBJDIR)/Utils.o
 
 $(LIB) : $(OBJS)
 	$(AR) r $(LIB) $(OBJS) 

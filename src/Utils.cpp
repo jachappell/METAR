@@ -1,3 +1,8 @@
+//
+// Copyright (c) 2018 James A. Chappell (rlrrlrll@gmail.com)
+//
+// Misc. weather utilities
+//
 #include "Utils.h"
 
 #include <math.h>
