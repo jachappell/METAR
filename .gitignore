@@ -28,5 +28,8 @@
 *.out
 *.app
 
+#dirs
+nbproject
+
 # vim
 *.swp

@@ -15,7 +15,7 @@
 
 using namespace std;
 using namespace Storage_B::Weather;
-
+   
 const int Metar::_INTEGER_UNDEFINED = INT_MIN;
 const double Metar::_DOUBLE_UNDEFINED = DBL_MAX;
 
@@ -24,59 +24,223 @@ const unsigned int Metar::_MAX_CLOUD_LAYERS = 6;
 const unsigned int Metar::_MAX_PHENOM = 16;
 #endif
 
-static const char *WIND_SPEED_KT = "KT";
-static const char *WIND_SPEED_MPS = "MPS";
-static const char *WIND_SPEED_KPH = "KPH";
-
-static const char *VIS_UNITS_SM = "SM";
-
-static const char *BR = "BR";
-static const char *DS = "DS";
-static const char *DU = "DU";
-static const char *DZ = "DZ";
-static const char *FC = "FC";
-static const char *FG = "FG";
-static const char *FU = "FU";
-static const char *GR = "GR";
-static const char *GS = "GS";
-static const char *HZ = "HZ";
-static const char *IC = "IC";
-static const char *PE = "PE";
-static const char *PL = "PL"; 
-static const char *PO = "PO"; 
-static const char *PY = "PY";
-static const char *RA = "RA";
-static const char *SA = "SA";
-static const char *SG = "SG";
-static const char *SH = "SH";
-static const char *SN = "SN";
-static const char *SQ = "SQ";
-static const char *SS = "SS"; 
-static const char *TS = "TS";
-static const char *UP = "UP";
-static const char *VA = "VA";
-
-static const char *sky_conditions[] =
+namespace
 {
-  "SKC",
-  "CLR",
-  "NSC",
-  "FEW",
-  "SCT",
-  "BKN",
-  "OVC"
-};
-static const auto NUM_LAYERS =
-  sizeof(sky_conditions) / sizeof(sky_conditions[0]);
+    const char *WIND_SPEED_KT = "KT";
+    const char *WIND_SPEED_MPS = "MPS";
+    const char *WIND_SPEED_KPH = "KPH";
 
-static const char *cloud_types[] =
-{
-  "TCU",
-  "CB",
-  "ACC" 
-};
-static const auto NUM_CLOUDS =
-  sizeof(cloud_types) / sizeof(cloud_types[0]);
+    const char *VIS_UNITS_SM = "SM";
+
+    const char *BR = "BR";
+    const char *DS = "DS";
+    const char *DU = "DU";
+    const char *DZ = "DZ";
+    const char *FC = "FC";
+    const char *FG = "FG";
+    const char *FU = "FU";
+    const char *GR = "GR";
+    const char *GS = "GS";
+    const char *HZ = "HZ";
+    const char *IC = "IC";
+    const char *PE = "PE";
+    const char *PL = "PL"; 
+    const char *PO = "PO"; 
+    const char *PY = "PY";
+    const char *RA = "RA";
+    const char *SA = "SA";
+    const char *SG = "SG";
+    const char *SH = "SH";
+    const char *SN = "SN";
+    const char *SQ = "SQ";
+    const char *SS = "SS"; 
+    const char *TS = "TS";
+    const char *UP = "UP";
+    const char *VA = "VA";
+
+    const char *sky_conditions[] =
+    {
+      "SKC",
+      "CLR",
+      "NSC",
+      "FEW",
+      "SCT",
+      "BKN",
+      "OVC"
+    };
+    const auto NUM_LAYERS =
+      sizeof(sky_conditions) / sizeof(sky_conditions[0]);
+
+    const char *cloud_types[] =
+    {
+      "TCU",
+      "CB",
+      "ACC" 
+    };
+    const auto NUM_CLOUDS =
+      sizeof(cloud_types) / sizeof(cloud_types[0]);
+    
+        bool match(const char *pattern, const char *str,
+        bool (*f)(size_t, size_t))
+    {
+      size_t len = strlen(pattern);
+      if (str && f(len, strlen(str)))
+      {
+        for (size_t i = 0 ; i < len ; i++)
+        {
+          switch(pattern[i])
+          {
+            case '#':
+              if (!isdigit(str[i])) return false;
+              break;
+
+            case '$':
+              if (!isalpha(str[i])) return false;
+              break;
+
+            default:
+              if (pattern[i] != str[i]) return false;
+              break;
+          }
+        }
+
+        return true;
+      }
+
+      return false;
+    }
+
+    inline bool match(const char *pattern, const char *str)
+    {
+      return match(pattern, str, [](size_t a, size_t b) { return a == b; });
+    }  
+
+    inline bool starts_with(const char *pattern, const char *str)
+    {
+      return match(pattern, str, [](size_t a, size_t b) { return a <= b; });
+    }  
+
+    inline bool is_message_type(const char *str)
+    {
+      return !strcmp(str, "METAR") || !strcmp(str, "SPECI");
+    }
+
+    inline bool is_icao(const char *str)
+    {
+      return match("$$$$", str);
+    }
+
+    inline bool is_ot(const char *str)
+    {
+      return match("######Z", str);
+    }
+
+    inline bool is_wind(const char *str)
+    {
+      return starts_with("#####", str) 
+          || starts_with("#####G##", str) 
+          || starts_with("######G###", str)
+          || starts_with("VRB", str);
+    }
+
+    inline bool is_wind_var(const char *str)
+    {
+      return match("###V###", str);
+    }
+
+    inline bool is_vis(const char *str)
+    {
+      if (!strcmp(str, "CAVOK"))
+        return true;
+
+      const char *p = strstr(str, VIS_UNITS_SM);
+      if (!p)
+      {  
+        return match("####", str);
+      }
+
+      auto len = strlen(str); 
+      if ((str + len - p) == 2)
+      {
+        if (!isdigit(str[0]) && (str[0] != 'M')) return false;
+        for (size_t i = 1 ; i < len - 2 ; i++)
+        {
+          if (!isdigit(str[i]) && str[i] != '/') return false;
+        }
+
+        return true;
+      }
+
+      return false;
+    }
+
+    inline bool is_cloud_layer(const char *str)
+    {
+      for (size_t i = 0 ; i < NUM_LAYERS ; i++)
+      {
+        if (starts_with(sky_conditions[i], str))
+            return true;
+      }
+
+      return false;
+    }
+
+    inline bool is_vert_vis(const char *str)
+    {
+      return match("VV###", str);
+    }
+
+    inline bool is_temp(const char *str)
+    {
+      return match("##/##", str) 
+        || match("##/M##", str) 
+        || match("M##/M##", str)
+        || match("##/", str)
+        || match("M##/", str);
+    }
+
+    inline bool is_altA(const char *str)
+    {
+      return match("A####", str);
+    }
+
+    inline bool is_altQ(const char *str)
+    {
+      return match("Q####", str);
+    }
+
+    inline bool is_rmk(const char *str)
+    {
+      return strcmp(str, "RMK") == 0;
+    }
+
+    inline bool is_tempo(const char *str)
+    {
+      return strcmp(str, "TEMPO") == 0;
+    }
+
+    inline bool is_slp(const char *str)
+    {
+      return match("SLP###", str);
+    }
+
+    inline bool is_tempNA(const char *str)
+    {
+      return match("T########", str);
+    }
+    
+    inline int temp(char *val)
+    {
+      if (val[0] == 'M') val[0] = '-';
+      return atoi(val);
+    }
+    
+    inline double tempNA(char *val)
+    {
+      if (val[0] == '1') val[0] = '-';
+      return atof(val) / 10.0;
+    }
+}
 
 class SkyConditionImpl : public Metar::SkyCondition
 {
@@ -278,155 +442,6 @@ Metar::~Metar()
   delete[] _phenomena;
 }
 #endif
-
-static bool match(const char *pattern, const char *str,
-    bool (*f)(size_t, size_t))
-{
-  size_t len = strlen(pattern);
-  if (str && f(len, strlen(str)))
-  {
-    for (size_t i = 0 ; i < len ; i++)
-    {
-      switch(pattern[i])
-      {
-        case '#':
-          if (!isdigit(str[i])) return false;
-          break;
-
-        case '$':
-          if (!isalpha(str[i])) return false;
-          break;
-
-        default:
-          if (pattern[i] != str[i]) return false;
-          break;
-      }
-    }
-
-    return true;
-  }
-
-  return false;
-}
-
-static inline bool match(const char *pattern, const char *str)
-{
-  return match(pattern, str, [](size_t a, size_t b) { return a == b; });
-}  
-
-static inline bool starts_with(const char *pattern, const char *str)
-{
-  return match(pattern, str, [](size_t a, size_t b) { return a <= b; });
-}  
-
-static inline bool is_message_type(const char *str)
-{
-  return !strcmp(str, "METAR") || !strcmp(str, "SPECI");
-}
-
-static inline bool is_icao(const char *str)
-{
-  return match("$$$$", str);
-}
-
-static inline bool is_ot(const char *str)
-{
-  return match("######Z", str);
-}
-
-static inline bool is_wind(const char *str)
-{
-  return starts_with("#####", str) 
-      || starts_with("#####G##", str) 
-      || starts_with("######G###", str)
-      || starts_with("VRB", str);
-}
-
-static inline bool is_wind_var(const char *str)
-{
-  return match("###V###", str);
-}
-
-static inline bool is_vis(const char *str)
-{
-  if (!strcmp(str, "CAVOK"))
-    return true;
-
-  const char *p = strstr(str, VIS_UNITS_SM);
-  if (!p)
-  {  
-    return match("####", str);
-  }
- 
-  auto len = strlen(str); 
-  if ((str + len - p) == 2)
-  {
-    if (!isdigit(str[0]) && (str[0] != 'M')) return false;
-    for (size_t i = 1 ; i < len - 2 ; i++)
-    {
-      if (!isdigit(str[i]) && str[i] != '/') return false;
-    }
-
-    return true;
-  }
-
-  return false;
-}
-
-static inline bool is_cloud_layer(const char *str)
-{
-  for (size_t i = 0 ; i < NUM_LAYERS ; i++)
-  {
-    if (starts_with(sky_conditions[i], str))
-        return true;
-  }
-
-  return false;
-}
-
-static inline bool is_vert_vis(const char *str)
-{
-  return match("VV###", str);
-}
-
-static inline bool is_temp(const char *str)
-{
-  return match("##/##", str) 
-    || match("##/M##", str) 
-    || match("M##/M##", str)
-    || match("##/", str)
-    || match("M##/", str);
-}
-
-static inline bool is_altA(const char *str)
-{
-  return match("A####", str);
-}
-
-static inline bool is_altQ(const char *str)
-{
-  return match("Q####", str);
-}
-
-static inline bool is_rmk(const char *str)
-{
-  return strcmp(str, "RMK") == 0;
-}
-
-static inline bool is_tempo(const char *str)
-{
-  return strcmp(str, "TEMPO") == 0;
-}
-
-static inline bool is_slp(const char *str)
-{
-  return match("SLP###", str);
-}
-
-static inline bool is_tempNA(const char *str)
-{
-  return match("T########", str);
-}
 
 void Metar::parse(const char *metar_str)
 {
@@ -709,12 +724,6 @@ void Metar::parse_cloud_layer(const char *str)
 void Metar::parse_vert_vis(const char *str)
 {
   _vert_vis = atoi(str + 2) * 100;
-}
-
-static inline int temp(char *val)
-{
-  if (val[0] == 'M') val[0] = '-';
-  return atoi(val);
 }
 
 void Metar::parse_temp(const char *str)
@@ -1042,12 +1051,6 @@ void Metar::parse_phenom(const char *str)
 void Metar::parse_slp(const char *str)
 {
   _slp = (atof(str + 3) / 10.0) + 1000.0;
-}
-
-static inline double tempNA(char *val)
-{
-  if (val[0] == '1') val[0] = '-';
-  return atof(val) / 10.0;
 }
 
 void Metar::parse_tempNA(const char *str)
