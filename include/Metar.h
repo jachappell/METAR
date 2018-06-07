@@ -86,13 +86,13 @@ namespace Storage_B
 
         virtual ~Phenom() = default;
 
-        virtual size_t NumPhenom() const = 0;
+        virtual unsigned int NumPhenom() const = 0;
 
         virtual phenom
 #ifndef NO_SHARED_PTR
         operator[](typename std::vector<Phenom>::size_type
 #else
-        operator[](size_t
+        operator[](unsigned int
 #endif
                         idx) const = 0;
         

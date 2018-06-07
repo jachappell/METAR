@@ -321,7 +321,7 @@ public:
 
   ~PhenomImpl() = default;
 
-  size_t NumPhenom() const 
+  unsigned int NumPhenom() const 
   { 
 #ifdef NO_SHARED_PTR
     return _num_phenom;
