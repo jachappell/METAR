@@ -4,12 +4,10 @@
 // METAR decoder
 //
 
-#ifndef __METAR_H__
-#define __METAR_H__
+#ifndef __STORAGE_B_WEATHER_METAR_H__
+#define __STORAGE_B_WEATHER_METAR_H__
 
-#ifdef ARDUINO
-#define NO_SHARED_PTR
-#endif
+#include "defines.h"
 
 #ifndef NO_SHARED_PTR
 #include <memory>
@@ -17,6 +15,7 @@
 #endif
 
 #include "Phenom.h"
+#include "Clouds.h"
 
 namespace Storage_B
 {
@@ -233,38 +232,6 @@ namespace Storage_B
       double DewPointNA() const { return _fdew; }
       bool hasDewPointNA() const { return _fdew != _DOUBLE_UNDEFINED; }
 
-      class SkyCondition
-      {
-      public:
-        enum class cover
-        {
-          SKC,
-          CLR,
-          NSC,
-          FEW,
-          SCT,
-          BKN,
-          OVC
-        };
-
-        enum class type
-        {
-          undefined = -1,
-          TCU,
-          CB,
-          ACC 
-        };
-
-        virtual ~SkyCondition() = default;
-
-        virtual cover Cover() const = 0;
-        virtual int Altitude() const = 0;
-        virtual bool hasAltitude() const = 0;
-        virtual type CloudType() const = 0;
-        virtual bool hasCloudType() const = 0;
-        virtual bool Temporary() const = 0;
-      };
-
       //
       // Number of Cloud Layers
       //
@@ -283,9 +250,9 @@ namespace Storage_B
       }
 
 #ifndef NO_SHARED_PTR
-      std::shared_ptr<SkyCondition>
+      std::shared_ptr<Clouds>
 #else
-      const SkyCondition *
+      const Clouds *
 #endif
       Layer(unsigned int idx) const
       {
@@ -381,9 +348,9 @@ namespace Storage_B
       bool _cavok;
 
 #ifndef NO_SHARED_PTR
-      std::vector<std::shared_ptr<SkyCondition>>
+      std::vector<std::shared_ptr<Clouds>>
 #else
-      SkyCondition **
+      Clouds **
 #endif
       _layers;
 

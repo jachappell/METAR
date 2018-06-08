@@ -527,7 +527,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_CLR)
   Metar metar("CLR");
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::CLR);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::CLR);
   BOOST_CHECK(!metar.Layer(0)->hasAltitude());
   BOOST_CHECK(!metar.Layer(0)->hasCloudType());
 }
@@ -537,7 +537,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_SKC)
   Metar metar("SKC");
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::SKC);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::SKC);
   BOOST_CHECK(!metar.Layer(0)->hasAltitude());
   BOOST_CHECK(!metar.Layer(0)->hasCloudType());
 }
@@ -547,7 +547,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_NSC)
   Metar metar("NSC");
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::NSC);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::NSC);
   BOOST_CHECK(!metar.Layer(0)->hasAltitude());
   BOOST_CHECK(!metar.Layer(0)->hasCloudType());
 }
@@ -557,7 +557,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_FEW)
   Metar metar("FEW105");
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::FEW);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::FEW);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 10500);
   BOOST_CHECK(!metar.Layer(0)->hasCloudType());
   BOOST_CHECK(!metar.Layer(0)->Temporary());
@@ -568,7 +568,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_SCT)
   Metar metar("SCT045");
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::SCT);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::SCT);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 4500);
   BOOST_CHECK(!metar.Layer(0)->hasCloudType());
 }
@@ -578,7 +578,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_BKN)
   Metar metar("BKN005");
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::BKN);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::BKN);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 500);
   BOOST_CHECK(!metar.Layer(0)->hasCloudType());
 }
@@ -588,7 +588,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_OVC)
   Metar metar("OVC050");
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::OVC);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 5000);
   BOOST_CHECK(!metar.Layer(0)->hasCloudType());
 }
@@ -598,10 +598,10 @@ BOOST_AUTO_TEST_CASE(cloud_layer_2_layers)
   Metar metar("BKN004 OVC008");
   
   BOOST_CHECK(metar.NumCloudLayers() == 2);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::BKN);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::BKN);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 400);
   BOOST_CHECK(!metar.Layer(0)->hasCloudType());
-  BOOST_CHECK(metar.Layer(1)->Cover() ==  Metar::SkyCondition::cover::OVC);
+  BOOST_CHECK(metar.Layer(1)->Cover() ==  Clouds::cover::OVC);
   BOOST_CHECK(metar.Layer(1)->Altitude() == 800);
   BOOST_CHECK(!metar.Layer(1)->hasCloudType());
 }
@@ -611,13 +611,13 @@ BOOST_AUTO_TEST_CASE(cloud_layer_3_layers)
   Metar metar("FEW004 SCT080 OVC120");
   
   BOOST_CHECK(metar.NumCloudLayers() == 3);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::FEW);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::FEW);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 400);
   BOOST_CHECK(!metar.Layer(0)->hasCloudType());
-  BOOST_CHECK(metar.Layer(1)->Cover() == Metar::SkyCondition::cover::SCT);
+  BOOST_CHECK(metar.Layer(1)->Cover() == Clouds::cover::SCT);
   BOOST_CHECK(metar.Layer(1)->Altitude() == 8000);
   BOOST_CHECK(!metar.Layer(1)->hasCloudType());
-  BOOST_CHECK(metar.Layer(2)->Cover() == Metar::SkyCondition::cover::OVC);
+  BOOST_CHECK(metar.Layer(2)->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(metar.Layer(2)->Altitude() == 12000);
   BOOST_CHECK(!metar.Layer(2)->hasCloudType());
 }
@@ -627,15 +627,15 @@ BOOST_AUTO_TEST_CASE(cloud_layer_3_layers_tempo)
   Metar metar("KSTL FEW004 SCT080 TEMPO OVC120");
   
   BOOST_CHECK(metar.NumCloudLayers() == 3);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::FEW);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::FEW);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 400);
   BOOST_CHECK(!metar.Layer(0)->hasCloudType());
   BOOST_CHECK(!metar.Layer(0)->Temporary());
-  BOOST_CHECK(metar.Layer(1)->Cover() == Metar::SkyCondition::cover::SCT);
+  BOOST_CHECK(metar.Layer(1)->Cover() == Clouds::cover::SCT);
   BOOST_CHECK(metar.Layer(1)->Altitude() == 8000);
   BOOST_CHECK(!metar.Layer(1)->hasCloudType());
   BOOST_CHECK(!metar.Layer(1)->Temporary());
-  BOOST_CHECK(metar.Layer(2)->Cover() == Metar::SkyCondition::cover::OVC);
+  BOOST_CHECK(metar.Layer(2)->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(metar.Layer(2)->Altitude() == 12000);
   BOOST_CHECK(!metar.Layer(2)->hasCloudType());
   BOOST_CHECK(metar.Layer(2)->Temporary());
@@ -646,15 +646,15 @@ BOOST_AUTO_TEST_CASE(cloud_layer_3_layers_cloud_types)
   Metar metar("FEW004TCU SCT080CB OVC120ACC");
   
   BOOST_CHECK(metar.NumCloudLayers() == 3);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::FEW);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::FEW);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 400);
-  BOOST_CHECK(metar.Layer(0)->CloudType() ==  Metar::SkyCondition::type::TCU);
-  BOOST_CHECK(metar.Layer(1)->Cover() == Metar::SkyCondition::cover::SCT);
+  BOOST_CHECK(metar.Layer(0)->CloudType() ==  Clouds::type::TCU);
+  BOOST_CHECK(metar.Layer(1)->Cover() == Clouds::cover::SCT);
   BOOST_CHECK(metar.Layer(1)->Altitude() == 8000);
-  BOOST_CHECK(metar.Layer(1)->CloudType() == Metar::SkyCondition::type::CB);
-  BOOST_CHECK(metar.Layer(2)->Cover() ==  Metar::SkyCondition::cover::OVC);
+  BOOST_CHECK(metar.Layer(1)->CloudType() == Clouds::type::CB);
+  BOOST_CHECK(metar.Layer(2)->Cover() ==  Clouds::cover::OVC);
   BOOST_CHECK(metar.Layer(2)->Altitude() == 12000);
-  BOOST_CHECK(metar.Layer(2)->CloudType() == Metar::SkyCondition::type::ACC);
+  BOOST_CHECK(metar.Layer(2)->CloudType() == Clouds::type::ACC);
 }
 
 BOOST_AUTO_TEST_CASE(phenoms)
@@ -1162,7 +1162,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_1)
   BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
 
   BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::OVC);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 1500);
   
   BOOST_CHECK(!metar.hasVerticalVisibility());
@@ -1219,9 +1219,9 @@ BOOST_AUTO_TEST_CASE(real_METAR_2)
   BOOST_CHECK(p.Intensity() == Phenom::intensity::HEAVY);
   
   BOOST_CHECK(metar.NumCloudLayers() == 2);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::BKN);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::BKN);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 2200);
-  BOOST_CHECK(metar.Layer(1)->Cover() ==  Metar::SkyCondition::cover::OVC);
+  BOOST_CHECK(metar.Layer(1)->Cover() ==  Clouds::cover::OVC);
   BOOST_CHECK(metar.Layer(1)->Altitude() == 5000);
   
   BOOST_CHECK(!metar.hasVerticalVisibility());
@@ -1279,7 +1279,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_3)
   BOOST_CHECK(p1.Intensity() == Phenom::intensity::NORMAL);
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::OVC);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 500);
   
   BOOST_CHECK(!metar.hasVerticalVisibility());
@@ -1325,7 +1325,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_4)
   BOOST_CHECK(metar.NumPhenomena() == 0);
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::CLR);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::CLR);
   BOOST_CHECK(!metar.Layer(0)->hasAltitude());
   
   BOOST_CHECK(!metar.hasVerticalVisibility());
@@ -1432,9 +1432,9 @@ BOOST_AUTO_TEST_CASE(real_METAR_6)
   BOOST_CHECK(p1.Intensity() == Phenom::intensity::NORMAL);
   
   BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Metar::SkyCondition::cover::OVC);
+  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 700);
-  BOOST_CHECK(metar.Layer(0)->CloudType() == Metar::SkyCondition::type::CB);
+  BOOST_CHECK(metar.Layer(0)->CloudType() == Clouds::type::CB);
   
   BOOST_CHECK(!metar.hasVerticalVisibility());
 
@@ -1471,9 +1471,9 @@ BOOST_AUTO_TEST_CASE(real_METAR_7)
   BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
   
   BOOST_CHECK(metar.NumCloudLayers() == 2);
-  BOOST_CHECK(metar.Layer(0)->Cover() ==  Metar::SkyCondition::cover::FEW);
+  BOOST_CHECK(metar.Layer(0)->Cover() ==  Clouds::cover::FEW);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 12000);
-  BOOST_CHECK(metar.Layer(1)->Cover() == Metar::SkyCondition::cover::BKN);
+  BOOST_CHECK(metar.Layer(1)->Cover() == Clouds::cover::BKN);
   BOOST_CHECK(metar.Layer(1)->Altitude() == 25000);
   
   BOOST_CHECK(!metar.hasVerticalVisibility());
@@ -1517,11 +1517,11 @@ BOOST_AUTO_TEST_CASE(real_METAR_8)
   BOOST_CHECK(p.Intensity() == Phenom::intensity::LIGHT);
   
   BOOST_CHECK(metar.NumCloudLayers() == 3);
-  BOOST_CHECK(metar.Layer(0)->Cover() ==  Metar::SkyCondition::cover::FEW);
+  BOOST_CHECK(metar.Layer(0)->Cover() ==  Clouds::cover::FEW);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 3400);
-  BOOST_CHECK(metar.Layer(1)->Cover() ==  Metar::SkyCondition::cover::SCT);
+  BOOST_CHECK(metar.Layer(1)->Cover() ==  Clouds::cover::SCT);
   BOOST_CHECK(metar.Layer(1)->Altitude() == 4800);
-  BOOST_CHECK(metar.Layer(2)->Cover() == Metar::SkyCondition::cover::OVC);
+  BOOST_CHECK(metar.Layer(2)->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(metar.Layer(2)->Altitude() == 11000);
   
   BOOST_CHECK(metar.Temperature() == 22);
@@ -1565,10 +1565,10 @@ BOOST_AUTO_TEST_CASE(real_METAR_9)
   BOOST_CHECK(p[1] == Phenom::phenom::RAIN);
   
   BOOST_CHECK(metar.NumCloudLayers() == 2);
-  BOOST_CHECK(metar.Layer(0)->Cover() ==  Metar::SkyCondition::cover::FEW);
+  BOOST_CHECK(metar.Layer(0)->Cover() ==  Clouds::cover::FEW);
   BOOST_CHECK(metar.Layer(0)->Altitude() == 5000);
-  BOOST_CHECK(metar.Layer(0)->CloudType() == Metar::SkyCondition::type::CB);
-  BOOST_CHECK(metar.Layer(1)->Cover() ==  Metar::SkyCondition::cover::OVC);
+  BOOST_CHECK(metar.Layer(0)->CloudType() == Clouds::type::CB);
+  BOOST_CHECK(metar.Layer(1)->Cover() ==  Clouds::cover::OVC);
   BOOST_CHECK(metar.Layer(1)->Altitude() == 9000);
   
   BOOST_CHECK(metar.Temperature() == 6);

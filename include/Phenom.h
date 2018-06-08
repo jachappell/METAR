@@ -4,8 +4,10 @@
 // METAR weather phenomena decoder
 //
 
-#ifndef __PHENOM_H__
-#define __PHENOM_H__
+#ifndef __STORAGE_B_WEATHER_PHENOM_H__
+#define __STORAGE_B_WEATHER_PHENOM_H__
+
+#include "defines.h"
 
 #ifndef NO_SHARED_PTR
 #include <memory>
