@@ -4,8 +4,8 @@
 // Weather utilities
 //
 
-#ifndef __UTILS_H__
-#define __UTILS_H__
+#ifndef __STORAGE_B_WEATHER_UTILS_H__
+#define __STORAGE_B_WEATHER_UTILS_H__
 
 namespace Storage_B 
 {

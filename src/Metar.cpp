@@ -31,28 +31,6 @@ namespace
   const char *WIND_SPEED_KPH = "KPH";
 
   const char *VIS_UNITS_SM = "SM";
-
-  const char *sky_conditions[] =
-  {
-    "SKC",
-    "CLR",
-    "NSC",
-    "FEW",
-    "SCT",
-    "BKN",
-    "OVC"
-  };
-  const auto NUM_LAYERS =
-      sizeof(sky_conditions) / sizeof(sky_conditions[0]);
-
-  const char *cloud_types[] =
-  {
-    "TCU",
-    "CB",
-    "ACC" 
-  };
-  const auto NUM_CLOUDS =
-      sizeof(cloud_types) / sizeof(cloud_types[0]);
     
   bool match(const char *pattern, const char *str,
       bool (*f)(size_t, size_t))
@@ -148,17 +126,6 @@ namespace
     return false;
   }
 
-  inline bool is_cloud_layer(const char *str)
-  {
-    for (size_t i = 0 ; i < NUM_LAYERS ; i++)
-    {
-      if (starts_with(sky_conditions[i], str))
-        return true;
-    }
-
-    return false;
-  }
-
   inline bool is_vert_vis(const char *str)
   {
     return match("VV###", str);
@@ -216,40 +183,6 @@ namespace
   }
 }
 
-class SkyConditionImpl : public Metar::SkyCondition
-{
-public:
-  SkyConditionImpl(bool temp, cover c, int a = INT_MIN,
-                   type t = type::undefined)
-    : _cover(c)
-    , _alt(a)
-    , _tempo(temp)
-    , _type(t)
-  {
-  }
-
-  virtual ~SkyConditionImpl() = default;
-
-  SkyConditionImpl() = delete;
-
-  SkyConditionImpl(const SkyConditionImpl&) = delete;
-  SkyConditionImpl& operator=(const SkyConditionImpl&) = delete;
-
-  virtual cover Cover() const { return _cover; } 
-  virtual int Altitude() const { return _alt; }
-  virtual bool hasAltitude() const { return _alt != INT_MIN; }
-  virtual type CloudType() const { return _type; }
-  virtual bool hasCloudType() const { return _type != type::undefined; }
-  virtual bool Temporary() const { return _tempo; }
-
-private:
-    cover _cover;
-    int _alt;
-    bool _tempo;
-    type _type;
-};
-
-
 Metar::Metar()
   : _message_type(message_type::undefined)
   , _day(_INTEGER_UNDEFINED)
@@ -285,7 +218,7 @@ Metar::Metar()
   _icao[0] = '\0';
 
 #ifdef NO_SHARED_PTR
-  _layers = new SkyCondition*[_MAX_CLOUD_LAYERS];
+  _layers = new Clouds*[_MAX_CLOUD_LAYERS];
   _phenomena = new Phenom*[_MAX_PHENOM];
 #endif
 }
@@ -354,10 +287,6 @@ void Metar::parse(char *metar_str)
     {
       parse_vis(el);
     }
-    else if (is_cloud_layer(el))
-    {
-      parse_cloud_layer(el);
-    } 
     else if (!hasVerticalVisibility() && is_vert_vis(el))
     {
       parse_vert_vis(el);
@@ -392,6 +321,7 @@ void Metar::parse(char *metar_str)
     }
     else if (!_rmk)
     {
+      parse_cloud_layer(el);
       parse_phenom(el);
     }
 
@@ -543,56 +473,15 @@ void Metar::parse_vis(const char *str)
 
 void Metar::parse_cloud_layer(const char *str)
 {
-  for (size_t i = 0 ; i < NUM_LAYERS ; i++)
+  auto c = Clouds::Create(str, _tempo);
+
+  if (c != nullptr)
   {
-    if (starts_with(sky_conditions[i], str))
-    {
-      if (str[3] == '\0')
-      {
 #ifndef NO_SHARED_PTR
-        _layers.push_back(
-            make_shared<SkyConditionImpl>(_tempo,
-                static_cast<SkyCondition::cover>(i)));
+        _layers.push_back(c);
 #else
-        _layers[_num_layers++] =
-            new SkyConditionImpl(_tempo,
-                static_cast<SkyCondition::cover>(i)); 
+        _layers[_num_layers++] = c;
 #endif
-      }
-      else if (str[6] == '\0')
-      {
-#ifndef NO_SHARED_PTR
-        _layers.push_back(
-            make_shared<SkyConditionImpl>(_tempo,
-                static_cast<SkyCondition::cover>(i), atoi(str + 3) * 100));
-#else
-        _layers[_num_layers++] =
-            new SkyConditionImpl(_tempo, static_cast<SkyCondition::cover>(i), 
-                                 atoi(str + 3) * 100);
-#endif
-      }
-      else
-      {
-        SkyCondition::type t = SkyCondition::type::undefined;
-        for (size_t j = 0 ; j < NUM_CLOUDS ; j++)
-        {
-          if (!strcmp(str + 6, cloud_types[j]))
-          {
-            t = static_cast<SkyCondition::type>(j);
-            break;
-          }
-        } 
-#ifndef NO_SHARED_PTR
-        _layers.push_back(
-            make_shared<SkyConditionImpl>(_tempo,
-                static_cast<SkyCondition::cover>(i), atoi(str + 3) * 100, t));
-#else
-        _layers[_num_layers++] =
-            new SkyConditionImpl(_temp, static_cast<SkyCondition::cover>(i), 
-                                 atoi(str + 3) * 100, t);
-#endif
-      }
-    }
   }
 }
 

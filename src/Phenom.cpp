@@ -6,6 +6,7 @@
 #include "Phenom.h"
 
 #include <string.h>
+#include <ctype.h>
 
 using namespace std;
 using namespace Storage_B::Weather;
