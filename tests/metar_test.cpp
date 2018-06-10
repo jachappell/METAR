@@ -15,28 +15,28 @@ using namespace Storage_B::Weather;
 
 BOOST_AUTO_TEST_CASE(uninitialized_observation_time)
 {
-  Metar metar("");
+  auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar.hasDay());
-  BOOST_CHECK(!metar.hasHour());
-  BOOST_CHECK(!metar.hasMinute());
+  BOOST_CHECK(!metar->hasDay());
+  BOOST_CHECK(!metar->hasHour());
+  BOOST_CHECK(!metar->hasMinute());
 }
 
 BOOST_AUTO_TEST_CASE(observation_time)
 {
-  Metar metar("123456Z");
+  auto metar = Metar::Create("123456Z");
 
-  BOOST_CHECK(metar.Day() == 12);
-  BOOST_CHECK(metar.Hour() == 34);
-  BOOST_CHECK(metar.Minute() == 56);
+  BOOST_CHECK(metar->Day() == 12);
+  BOOST_CHECK(metar->Hour() == 34);
+  BOOST_CHECK(metar->Minute() == 56);
 }
 
 BOOST_AUTO_TEST_CASE(uninitialized_temperature)
 {
-  Metar metar("");
+  auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar.hasTemperature());
-  BOOST_CHECK(!metar.hasDewPoint());
+  BOOST_CHECK(!metar->hasTemperature());
+  BOOST_CHECK(!metar->hasDewPoint());
 }
 
 BOOST_AUTO_TEST_CASE(temperature_both_positive1)
@@ -45,13 +45,13 @@ BOOST_AUTO_TEST_CASE(temperature_both_positive1)
   char buffer[8];
   strcpy(buffer, "08/06");
 
-  Metar metar(buffer);
+  auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar.hasTemperature());
-  BOOST_CHECK(metar.hasDewPoint());
+  BOOST_CHECK(metar->hasTemperature());
+  BOOST_CHECK(metar->hasDewPoint());
 
-  BOOST_CHECK(metar.Temperature() == 8);
-  BOOST_CHECK(metar.DewPoint() == 6);
+  BOOST_CHECK(metar->Temperature() == 8);
+  BOOST_CHECK(metar->DewPoint() == 6);
 }
 
 BOOST_AUTO_TEST_CASE(temperature_negative_dew_point)
@@ -59,13 +59,13 @@ BOOST_AUTO_TEST_CASE(temperature_negative_dew_point)
   char buffer[8];
   strcpy(buffer, "01/M01");
   
-  Metar metar(buffer);
+  auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar.hasTemperature());
-  BOOST_CHECK(metar.hasDewPoint());
+  BOOST_CHECK(metar->hasTemperature());
+  BOOST_CHECK(metar->hasDewPoint());
 
-  BOOST_CHECK(metar.Temperature() == 1);
-  BOOST_CHECK(metar.DewPoint() == -1);
+  BOOST_CHECK(metar->Temperature() == 1);
+  BOOST_CHECK(metar->DewPoint() == -1);
 }
 
 BOOST_AUTO_TEST_CASE(temperature_both_negative)
@@ -73,13 +73,13 @@ BOOST_AUTO_TEST_CASE(temperature_both_negative)
   char buffer[8];
   strcpy(buffer, "M14/M15");
 
-  Metar metar(buffer);
+  auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar.hasTemperature());
-  BOOST_CHECK(metar.hasDewPoint());
+  BOOST_CHECK(metar->hasTemperature());
+  BOOST_CHECK(metar->hasDewPoint());
 
-  BOOST_CHECK(metar.Temperature() == -14);
-  BOOST_CHECK(metar.DewPoint() == -15);
+  BOOST_CHECK(metar->Temperature() == -14);
+  BOOST_CHECK(metar->DewPoint() == -15);
 }
 
 BOOST_AUTO_TEST_CASE(temperature_both_positive2)
@@ -87,41 +87,41 @@ BOOST_AUTO_TEST_CASE(temperature_both_positive2)
   char buffer[8];
   strcpy(buffer, "15/14");
 
-  Metar metar(buffer);
+  auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar.hasTemperature());
-  BOOST_CHECK(metar.hasDewPoint());
+  BOOST_CHECK(metar->hasTemperature());
+  BOOST_CHECK(metar->hasDewPoint());
 
-  BOOST_CHECK(metar.Temperature() == 15);
-  BOOST_CHECK(metar.DewPoint() == 14);
+  BOOST_CHECK(metar->Temperature() == 15);
+  BOOST_CHECK(metar->DewPoint() == 14);
 }
 
 BOOST_AUTO_TEST_CASE(temperature_no_dew_positive)
 {
-  Metar metar("15/");
+  auto metar = Metar::Create("15/");
 
-  BOOST_CHECK(metar.hasTemperature());
-  BOOST_CHECK(!metar.hasDewPoint());
+  BOOST_CHECK(metar->hasTemperature());
+  BOOST_CHECK(!metar->hasDewPoint());
 
-  BOOST_CHECK(metar.Temperature() == 15);
+  BOOST_CHECK(metar->Temperature() == 15);
 }
 
 BOOST_AUTO_TEST_CASE(temperature_no_dew_negative)
 {
-  Metar metar("M07/");
+  auto metar = Metar::Create("M07/");
 
-  BOOST_CHECK(metar.hasTemperature());
-  BOOST_CHECK(!metar.hasDewPoint());
+  BOOST_CHECK(metar->hasTemperature());
+  BOOST_CHECK(!metar->hasDewPoint());
 
-  BOOST_CHECK(metar.Temperature() == -7);
+  BOOST_CHECK(metar->Temperature() == -7);
 }
 
 BOOST_AUTO_TEST_CASE(uninitialized_temperatureNA)
 {
-  Metar metar("");
+  auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar.hasTemperatureNA());
-  BOOST_CHECK(!metar.hasDewPointNA());
+  BOOST_CHECK(!metar->hasTemperatureNA());
+  BOOST_CHECK(!metar->hasDewPointNA());
 }
 
 BOOST_AUTO_TEST_CASE(temperatureNA_1)
@@ -129,13 +129,13 @@ BOOST_AUTO_TEST_CASE(temperatureNA_1)
   char buffer[10];
   strcpy(buffer, "T00830067");
 
-  Metar metar(buffer);
+  auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar.hasTemperatureNA());
-  BOOST_CHECK(metar.hasDewPointNA());
+  BOOST_CHECK(metar->hasTemperatureNA());
+  BOOST_CHECK(metar->hasDewPointNA());
 
-  BOOST_CHECK(metar.TemperatureNA() == 8.3);
-  BOOST_CHECK(metar.DewPointNA() == 6.7);
+  BOOST_CHECK(metar->TemperatureNA() == 8.3);
+  BOOST_CHECK(metar->DewPointNA() == 6.7);
 }
 
 
@@ -144,13 +144,13 @@ BOOST_AUTO_TEST_CASE(temperatureNA_2)
   char buffer[10];
   strcpy(buffer, "T01830167");
 
-  Metar metar(buffer);
+  auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar.hasTemperatureNA());
-  BOOST_CHECK(metar.hasDewPointNA());
+  BOOST_CHECK(metar->hasTemperatureNA());
+  BOOST_CHECK(metar->hasDewPointNA());
 
-  BOOST_CHECK(metar.TemperatureNA() == 18.3);
-  BOOST_CHECK(metar.DewPointNA() == 16.7);
+  BOOST_CHECK(metar->TemperatureNA() == 18.3);
+  BOOST_CHECK(metar->DewPointNA() == 16.7);
 }
 
 BOOST_AUTO_TEST_CASE(temperatureNA_both_negative)
@@ -158,23 +158,23 @@ BOOST_AUTO_TEST_CASE(temperatureNA_both_negative)
   char buffer[10];
   strcpy(buffer, "T10171018");
 
-  Metar metar(buffer);
+  auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar.hasTemperatureNA());
-  BOOST_CHECK(metar.hasDewPointNA());
+  BOOST_CHECK(metar->hasTemperatureNA());
+  BOOST_CHECK(metar->hasDewPointNA());
 
-  BOOST_CHECK(metar.TemperatureNA() == -1.7);
-  BOOST_CHECK(metar.DewPointNA() == -1.8);
+  BOOST_CHECK(metar->TemperatureNA() == -1.7);
+  BOOST_CHECK(metar->DewPointNA() == -1.8);
 }
 
 BOOST_AUTO_TEST_CASE(uninitialized_wind)
 {
-  Metar metar("");
+  auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar.hasWindSpeed());
-  BOOST_CHECK(!metar.hasWindDirection());
-  BOOST_CHECK(!metar.hasWindGust());
-  BOOST_CHECK(!metar.hasWindSpeedUnits());
+  BOOST_CHECK(!metar->hasWindSpeed());
+  BOOST_CHECK(!metar->hasWindDirection());
+  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(!metar->hasWindSpeedUnits());
 }
 
 BOOST_AUTO_TEST_CASE(wind_kt)
@@ -182,81 +182,81 @@ BOOST_AUTO_TEST_CASE(wind_kt)
   char buffer[9];
   strcpy(buffer, "25005KT");
 
-  Metar metar(buffer);
+  auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar.hasWindSpeed());
-  BOOST_CHECK(metar.hasWindDirection());
+  BOOST_CHECK(metar->hasWindSpeed());
+  BOOST_CHECK(metar->hasWindDirection());
 
-  BOOST_CHECK(metar.WindDirection() == 250);
-  BOOST_CHECK(metar.WindSpeed() == 5);
+  BOOST_CHECK(metar->WindDirection() == 250);
+  BOOST_CHECK(metar->WindSpeed() == 5);
 
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
   
-  BOOST_CHECK(!metar.hasWindGust());
+  BOOST_CHECK(!metar->hasWindGust());
 }
 
 BOOST_AUTO_TEST_CASE(wind_kt_3digit)
 {
-  Metar metar("240105KT");
+  auto metar = Metar::Create("240105KT");
 
-  BOOST_CHECK(metar.hasWindSpeed());
-  BOOST_CHECK(metar.hasWindDirection());
+  BOOST_CHECK(metar->hasWindSpeed());
+  BOOST_CHECK(metar->hasWindDirection());
 
-  BOOST_CHECK(metar.WindDirection() == 240);
-  BOOST_CHECK(metar.WindSpeed() == 105);
+  BOOST_CHECK(metar->WindDirection() == 240);
+  BOOST_CHECK(metar->WindSpeed() == 105);
 
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
   
-  BOOST_CHECK(!metar.hasWindGust());
+  BOOST_CHECK(!metar->hasWindGust());
 }
 
 BOOST_AUTO_TEST_CASE(wind_kt_3digit_gust)
 {
-  Metar metar("240105G121KT");
+  auto metar = Metar::Create("240105G121KT");
 
-  BOOST_CHECK(metar.hasWindSpeed());
-  BOOST_CHECK(metar.hasWindDirection());
+  BOOST_CHECK(metar->hasWindSpeed());
+  BOOST_CHECK(metar->hasWindDirection());
 
-  BOOST_CHECK(metar.WindDirection() == 240);
-  BOOST_CHECK(metar.WindSpeed() == 105);
+  BOOST_CHECK(metar->WindDirection() == 240);
+  BOOST_CHECK(metar->WindSpeed() == 105);
   
-  BOOST_CHECK(metar.hasWindGust());
-  BOOST_CHECK(metar.WindGust() == 121);
+  BOOST_CHECK(metar->hasWindGust());
+  BOOST_CHECK(metar->WindGust() == 121);
 
-  BOOST_CHECK(metar.WindSpeedUnits() ==  Metar::speed_units::KT);
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
 }
 
 BOOST_AUTO_TEST_CASE(wind_vrb_kt_3digit_gust)
 {
-  Metar metar("VRB105G121KT");
+  auto metar = Metar::Create("VRB105G121KT");
 
-  BOOST_CHECK(metar.hasWindSpeed());
-  BOOST_CHECK(!metar.hasWindDirection());
-  BOOST_CHECK(metar.isVariableWindDirection());
+  BOOST_CHECK(metar->hasWindSpeed());
+  BOOST_CHECK(!metar->hasWindDirection());
+  BOOST_CHECK(metar->isVariableWindDirection());
 
-  BOOST_CHECK(metar.WindSpeed() == 105);
+  BOOST_CHECK(metar->WindSpeed() == 105);
   
-  BOOST_CHECK(metar.hasWindGust());
-  BOOST_CHECK(metar.WindGust() == 121);
+  BOOST_CHECK(metar->hasWindGust());
+  BOOST_CHECK(metar->WindGust() == 121);
 
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
 }
 
 BOOST_AUTO_TEST_CASE(wind_kt_gust)
 {
-  Metar metar("25005G12KT");
+  auto metar = Metar::Create("25005G12KT");
 
-  BOOST_CHECK(metar.hasWindSpeed());
-  BOOST_CHECK(metar.hasWindDirection());
-  BOOST_CHECK(!metar.isVariableWindDirection());
+  BOOST_CHECK(metar->hasWindSpeed());
+  BOOST_CHECK(metar->hasWindDirection());
+  BOOST_CHECK(!metar->isVariableWindDirection());
 
-  BOOST_CHECK(metar.WindDirection() == 250);
-  BOOST_CHECK(metar.WindSpeed() == 5);
+  BOOST_CHECK(metar->WindDirection() == 250);
+  BOOST_CHECK(metar->WindSpeed() == 5);
 
-  BOOST_CHECK(metar.hasWindGust());
-  BOOST_CHECK(metar.WindGust() == 12);
+  BOOST_CHECK(metar->hasWindGust());
+  BOOST_CHECK(metar->WindGust() == 12);
 
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
 }
 
 BOOST_AUTO_TEST_CASE(wind_mps)
@@ -264,47 +264,47 @@ BOOST_AUTO_TEST_CASE(wind_mps)
   char buffer[9];
   strcpy(buffer, "04503MPS");
 
-  Metar metar(buffer);
+  auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar.hasWindSpeed());
-  BOOST_CHECK(metar.hasWindDirection());
+  BOOST_CHECK(metar->hasWindSpeed());
+  BOOST_CHECK(metar->hasWindDirection());
 
-  BOOST_CHECK(metar.WindDirection() == 45);
-  BOOST_CHECK(metar.WindSpeed() == 3);
+  BOOST_CHECK(metar->WindDirection() == 45);
+  BOOST_CHECK(metar->WindSpeed() == 3);
 
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::MPS);
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::MPS);
   
-  BOOST_CHECK(!metar.hasWindGust());
+  BOOST_CHECK(!metar->hasWindGust());
 }
 
 BOOST_AUTO_TEST_CASE(wind_mps_vrb)
 {
-  Metar metar("VRB03MPS");
+  auto metar = Metar::Create("VRB03MPS");
 
-  BOOST_CHECK(metar.hasWindSpeed());
-  BOOST_CHECK(!metar.hasWindDirection());
+  BOOST_CHECK(metar->hasWindSpeed());
+  BOOST_CHECK(!metar->hasWindDirection());
 
-  BOOST_CHECK(metar.WindSpeed() == 3);
+  BOOST_CHECK(metar->WindSpeed() == 3);
 
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::MPS);
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::MPS);
   
-  BOOST_CHECK(!metar.hasWindGust());
+  BOOST_CHECK(!metar->hasWindGust());
 }
 
 BOOST_AUTO_TEST_CASE(wind_mps_3digit_gust)
 {
-  Metar metar("08090G102MPS");
+  auto metar = Metar::Create("08090G102MPS");
 
-  BOOST_CHECK(metar.hasWindSpeed());
-  BOOST_CHECK(metar.hasWindDirection());
+  BOOST_CHECK(metar->hasWindSpeed());
+  BOOST_CHECK(metar->hasWindDirection());
 
-  BOOST_CHECK(metar.WindDirection() == 80);
-  BOOST_CHECK(metar.WindSpeed() == 90);
+  BOOST_CHECK(metar->WindDirection() == 80);
+  BOOST_CHECK(metar->WindSpeed() == 90);
   
-  BOOST_CHECK(metar.hasWindGust());
-  BOOST_CHECK(metar.WindGust() == 102);
+  BOOST_CHECK(metar->hasWindGust());
+  BOOST_CHECK(metar->WindGust() == 102);
 
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::MPS);
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::MPS);
 }
 
 BOOST_AUTO_TEST_CASE(wind_kph)
@@ -312,58 +312,58 @@ BOOST_AUTO_TEST_CASE(wind_kph)
   char buffer[9];
   strcpy(buffer, "04005KPH");
 
-  Metar metar(buffer);
+  auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar.hasWindSpeed());
-  BOOST_CHECK(metar.hasWindDirection());
+  BOOST_CHECK(metar->hasWindSpeed());
+  BOOST_CHECK(metar->hasWindDirection());
 
-  BOOST_CHECK(metar.WindDirection() == 40);
-  BOOST_CHECK(metar.WindSpeed() == 5);
+  BOOST_CHECK(metar->WindDirection() == 40);
+  BOOST_CHECK(metar->WindSpeed() == 5);
 
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KPH);
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KPH);
   
-  BOOST_CHECK(!metar.hasWindGust());
+  BOOST_CHECK(!metar->hasWindGust());
 }
 
 BOOST_AUTO_TEST_CASE(wind_vrb_kph_2digit_gust)
 {
-  Metar metar("VRB05G21KPH");
+  auto metar = Metar::Create("VRB05G21KPH");
 
-  BOOST_CHECK(metar.hasWindSpeed());
-  BOOST_CHECK(!metar.hasWindDirection());
+  BOOST_CHECK(metar->hasWindSpeed());
+  BOOST_CHECK(!metar->hasWindDirection());
 
-  BOOST_CHECK(metar.WindSpeed() == 5);
+  BOOST_CHECK(metar->WindSpeed() == 5);
   
-  BOOST_CHECK(metar.hasWindGust());
-  BOOST_CHECK(metar.WindGust() == 21);
+  BOOST_CHECK(metar->hasWindGust());
+  BOOST_CHECK(metar->WindGust() == 21);
 
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KPH);
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KPH);
 }
 
 BOOST_AUTO_TEST_CASE(uninitialized_altA)
 {
-  Metar metar("");
+  auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar.hasAltimeterA());
+  BOOST_CHECK(!metar->hasAltimeterA());
 }
 
 BOOST_AUTO_TEST_CASE(uninitialized_wind_var)
 {
-  Metar metar("");
+  auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar.hasMinWindDirection());
-  BOOST_CHECK(!metar.hasMaxWindDirection());
+  BOOST_CHECK(!metar->hasMinWindDirection());
+  BOOST_CHECK(!metar->hasMaxWindDirection());
 }
 
 BOOST_AUTO_TEST_CASE(wind_var)
 {
-  Metar metar("090V150");
+  auto metar = Metar::Create("090V150");
 
-  BOOST_CHECK(metar.hasMinWindDirection());
-  BOOST_CHECK(metar.hasMaxWindDirection());
+  BOOST_CHECK(metar->hasMinWindDirection());
+  BOOST_CHECK(metar->hasMaxWindDirection());
 
-  BOOST_CHECK(metar.MinWindDirection() == 90);
-  BOOST_CHECK(metar.MaxWindDirection() == 150);
+  BOOST_CHECK(metar->MinWindDirection() == 90);
+  BOOST_CHECK(metar->MaxWindDirection() == 150);
 }
 
 BOOST_AUTO_TEST_CASE(altA)
@@ -371,17 +371,17 @@ BOOST_AUTO_TEST_CASE(altA)
   char buffer[9];
   strcpy(buffer, "A3006");
 
-  Metar metar(buffer);
+  auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar.hasAltimeterA());
-  BOOST_CHECK(metar.AltimeterA() == 30.06);
+  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(metar->AltimeterA() == 30.06);
 }
 
 BOOST_AUTO_TEST_CASE(uninitialized_altQ)
 {
-  Metar metar("");
+  auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar.hasAltimeterQ());
+  BOOST_CHECK(!metar->hasAltimeterQ());
 }
 
 BOOST_AUTO_TEST_CASE(altQ)
@@ -389,17 +389,17 @@ BOOST_AUTO_TEST_CASE(altQ)
   char buffer[9];
   strcpy(buffer, "Q1020");
 
-  Metar metar(buffer);
+  auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar.hasAltimeterQ());
-  BOOST_CHECK(metar.AltimeterQ() == 1020);
+  BOOST_CHECK(metar->hasAltimeterQ());
+  BOOST_CHECK(metar->AltimeterQ() == 1020);
 }
 
 BOOST_AUTO_TEST_CASE(uninitialized_slp)
 {
-  Metar metar("");
+  auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar.hasSeaLevelPressure());
+  BOOST_CHECK(!metar->hasSeaLevelPressure());
 }
 
 BOOST_AUTO_TEST_CASE(slp)
@@ -407,264 +407,264 @@ BOOST_AUTO_TEST_CASE(slp)
   char buffer[9];
   strcpy(buffer, "SLP177");
 
-  Metar metar(buffer);
+  auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar.hasSeaLevelPressure());
-  BOOST_CHECK(metar.SeaLevelPressure() == 1017.7);
+  BOOST_CHECK(metar->hasSeaLevelPressure());
+  BOOST_CHECK(metar->SeaLevelPressure() == 1017.7);
 }
 
 BOOST_AUTO_TEST_CASE(uninitialized_visibility)
 {
-  Metar metar("");
+  auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar.hasVisibility());
-  BOOST_CHECK(!metar.hasVisibilityUnits());
+  BOOST_CHECK(!metar->hasVisibility());
+  BOOST_CHECK(!metar->hasVisibilityUnits());
 }
 
 BOOST_AUTO_TEST_CASE(visibility_meters)
 {
-  Metar metar("1500");
+  auto metar = Metar::Create("1500");
 
-  BOOST_CHECK(metar.hasVisibility());
-  BOOST_CHECK(metar.Visibility() == 1500);
+  BOOST_CHECK(metar->hasVisibility());
+  BOOST_CHECK(metar->Visibility() == 1500);
 
-  BOOST_CHECK(metar.hasVisibilityUnits());
-  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::M);
+  BOOST_CHECK(metar->hasVisibilityUnits());
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::M);
 }
 
 BOOST_AUTO_TEST_CASE(visibility_integer_sm)
 {
-  Metar metar("10SM");
+  auto metar = Metar::Create("10SM");
 
-  BOOST_CHECK(metar.hasVisibility());
-  BOOST_CHECK(metar.Visibility() == 10);
+  BOOST_CHECK(metar->hasVisibility());
+  BOOST_CHECK(metar->Visibility() == 10);
 
-  BOOST_CHECK(metar.hasVisibilityUnits());
-  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+  BOOST_CHECK(metar->hasVisibilityUnits());
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
 }
 
 BOOST_AUTO_TEST_CASE(visibility_fraction_sm_1)
 {
-  Metar metar("1/4SM");
+  auto metar = Metar::Create("1/4SM");
 
-  BOOST_CHECK(metar.hasVisibility());
-  BOOST_CHECK(metar.Visibility() == 0.25);
+  BOOST_CHECK(metar->hasVisibility());
+  BOOST_CHECK(metar->Visibility() == 0.25);
 
-  BOOST_CHECK(metar.hasVisibilityUnits());
-  BOOST_CHECK(metar.VisibilityUnits() ==  Metar::distance_units::SM);
-  BOOST_CHECK(!metar.isVisibilityLessThan());
+  BOOST_CHECK(metar->hasVisibilityUnits());
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
+  BOOST_CHECK(!metar->isVisibilityLessThan());
 }
 
 BOOST_AUTO_TEST_CASE(visibility_fraction_sm_2)
 {
-  Metar metar("5/16SM");
+  auto metar = Metar::Create("5/16SM");
 
-  BOOST_CHECK(metar.hasVisibility());
-  BOOST_CHECK(metar.Visibility() == (5.0 / 16.0));
+  BOOST_CHECK(metar->hasVisibility());
+  BOOST_CHECK(metar->Visibility() == (5.0 / 16.0));
 
-  BOOST_CHECK(metar.hasVisibilityUnits());
-  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+  BOOST_CHECK(metar->hasVisibilityUnits());
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
 }
 
 BOOST_AUTO_TEST_CASE(visibility_fraction_sm_3)
 {
-  Metar metar("2 1/2SM");
+  auto metar = Metar::Create("2 1/2SM");
 
-  BOOST_CHECK(metar.hasVisibility());
-  BOOST_CHECK(metar.Visibility() == 2.5);
+  BOOST_CHECK(metar->hasVisibility());
+  BOOST_CHECK(metar->Visibility() == 2.5);
 
-  BOOST_CHECK(metar.hasVisibilityUnits());
-  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+  BOOST_CHECK(metar->hasVisibilityUnits());
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
 }
 
 BOOST_AUTO_TEST_CASE(visibility_LT)
 {
-  Metar metar("M1/4SM");
+  auto metar = Metar::Create("M1/4SM");
 
-  BOOST_CHECK(metar.hasVisibility());
-  BOOST_CHECK(metar.Visibility() == 0.25);
+  BOOST_CHECK(metar->hasVisibility());
+  BOOST_CHECK(metar->Visibility() == 0.25);
 
-  BOOST_CHECK(metar.hasVisibilityUnits());
-  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
-  BOOST_CHECK(metar.isVisibilityLessThan());
-  BOOST_CHECK(!metar.isCAVOK());
+  BOOST_CHECK(metar->hasVisibilityUnits());
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
+  BOOST_CHECK(metar->isVisibilityLessThan());
+  BOOST_CHECK(!metar->isCAVOK());
 }
 
 BOOST_AUTO_TEST_CASE(visibility_CAVOK)
 {
-  Metar metar("CAVOK");
+  auto metar = Metar::Create("CAVOK");
 
-  BOOST_CHECK(!metar.hasVisibility());
-  BOOST_CHECK(!metar.hasVisibilityUnits());
-  BOOST_CHECK(metar.isCAVOK());
+  BOOST_CHECK(!metar->hasVisibility());
+  BOOST_CHECK(!metar->hasVisibilityUnits());
+  BOOST_CHECK(metar->isCAVOK());
 }
 
 BOOST_AUTO_TEST_CASE(uninitialized_vert_visibility)
 {
-  Metar metar("");
+  auto metar = Metar::Create("");
   
-  BOOST_CHECK(!metar.hasVerticalVisibility());
+  BOOST_CHECK(!metar->hasVerticalVisibility());
 }
 
 BOOST_AUTO_TEST_CASE(vert_visibility)
 {
-  Metar metar("VV105");
+  auto metar = Metar::Create("VV105");
   
-  BOOST_CHECK(metar.hasVerticalVisibility());
-  BOOST_CHECK(metar.VerticalVisibility() == 10500);
+  BOOST_CHECK(metar->hasVerticalVisibility());
+  BOOST_CHECK(metar->VerticalVisibility() == 10500);
 }
 
 BOOST_AUTO_TEST_CASE(uninitialized_cloud_layer)
 {
-  Metar metar("");
+  auto metar = Metar::Create("");
   
-  BOOST_CHECK(metar.NumCloudLayers() == 0);
-  BOOST_CHECK(metar.Layer(0) == nullptr);
+  BOOST_CHECK(metar->NumCloudLayers() == 0);
+  BOOST_CHECK(metar->Layer(0) == nullptr);
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_CLR)
 {
-  Metar metar("CLR");
+  auto metar = Metar::Create("CLR");
   
-  BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::CLR);
-  BOOST_CHECK(!metar.Layer(0)->hasAltitude());
-  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+  BOOST_CHECK(metar->NumCloudLayers() == 1);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::CLR);
+  BOOST_CHECK(!metar->Layer(0)->hasAltitude());
+  BOOST_CHECK(!metar->Layer(0)->hasCloudType());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_SKC)
 {
-  Metar metar("SKC");
+  auto metar = Metar::Create("SKC");
   
-  BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::SKC);
-  BOOST_CHECK(!metar.Layer(0)->hasAltitude());
-  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+  BOOST_CHECK(metar->NumCloudLayers() == 1);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::SKC);
+  BOOST_CHECK(!metar->Layer(0)->hasAltitude());
+  BOOST_CHECK(!metar->Layer(0)->hasCloudType());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_NSC)
 {
-  Metar metar("NSC");
+  auto metar = Metar::Create("NSC");
   
-  BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::NSC);
-  BOOST_CHECK(!metar.Layer(0)->hasAltitude());
-  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+  BOOST_CHECK(metar->NumCloudLayers() == 1);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::NSC);
+  BOOST_CHECK(!metar->Layer(0)->hasAltitude());
+  BOOST_CHECK(!metar->Layer(0)->hasCloudType());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_FEW)
 {
-  Metar metar("FEW105");
+  auto metar = Metar::Create("FEW105");
   
-  BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::FEW);
-  BOOST_CHECK(metar.Layer(0)->Altitude() == 10500);
-  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
-  BOOST_CHECK(!metar.Layer(0)->Temporary());
+  BOOST_CHECK(metar->NumCloudLayers() == 1);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::FEW);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 10500);
+  BOOST_CHECK(!metar->Layer(0)->hasCloudType());
+  BOOST_CHECK(!metar->Layer(0)->Temporary());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_SCT)
 {
-  Metar metar("SCT045");
+  auto metar = Metar::Create("SCT045");
   
-  BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::SCT);
-  BOOST_CHECK(metar.Layer(0)->Altitude() == 4500);
-  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+  BOOST_CHECK(metar->NumCloudLayers() == 1);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::SCT);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 4500);
+  BOOST_CHECK(!metar->Layer(0)->hasCloudType());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_BKN)
 {
-  Metar metar("BKN005");
+  auto metar = Metar::Create("BKN005");
   
-  BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::BKN);
-  BOOST_CHECK(metar.Layer(0)->Altitude() == 500);
-  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+  BOOST_CHECK(metar->NumCloudLayers() == 1);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::BKN);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 500);
+  BOOST_CHECK(!metar->Layer(0)->hasCloudType());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_OVC)
 {
-  Metar metar("OVC050");
+  auto metar = Metar::Create("OVC050");
   
-  BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::OVC);
-  BOOST_CHECK(metar.Layer(0)->Altitude() == 5000);
-  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
+  BOOST_CHECK(metar->NumCloudLayers() == 1);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::OVC);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 5000);
+  BOOST_CHECK(!metar->Layer(0)->hasCloudType());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_2_layers)
 {
-  Metar metar("BKN004 OVC008");
+  auto metar = Metar::Create("BKN004 OVC008");
   
-  BOOST_CHECK(metar.NumCloudLayers() == 2);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::BKN);
-  BOOST_CHECK(metar.Layer(0)->Altitude() == 400);
-  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
-  BOOST_CHECK(metar.Layer(1)->Cover() ==  Clouds::cover::OVC);
-  BOOST_CHECK(metar.Layer(1)->Altitude() == 800);
-  BOOST_CHECK(!metar.Layer(1)->hasCloudType());
+  BOOST_CHECK(metar->NumCloudLayers() == 2);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::BKN);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 400);
+  BOOST_CHECK(!metar->Layer(0)->hasCloudType());
+  BOOST_CHECK(metar->Layer(1)->Cover() == Clouds::cover::OVC);
+  BOOST_CHECK(metar->Layer(1)->Altitude() == 800);
+  BOOST_CHECK(!metar->Layer(1)->hasCloudType());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_3_layers)
 {
-  Metar metar("FEW004 SCT080 OVC120");
+  auto metar = Metar::Create("FEW004 SCT080 OVC120");
   
-  BOOST_CHECK(metar.NumCloudLayers() == 3);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::FEW);
-  BOOST_CHECK(metar.Layer(0)->Altitude() == 400);
-  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
-  BOOST_CHECK(metar.Layer(1)->Cover() == Clouds::cover::SCT);
-  BOOST_CHECK(metar.Layer(1)->Altitude() == 8000);
-  BOOST_CHECK(!metar.Layer(1)->hasCloudType());
-  BOOST_CHECK(metar.Layer(2)->Cover() == Clouds::cover::OVC);
-  BOOST_CHECK(metar.Layer(2)->Altitude() == 12000);
-  BOOST_CHECK(!metar.Layer(2)->hasCloudType());
+  BOOST_CHECK(metar->NumCloudLayers() == 3);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::FEW);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 400);
+  BOOST_CHECK(!metar->Layer(0)->hasCloudType());
+  BOOST_CHECK(metar->Layer(1)->Cover() == Clouds::cover::SCT);
+  BOOST_CHECK(metar->Layer(1)->Altitude() == 8000);
+  BOOST_CHECK(!metar->Layer(1)->hasCloudType());
+  BOOST_CHECK(metar->Layer(2)->Cover() == Clouds::cover::OVC);
+  BOOST_CHECK(metar->Layer(2)->Altitude() == 12000);
+  BOOST_CHECK(!metar->Layer(2)->hasCloudType());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_3_layers_tempo)
 {
-  Metar metar("KSTL FEW004 SCT080 TEMPO OVC120");
+  auto metar = Metar::Create("KSTL FEW004 SCT080 TEMPO OVC120");
   
-  BOOST_CHECK(metar.NumCloudLayers() == 3);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::FEW);
-  BOOST_CHECK(metar.Layer(0)->Altitude() == 400);
-  BOOST_CHECK(!metar.Layer(0)->hasCloudType());
-  BOOST_CHECK(!metar.Layer(0)->Temporary());
-  BOOST_CHECK(metar.Layer(1)->Cover() == Clouds::cover::SCT);
-  BOOST_CHECK(metar.Layer(1)->Altitude() == 8000);
-  BOOST_CHECK(!metar.Layer(1)->hasCloudType());
-  BOOST_CHECK(!metar.Layer(1)->Temporary());
-  BOOST_CHECK(metar.Layer(2)->Cover() == Clouds::cover::OVC);
-  BOOST_CHECK(metar.Layer(2)->Altitude() == 12000);
-  BOOST_CHECK(!metar.Layer(2)->hasCloudType());
-  BOOST_CHECK(metar.Layer(2)->Temporary());
+  BOOST_CHECK(metar->NumCloudLayers() == 3);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::FEW);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 400);
+  BOOST_CHECK(!metar->Layer(0)->hasCloudType());
+  BOOST_CHECK(!metar->Layer(0)->Temporary());
+  BOOST_CHECK(metar->Layer(1)->Cover() == Clouds::cover::SCT);
+  BOOST_CHECK(metar->Layer(1)->Altitude() == 8000);
+  BOOST_CHECK(!metar->Layer(1)->hasCloudType());
+  BOOST_CHECK(!metar->Layer(1)->Temporary());
+  BOOST_CHECK(metar->Layer(2)->Cover() == Clouds::cover::OVC);
+  BOOST_CHECK(metar->Layer(2)->Altitude() == 12000);
+  BOOST_CHECK(!metar->Layer(2)->hasCloudType());
+  BOOST_CHECK(metar->Layer(2)->Temporary());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_3_layers_cloud_types)
 {
-  Metar metar("FEW004TCU SCT080CB OVC120ACC");
+  auto metar = Metar::Create("FEW004TCU SCT080CB OVC120ACC");
   
-  BOOST_CHECK(metar.NumCloudLayers() == 3);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::FEW);
-  BOOST_CHECK(metar.Layer(0)->Altitude() == 400);
-  BOOST_CHECK(metar.Layer(0)->CloudType() ==  Clouds::type::TCU);
-  BOOST_CHECK(metar.Layer(1)->Cover() == Clouds::cover::SCT);
-  BOOST_CHECK(metar.Layer(1)->Altitude() == 8000);
-  BOOST_CHECK(metar.Layer(1)->CloudType() == Clouds::type::CB);
-  BOOST_CHECK(metar.Layer(2)->Cover() ==  Clouds::cover::OVC);
-  BOOST_CHECK(metar.Layer(2)->Altitude() == 12000);
-  BOOST_CHECK(metar.Layer(2)->CloudType() == Clouds::type::ACC);
+  BOOST_CHECK(metar->NumCloudLayers() == 3);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::FEW);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 400);
+  BOOST_CHECK(metar->Layer(0)->CloudType() == Clouds::type::TCU);
+  BOOST_CHECK(metar->Layer(1)->Cover() == Clouds::cover::SCT);
+  BOOST_CHECK(metar->Layer(1)->Altitude() == 8000);
+  BOOST_CHECK(metar->Layer(1)->CloudType() == Clouds::type::CB);
+  BOOST_CHECK(metar->Layer(2)->Cover() == Clouds::cover::OVC);
+  BOOST_CHECK(metar->Layer(2)->Altitude() == 12000);
+  BOOST_CHECK(metar->Layer(2)->CloudType() == Clouds::type::ACC);
 }
 
 BOOST_AUTO_TEST_CASE(phenoms)
 {
   {
-    Metar metar("BR");
+    auto metar = Metar::Create("BR");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::MIST);
@@ -678,26 +678,26 @@ BOOST_AUTO_TEST_CASE(phenoms)
     BOOST_CHECK(p.Patches() == false);
     BOOST_CHECK(p.Temporary() == false);
     
-    BOOST_CHECK((*metar.Phenomenon(0))[1] == Phenom::phenom::NONE);
+    BOOST_CHECK((*metar->Phenomenon(0))[1] == Phenom::phenom::NONE);
   }
 
   {
-    Metar metar("DS");
+    auto metar = Metar::Create("DS");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p[0] == Phenom::phenom::DUST_STORM);
     BOOST_CHECK(p.Intensity() == Phenom::intensity::NORMAL);
   }
 
   {
-    Metar metar("DU");
+    auto metar = Metar::Create("DU");
 
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::DUST);
@@ -705,11 +705,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("DZ");
+    auto metar = Metar::Create("DZ");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::DRIZZLE);
@@ -717,11 +717,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("FC");
+    auto metar = Metar::Create("FC");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::FUNNEL_CLOUD);
@@ -729,11 +729,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("FG");
+    auto metar = Metar::Create("FG");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::FOG);
@@ -741,11 +741,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("FU");
+    auto metar = Metar::Create("FU");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::SMOKE);
@@ -753,11 +753,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("GR");
+    auto metar = Metar::Create("GR");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::HAIL);
@@ -765,11 +765,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("GS");
+    auto metar = Metar::Create("GS");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::SMALL_HAIL);
@@ -777,11 +777,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("HZ");
+    auto metar = Metar::Create("HZ");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::HAZE);
@@ -789,11 +789,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("IC");
+    auto metar = Metar::Create("IC");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::ICE_CRYSTALS);
@@ -801,11 +801,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("PE");
+    auto metar = Metar::Create("PE");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::ICE_PELLETS);
@@ -813,11 +813,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("PL");
+    auto metar = Metar::Create("PL");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::ICE_PELLETS);
@@ -825,11 +825,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("PO");
+    auto metar = Metar::Create("PO");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::DUST_SAND_WHORLS);
@@ -837,11 +837,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("PY");
+    auto metar = Metar::Create("PY");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::SPRAY);
@@ -849,11 +849,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("RA");
+    auto metar = Metar::Create("RA");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::RAIN);
@@ -861,11 +861,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("SA");
+    auto metar = Metar::Create("SA");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::SAND);
@@ -873,11 +873,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("SG");
+    auto metar = Metar::Create("SG");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::SNOW_GRAINS);
@@ -885,11 +885,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("SN");
+    auto metar = Metar::Create("SN");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::SNOW);
@@ -897,11 +897,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("SQ");
+    auto metar = Metar::Create("SQ");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::SQUALLS);
@@ -909,11 +909,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("SS");
+    auto metar = Metar::Create("SS");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::SAND_STORM);
@@ -921,11 +921,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("TS");
+    auto metar = Metar::Create("TS");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::THUNDER_STORM);
@@ -933,11 +933,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("UP");
+    auto metar = Metar::Create("UP");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::UNKNOWN_PRECIP);
@@ -945,11 +945,11 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    Metar metar("VA");
+    auto metar = Metar::Create("VA");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 1);
     BOOST_CHECK(p[0] == Phenom::phenom::VOLCANIC_ASH);
@@ -960,33 +960,33 @@ BOOST_AUTO_TEST_CASE(phenoms)
 BOOST_AUTO_TEST_CASE(phenom_intensity)
 {
   {
-    Metar metar("RA");
+    auto metar = Metar::Create("RA");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p[0] == Phenom::phenom::RAIN);
     BOOST_CHECK(p.Intensity() == Phenom::intensity::NORMAL);
   }
 
   {
-    Metar metar("-RA");
+    auto metar = Metar::Create("-RA");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p[0] == Phenom::phenom::RAIN);
     BOOST_CHECK(p.Intensity() == Phenom::intensity::LIGHT);
   }
 
   {
-    Metar metar("+RA");
+    auto metar = Metar::Create("+RA");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p[0] == Phenom::phenom::RAIN);
     BOOST_CHECK(p.Intensity() == Phenom::intensity::HEAVY);
@@ -994,11 +994,11 @@ BOOST_AUTO_TEST_CASE(phenom_intensity)
 }
 BOOST_AUTO_TEST_CASE(phenom_proximity)
 {
-    Metar metar("KSTL VCFG");
+    auto metar = Metar::Create("KSTL VCFG");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p[0] == Phenom::phenom::FOG);
     BOOST_CHECK(p.Vicinity() == true);
@@ -1006,11 +1006,11 @@ BOOST_AUTO_TEST_CASE(phenom_proximity)
 
 BOOST_AUTO_TEST_CASE(phenom_blowing)
 {
-    Metar metar("KSTL BLSN");
+    auto metar = Metar::Create("KSTL BLSN");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p[0] == Phenom::phenom::SNOW);
     BOOST_CHECK(p.Blowing() == true);
@@ -1018,11 +1018,11 @@ BOOST_AUTO_TEST_CASE(phenom_blowing)
 
 BOOST_AUTO_TEST_CASE(phenom_drifting)
 {
-    Metar metar("KSTL DRSA");
+    auto metar = Metar::Create("KSTL DRSA");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p[0] == Phenom::phenom::SAND);
     BOOST_CHECK(p.Drifting() == true);
@@ -1030,11 +1030,11 @@ BOOST_AUTO_TEST_CASE(phenom_drifting)
 
 BOOST_AUTO_TEST_CASE(phenom_freezing)
 {
-    Metar metar("KSTL FZDZ");
+    auto metar = Metar::Create("KSTL FZDZ");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p[0] == Phenom::phenom::DRIZZLE);
     BOOST_CHECK(p.Freezing() == true);
@@ -1042,11 +1042,11 @@ BOOST_AUTO_TEST_CASE(phenom_freezing)
 
 BOOST_AUTO_TEST_CASE(phenom_shower)
 {
-    Metar metar("KSTL SHRA");
+    auto metar = Metar::Create("KSTL SHRA");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p.NumPhenom() == 2);
     BOOST_CHECK(p[0] == Phenom::phenom::SHOWER);
@@ -1055,11 +1055,11 @@ BOOST_AUTO_TEST_CASE(phenom_shower)
 
 BOOST_AUTO_TEST_CASE(phenom_shower_vicinity)
 {
-    Metar metar("KSTL VCSH");
+    auto metar = Metar::Create("KSTL VCSH");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p[0] == Phenom::phenom::SHOWER);
     BOOST_CHECK(p.Vicinity() == true);
@@ -1067,11 +1067,11 @@ BOOST_AUTO_TEST_CASE(phenom_shower_vicinity)
 
 BOOST_AUTO_TEST_CASE(phenom_partial)
 {
-    Metar metar("KSTL PRFG");
+    auto metar = Metar::Create("KSTL PRFG");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p[0] == Phenom::phenom::FOG);
     BOOST_CHECK(p.Partial() == true);
@@ -1079,11 +1079,11 @@ BOOST_AUTO_TEST_CASE(phenom_partial)
 
 BOOST_AUTO_TEST_CASE(phenom_shallow)
 {
-    Metar metar("KSTL MIFG");
+    auto metar = Metar::Create("KSTL MIFG");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p[0] == Phenom::phenom::FOG);
     BOOST_CHECK(p.Shallow() == true);
@@ -1091,11 +1091,11 @@ BOOST_AUTO_TEST_CASE(phenom_shallow)
 
 BOOST_AUTO_TEST_CASE(phenom_patches)
 {
-    Metar metar("KSTL BCFG");
+    auto metar = Metar::Create("KSTL BCFG");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p[0] == Phenom::phenom::FOG);
     BOOST_CHECK(p.Patches() == true);
@@ -1103,11 +1103,11 @@ BOOST_AUTO_TEST_CASE(phenom_patches)
 
 BOOST_AUTO_TEST_CASE(phenom_vicinity_blowing)
 {
-    Metar metar("VCBLSN");
+    auto metar = Metar::Create("VCBLSN");
   
-    BOOST_CHECK(metar.NumPhenomena() == 1);
+    BOOST_CHECK(metar->NumPhenomena() == 1);
 
-    const auto &p = *metar.Phenomenon(0);
+    const auto &p = *metar->Phenomenon(0);
 
     BOOST_CHECK(p[0] == Phenom::phenom::SNOW);
     BOOST_CHECK(p.Vicinity() == true);
@@ -1116,18 +1116,18 @@ BOOST_AUTO_TEST_CASE(phenom_vicinity_blowing)
 
 BOOST_AUTO_TEST_CASE(phenom_tempo)
 {
-    Metar metar("EDDH VCBLSN TEMPO SHSN");
+    auto metar = Metar::Create("EDDH VCBLSN TEMPO SHSN");
   
-    BOOST_CHECK(metar.NumPhenomena() == 2);
+    BOOST_CHECK(metar->NumPhenomena() == 2);
 
-    const auto &p0 = *metar.Phenomenon(0);
+    const auto &p0 = *metar->Phenomenon(0);
 
     BOOST_CHECK(p0[0] == Phenom::phenom::SNOW);
     BOOST_CHECK(p0.Vicinity() == true);
     BOOST_CHECK(p0.Blowing() == true);
     BOOST_CHECK(p0.Temporary() == false);
 
-    const auto &p1 = *metar.Phenomenon(1);
+    const auto &p1 = *metar->Phenomenon(1);
     
     BOOST_CHECK(p1[0] == Phenom::phenom::SHOWER);
     BOOST_CHECK(p1[1] == Phenom::phenom::SNOW);
@@ -1139,401 +1139,401 @@ BOOST_AUTO_TEST_CASE(real_METAR_1)
   char buffer[100];
   strcpy(buffer, "KSTL 231751Z 27009KT 10SM OVC015 09/06 A3029 RMK AO2 SLP260 T00940061 10100 20078 53002");
 
-  Metar metar(buffer);
+  auto metar = Metar::Create(buffer);
   
-  BOOST_CHECK(!metar.hasMessageType());
+  BOOST_CHECK(!metar->hasMessageType());
 
-  BOOST_CHECK(metar.hasICAO());
-  BOOST_CHECK(strcmp(metar.ICAO(), "KSTL") == 0);
+  BOOST_CHECK(metar->hasICAO());
+  BOOST_CHECK(strcmp(metar->ICAO(), "KSTL") == 0);
 
-  BOOST_CHECK(metar.Day() == 23);
-  BOOST_CHECK(metar.Hour() == 17);
-  BOOST_CHECK(metar.Minute() == 51);
+  BOOST_CHECK(metar->Day() == 23);
+  BOOST_CHECK(metar->Hour() == 17);
+  BOOST_CHECK(metar->Minute() == 51);
 
-  BOOST_CHECK(metar.WindDirection() == 270);
-  BOOST_CHECK(metar.WindSpeed() == 9);
-  BOOST_CHECK(!metar.hasWindGust());
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
+  BOOST_CHECK(metar->WindDirection() == 270);
+  BOOST_CHECK(metar->WindSpeed() == 9);
+  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
 
-  BOOST_CHECK(!metar.hasMinWindDirection());
-  BOOST_CHECK(!metar.hasMaxWindDirection());
+  BOOST_CHECK(!metar->hasMinWindDirection());
+  BOOST_CHECK(!metar->hasMaxWindDirection());
   
-  BOOST_CHECK(metar.Visibility() == 10);
-  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+  BOOST_CHECK(metar->Visibility() == 10);
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
 
-  BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::OVC);
-  BOOST_CHECK(metar.Layer(0)->Altitude() == 1500);
+  BOOST_CHECK(metar->NumCloudLayers() == 1);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::OVC);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 1500);
   
-  BOOST_CHECK(!metar.hasVerticalVisibility());
+  BOOST_CHECK(!metar->hasVerticalVisibility());
 
-  BOOST_CHECK(metar.Temperature() == 9);
-  BOOST_CHECK(metar.DewPoint() == 6);
+  BOOST_CHECK(metar->Temperature() == 9);
+  BOOST_CHECK(metar->DewPoint() == 6);
   
-  BOOST_CHECK(!metar.hasAltimeterQ());
-  BOOST_CHECK(metar.hasAltimeterA());
-  BOOST_CHECK(metar.AltimeterA() == 30.29);
+  BOOST_CHECK(!metar->hasAltimeterQ());
+  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(metar->AltimeterA() == 30.29);
 
-  BOOST_CHECK(metar.hasSeaLevelPressure());
-  BOOST_CHECK(metar.SeaLevelPressure() == 1026.0);
+  BOOST_CHECK(metar->hasSeaLevelPressure());
+  BOOST_CHECK(metar->SeaLevelPressure() == 1026.0);
 
-  BOOST_CHECK(metar.TemperatureNA() == 9.4);
-  BOOST_CHECK(metar.DewPointNA() == 6.1);
+  BOOST_CHECK(metar->TemperatureNA() == 9.4);
+  BOOST_CHECK(metar->DewPointNA() == 6.1);
 }
 
 BOOST_AUTO_TEST_CASE(real_METAR_2)
 {
   std::string metar_str = "METAR LBBG 041600Z 12012MPS 090V150 1400 R04/P1500N R22/P1500U +SN BKN022 OVC050 M04/M07 Q1020 NOSIG 8849//91=";
 
-  Metar metar(metar_str.c_str());
+  auto metar = Metar::Create(metar_str.c_str());
 
-  BOOST_CHECK(metar.hasMessageType());
-  BOOST_CHECK(metar.MessageType() == Metar::message_type::METAR);
+  BOOST_CHECK(metar->hasMessageType());
+  BOOST_CHECK(metar->MessageType() == Metar::message_type::METAR);
 
-  BOOST_CHECK(metar.hasICAO());
-  BOOST_CHECK(strcmp(metar.ICAO(), "LBBG") == 0);
+  BOOST_CHECK(metar->hasICAO());
+  BOOST_CHECK(strcmp(metar->ICAO(), "LBBG") == 0);
 
-  BOOST_CHECK(metar.Day() == 4);
-  BOOST_CHECK(metar.Hour() == 16);
-  BOOST_CHECK(metar.Minute() == 0);
+  BOOST_CHECK(metar->Day() == 4);
+  BOOST_CHECK(metar->Hour() == 16);
+  BOOST_CHECK(metar->Minute() == 0);
 
-  BOOST_CHECK(metar.WindDirection() == 120);
-  BOOST_CHECK(metar.WindSpeed() == 12);
-  BOOST_CHECK(!metar.hasWindGust());
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::MPS);
+  BOOST_CHECK(metar->WindDirection() == 120);
+  BOOST_CHECK(metar->WindSpeed() == 12);
+  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::MPS);
 
-  BOOST_CHECK(metar.hasMinWindDirection());
-  BOOST_CHECK(metar.hasMaxWindDirection());
+  BOOST_CHECK(metar->hasMinWindDirection());
+  BOOST_CHECK(metar->hasMaxWindDirection());
 
-  BOOST_CHECK(metar.MinWindDirection() == 90);
-  BOOST_CHECK(metar.MaxWindDirection() == 150);
+  BOOST_CHECK(metar->MinWindDirection() == 90);
+  BOOST_CHECK(metar->MaxWindDirection() == 150);
 
-  BOOST_CHECK(metar.Visibility() == 1400);
-  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::M);
+  BOOST_CHECK(metar->Visibility() == 1400);
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::M);
 
-  BOOST_CHECK(metar.NumPhenomena() == 1);
+  BOOST_CHECK(metar->NumPhenomena() == 1);
 
-  const auto &p = *metar.Phenomenon(0);
+  const auto &p = *metar->Phenomenon(0);
 
   BOOST_CHECK(p[0] == Phenom::phenom::SNOW);
   BOOST_CHECK(p.Intensity() == Phenom::intensity::HEAVY);
   
-  BOOST_CHECK(metar.NumCloudLayers() == 2);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::BKN);
-  BOOST_CHECK(metar.Layer(0)->Altitude() == 2200);
-  BOOST_CHECK(metar.Layer(1)->Cover() ==  Clouds::cover::OVC);
-  BOOST_CHECK(metar.Layer(1)->Altitude() == 5000);
+  BOOST_CHECK(metar->NumCloudLayers() == 2);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::BKN);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 2200);
+  BOOST_CHECK(metar->Layer(1)->Cover() == Clouds::cover::OVC);
+  BOOST_CHECK(metar->Layer(1)->Altitude() == 5000);
   
-  BOOST_CHECK(!metar.hasVerticalVisibility());
+  BOOST_CHECK(!metar->hasVerticalVisibility());
 
-  BOOST_CHECK(metar.Temperature() == -4);
-  BOOST_CHECK(metar.DewPoint() == -7);
+  BOOST_CHECK(metar->Temperature() == -4);
+  BOOST_CHECK(metar->DewPoint() == -7);
   
-  BOOST_CHECK(!metar.hasAltimeterA());
-  BOOST_CHECK(metar.hasAltimeterQ());
-  BOOST_CHECK(metar.AltimeterQ() == 1020);
+  BOOST_CHECK(!metar->hasAltimeterA());
+  BOOST_CHECK(metar->hasAltimeterQ());
+  BOOST_CHECK(metar->AltimeterQ() == 1020);
   
-  BOOST_CHECK(!metar.hasSeaLevelPressure());
+  BOOST_CHECK(!metar->hasSeaLevelPressure());
 
-  BOOST_CHECK(!metar.hasTemperatureNA());
-  BOOST_CHECK(!metar.hasDewPointNA());
+  BOOST_CHECK(!metar->hasTemperatureNA());
+  BOOST_CHECK(!metar->hasDewPointNA());
 }
 
 BOOST_AUTO_TEST_CASE(real_METAR_3)
 {
   std::string metar_str = "SPECI KSTL 221513Z 07005KT 2SM -RA BR OVC005 02/02 A3041 RMK AO2 P0001 T00220022";
 
-  Metar metar(metar_str.c_str()); 
+  auto metar = Metar::Create(metar_str.c_str()); 
 
-  BOOST_CHECK(metar.hasMessageType());
-  BOOST_CHECK(metar.MessageType() == Metar::message_type::SPECI);
+  BOOST_CHECK(metar->hasMessageType());
+  BOOST_CHECK(metar->MessageType() == Metar::message_type::SPECI);
 
-  BOOST_CHECK(metar.hasICAO());
-  BOOST_CHECK(strcmp(metar.ICAO(), "KSTL") == 0);
+  BOOST_CHECK(metar->hasICAO());
+  BOOST_CHECK(strcmp(metar->ICAO(), "KSTL") == 0);
 
-  BOOST_CHECK(metar.Day() == 22);
-  BOOST_CHECK(metar.Hour() == 15);
-  BOOST_CHECK(metar.Minute() == 13);
+  BOOST_CHECK(metar->Day() == 22);
+  BOOST_CHECK(metar->Hour() == 15);
+  BOOST_CHECK(metar->Minute() == 13);
 
-  BOOST_CHECK(metar.WindDirection() == 70);
-  BOOST_CHECK(metar.WindSpeed() == 5);
-  BOOST_CHECK(!metar.hasWindGust());
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
+  BOOST_CHECK(metar->WindDirection() == 70);
+  BOOST_CHECK(metar->WindSpeed() == 5);
+  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
 
-  BOOST_CHECK(!metar.hasMinWindDirection());
-  BOOST_CHECK(!metar.hasMaxWindDirection());
+  BOOST_CHECK(!metar->hasMinWindDirection());
+  BOOST_CHECK(!metar->hasMaxWindDirection());
   
-  BOOST_CHECK(metar.Visibility() == 2);
-  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+  BOOST_CHECK(metar->Visibility() == 2);
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
 
-  BOOST_CHECK(metar.NumPhenomena() == 2);
+  BOOST_CHECK(metar->NumPhenomena() == 2);
 
-  const auto &p0 = *metar.Phenomenon(0);
+  const auto &p0 = *metar->Phenomenon(0);
 
   BOOST_CHECK(p0[0] == Phenom::phenom::RAIN);
   BOOST_CHECK(p0.Intensity() == Phenom::intensity::LIGHT);
 
-  const auto &p1 = *metar.Phenomenon(1);
+  const auto &p1 = *metar->Phenomenon(1);
 
   BOOST_CHECK(p1[0] == Phenom::phenom::MIST);
   BOOST_CHECK(p1.Intensity() == Phenom::intensity::NORMAL);
   
-  BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::OVC);
-  BOOST_CHECK(metar.Layer(0)->Altitude() == 500);
+  BOOST_CHECK(metar->NumCloudLayers() == 1);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::OVC);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 500);
   
-  BOOST_CHECK(!metar.hasVerticalVisibility());
+  BOOST_CHECK(!metar->hasVerticalVisibility());
 
-  BOOST_CHECK(metar.Temperature() == 2);
-  BOOST_CHECK(metar.DewPoint() == 2);
+  BOOST_CHECK(metar->Temperature() == 2);
+  BOOST_CHECK(metar->DewPoint() == 2);
  
-  BOOST_CHECK(!metar.hasAltimeterQ());
-  BOOST_CHECK(metar.hasAltimeterA());
-  BOOST_CHECK(metar.AltimeterA() == 30.41);
+  BOOST_CHECK(!metar->hasAltimeterQ());
+  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(metar->AltimeterA() == 30.41);
 
-  BOOST_CHECK(!metar.hasSeaLevelPressure());
+  BOOST_CHECK(!metar->hasSeaLevelPressure());
 
-  BOOST_CHECK(metar.TemperatureNA() == 2.2);
-  BOOST_CHECK(metar.DewPointNA() == 2.2);
+  BOOST_CHECK(metar->TemperatureNA() == 2.2);
+  BOOST_CHECK(metar->DewPointNA() == 2.2);
 }
 
 BOOST_AUTO_TEST_CASE(real_METAR_4)
 {
   const char *metar_str = "KSTL 262051Z VRB04KT 10SM CLR 16/M01 A3023 RMK AO2 SLP242 T01561006 57015";
 
-  Metar metar(metar_str); 
+  auto metar = Metar::Create(metar_str); 
 
-  BOOST_CHECK(metar.hasICAO());
-  BOOST_CHECK(strcmp(metar.ICAO(), "KSTL") == 0);
+  BOOST_CHECK(metar->hasICAO());
+  BOOST_CHECK(strcmp(metar->ICAO(), "KSTL") == 0);
 
-  BOOST_CHECK(metar.Day() == 26);
-  BOOST_CHECK(metar.Hour() == 20);
-  BOOST_CHECK(metar.Minute() == 51);
+  BOOST_CHECK(metar->Day() == 26);
+  BOOST_CHECK(metar->Hour() == 20);
+  BOOST_CHECK(metar->Minute() == 51);
 
-  BOOST_CHECK(!metar.hasWindDirection());
-  BOOST_CHECK(metar.isVariableWindDirection());
-  BOOST_CHECK(metar.WindSpeed() == 4);
-  BOOST_CHECK(!metar.hasWindGust());
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
+  BOOST_CHECK(!metar->hasWindDirection());
+  BOOST_CHECK(metar->isVariableWindDirection());
+  BOOST_CHECK(metar->WindSpeed() == 4);
+  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
 
-  BOOST_CHECK(!metar.hasMinWindDirection());
-  BOOST_CHECK(!metar.hasMaxWindDirection());
+  BOOST_CHECK(!metar->hasMinWindDirection());
+  BOOST_CHECK(!metar->hasMaxWindDirection());
   
-  BOOST_CHECK(metar.Visibility() == 10);
-  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+  BOOST_CHECK(metar->Visibility() == 10);
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
   
-  BOOST_CHECK(metar.NumPhenomena() == 0);
+  BOOST_CHECK(metar->NumPhenomena() == 0);
   
-  BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::CLR);
-  BOOST_CHECK(!metar.Layer(0)->hasAltitude());
+  BOOST_CHECK(metar->NumCloudLayers() == 1);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::CLR);
+  BOOST_CHECK(!metar->Layer(0)->hasAltitude());
   
-  BOOST_CHECK(!metar.hasVerticalVisibility());
+  BOOST_CHECK(!metar->hasVerticalVisibility());
 
-  BOOST_CHECK(metar.Temperature() == 16);
-  BOOST_CHECK(metar.DewPoint() == -1);
+  BOOST_CHECK(metar->Temperature() == 16);
+  BOOST_CHECK(metar->DewPoint() == -1);
  
-  BOOST_CHECK(!metar.hasAltimeterQ());
-  BOOST_CHECK(metar.hasAltimeterA());
-  BOOST_CHECK(metar.AltimeterA() == 30.23);
+  BOOST_CHECK(!metar->hasAltimeterQ());
+  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(metar->AltimeterA() == 30.23);
 
-  BOOST_CHECK(metar.hasSeaLevelPressure());
-  BOOST_CHECK(metar.SeaLevelPressure() == 1024.2);
+  BOOST_CHECK(metar->hasSeaLevelPressure());
+  BOOST_CHECK(metar->SeaLevelPressure() == 1024.2);
 
-  BOOST_CHECK(metar.TemperatureNA() == 15.6);
-  BOOST_CHECK(metar.DewPointNA() == -0.6);
+  BOOST_CHECK(metar->TemperatureNA() == 15.6);
+  BOOST_CHECK(metar->DewPointNA() == -0.6);
 }
 
 BOOST_AUTO_TEST_CASE(real_METAR_5)
 {
   const char *metar_str = "KHLN 041610Z 28009KT 1/2SM SN FZFG VV007 M10/M12 A2998 RMK AO2 P0001 T11001117";
 
-  Metar metar(metar_str); 
+  auto metar = Metar::Create(metar_str); 
 
-  BOOST_CHECK(metar.hasICAO());
-  BOOST_CHECK(strcmp(metar.ICAO(), "KHLN") == 0);
+  BOOST_CHECK(metar->hasICAO());
+  BOOST_CHECK(strcmp(metar->ICAO(), "KHLN") == 0);
 
-  BOOST_CHECK(metar.Day() == 4);
-  BOOST_CHECK(metar.Hour() == 16);
-  BOOST_CHECK(metar.Minute() == 10);
+  BOOST_CHECK(metar->Day() == 4);
+  BOOST_CHECK(metar->Hour() == 16);
+  BOOST_CHECK(metar->Minute() == 10);
 
-  BOOST_CHECK(metar.WindDirection() == 280);
-  BOOST_CHECK(metar.WindSpeed() == 9);
-  BOOST_CHECK(!metar.hasWindGust());
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
+  BOOST_CHECK(metar->WindDirection() == 280);
+  BOOST_CHECK(metar->WindSpeed() == 9);
+  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
 
-  BOOST_CHECK(!metar.hasMinWindDirection());
-  BOOST_CHECK(!metar.hasMaxWindDirection());
+  BOOST_CHECK(!metar->hasMinWindDirection());
+  BOOST_CHECK(!metar->hasMaxWindDirection());
 
-  BOOST_CHECK(metar.NumPhenomena() == 2);
+  BOOST_CHECK(metar->NumPhenomena() == 2);
 
-  const auto &p0 = *metar.Phenomenon(0);
+  const auto &p0 = *metar->Phenomenon(0);
 
   BOOST_CHECK(p0[0] == Phenom::phenom::SNOW);
   BOOST_CHECK(p0.Intensity() == Phenom::intensity::NORMAL);
 
-  const auto &p1 = *metar.Phenomenon(1);
+  const auto &p1 = *metar->Phenomenon(1);
 
   BOOST_CHECK(p1[0] == Phenom::phenom::FOG);
   BOOST_CHECK(p1.Freezing() == true);
   BOOST_CHECK(p1.Intensity() == Phenom::intensity::NORMAL);
   
-  BOOST_CHECK(metar.Visibility() == 0.5);
-  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+  BOOST_CHECK(metar->Visibility() == 0.5);
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
   
-  BOOST_CHECK(metar.NumCloudLayers() == 0);
+  BOOST_CHECK(metar->NumCloudLayers() == 0);
 
-  BOOST_CHECK(metar.hasVerticalVisibility());
-  BOOST_CHECK(metar.VerticalVisibility() == 700);
+  BOOST_CHECK(metar->hasVerticalVisibility());
+  BOOST_CHECK(metar->VerticalVisibility() == 700);
 
-  BOOST_CHECK(metar.Temperature() == -10);
-  BOOST_CHECK(metar.DewPoint() == -12);
+  BOOST_CHECK(metar->Temperature() == -10);
+  BOOST_CHECK(metar->DewPoint() == -12);
  
-  BOOST_CHECK(!metar.hasAltimeterQ());
-  BOOST_CHECK(metar.hasAltimeterA());
-  BOOST_CHECK(metar.AltimeterA() == 29.98);
+  BOOST_CHECK(!metar->hasAltimeterQ());
+  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(metar->AltimeterA() == 29.98);
 
-  BOOST_CHECK(!metar.hasSeaLevelPressure());
+  BOOST_CHECK(!metar->hasSeaLevelPressure());
 
-  BOOST_CHECK(metar.TemperatureNA() == -10.0);
-  BOOST_CHECK(metar.DewPointNA() == -11.7);
+  BOOST_CHECK(metar->TemperatureNA() == -10.0);
+  BOOST_CHECK(metar->DewPointNA() == -11.7);
 }
 
 BOOST_AUTO_TEST_CASE(real_METAR_6)
 {
   const char *metar_str = "KSTL 051520Z 12017KT 5SM -TSRA BR OVC007CB 06/05 A2989 RMK AO2 LTG DSNT SE OCNL LTGIC SE TSB0854 TS SE MOV NE P0004 T00560050";
 
-  Metar metar(metar_str); 
+  auto metar = Metar::Create(metar_str); 
 
-  BOOST_CHECK(strcmp(metar.ICAO(), "KSTL") == 0);
+  BOOST_CHECK(strcmp(metar->ICAO(), "KSTL") == 0);
 
-  BOOST_CHECK(metar.Day() == 5);
-  BOOST_CHECK(metar.Hour() == 15);
-  BOOST_CHECK(metar.Minute() == 20);
+  BOOST_CHECK(metar->Day() == 5);
+  BOOST_CHECK(metar->Hour() == 15);
+  BOOST_CHECK(metar->Minute() == 20);
 
-  BOOST_CHECK(metar.WindDirection() == 120);
-  BOOST_CHECK(metar.WindSpeed() == 17);
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
+  BOOST_CHECK(metar->WindDirection() == 120);
+  BOOST_CHECK(metar->WindSpeed() == 17);
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
   
-  BOOST_CHECK(metar.Visibility() == 5);
-  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+  BOOST_CHECK(metar->Visibility() == 5);
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
 
-  BOOST_CHECK(metar.NumPhenomena() == 2);
+  BOOST_CHECK(metar->NumPhenomena() == 2);
 
-  const auto &p0 = *metar.Phenomenon(0);
+  const auto &p0 = *metar->Phenomenon(0);
 
   BOOST_CHECK(p0[0] == Phenom::phenom::THUNDER_STORM);
   BOOST_CHECK(p0[1] == Phenom::phenom::RAIN);
   BOOST_CHECK(p0.Intensity() == Phenom::intensity::LIGHT);
 
-  const auto &p1 = *metar.Phenomenon(1);
+  const auto &p1 = *metar->Phenomenon(1);
 
   BOOST_CHECK(p1[0] == Phenom::phenom::MIST);
   BOOST_CHECK(p1.Intensity() == Phenom::intensity::NORMAL);
   
-  BOOST_CHECK(metar.NumCloudLayers() == 1);
-  BOOST_CHECK(metar.Layer(0)->Cover() == Clouds::cover::OVC);
-  BOOST_CHECK(metar.Layer(0)->Altitude() == 700);
-  BOOST_CHECK(metar.Layer(0)->CloudType() == Clouds::type::CB);
+  BOOST_CHECK(metar->NumCloudLayers() == 1);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::OVC);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 700);
+  BOOST_CHECK(metar->Layer(0)->CloudType() == Clouds::type::CB);
   
-  BOOST_CHECK(!metar.hasVerticalVisibility());
+  BOOST_CHECK(!metar->hasVerticalVisibility());
 
-  BOOST_CHECK(metar.Temperature() == 6);
-  BOOST_CHECK(metar.DewPoint() == 5);
+  BOOST_CHECK(metar->Temperature() == 6);
+  BOOST_CHECK(metar->DewPoint() == 5);
  
-  BOOST_CHECK(metar.hasAltimeterA());
-  BOOST_CHECK(metar.AltimeterA() == 29.89);
+  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(metar->AltimeterA() == 29.89);
 
-  BOOST_CHECK(metar.TemperatureNA() == 5.6);
-  BOOST_CHECK(metar.DewPointNA() == 5);
+  BOOST_CHECK(metar->TemperatureNA() == 5.6);
+  BOOST_CHECK(metar->DewPointNA() == 5);
 }
 
 BOOST_AUTO_TEST_CASE(real_METAR_7)
 {
   const char *metar_str = "KSTL 091651Z 10010KT 060V120 10SM FEW120 BKN250 07/M06 A2998 RMK AO2 SLP160 T00671056";
 
-  Metar metar(metar_str); 
+  auto metar = Metar::Create(metar_str); 
 
-  BOOST_CHECK(strcmp(metar.ICAO(), "KSTL") == 0);
+  BOOST_CHECK(strcmp(metar->ICAO(), "KSTL") == 0);
 
-  BOOST_CHECK(metar.Day() == 9);
-  BOOST_CHECK(metar.Hour() == 16);
-  BOOST_CHECK(metar.Minute() == 51);
+  BOOST_CHECK(metar->Day() == 9);
+  BOOST_CHECK(metar->Hour() == 16);
+  BOOST_CHECK(metar->Minute() == 51);
 
-  BOOST_CHECK(metar.WindDirection() == 100);
-  BOOST_CHECK(metar.WindSpeed() == 10);
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
+  BOOST_CHECK(metar->WindDirection() == 100);
+  BOOST_CHECK(metar->WindSpeed() == 10);
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
 
-  BOOST_CHECK(metar.MinWindDirection() == 60);
-  BOOST_CHECK(metar.MaxWindDirection() == 120);
+  BOOST_CHECK(metar->MinWindDirection() == 60);
+  BOOST_CHECK(metar->MaxWindDirection() == 120);
   
-  BOOST_CHECK(metar.Visibility() == 10);
-  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+  BOOST_CHECK(metar->Visibility() == 10);
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
   
-  BOOST_CHECK(metar.NumCloudLayers() == 2);
-  BOOST_CHECK(metar.Layer(0)->Cover() ==  Clouds::cover::FEW);
-  BOOST_CHECK(metar.Layer(0)->Altitude() == 12000);
-  BOOST_CHECK(metar.Layer(1)->Cover() == Clouds::cover::BKN);
-  BOOST_CHECK(metar.Layer(1)->Altitude() == 25000);
+  BOOST_CHECK(metar->NumCloudLayers() == 2);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::FEW);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 12000);
+  BOOST_CHECK(metar->Layer(1)->Cover() == Clouds::cover::BKN);
+  BOOST_CHECK(metar->Layer(1)->Altitude() == 25000);
   
-  BOOST_CHECK(!metar.hasVerticalVisibility());
+  BOOST_CHECK(!metar->hasVerticalVisibility());
 
-  BOOST_CHECK(metar.Temperature() == 7);
-  BOOST_CHECK(metar.DewPoint() == -6);
+  BOOST_CHECK(metar->Temperature() == 7);
+  BOOST_CHECK(metar->DewPoint() == -6);
  
-  BOOST_CHECK(metar.hasAltimeterA());
-  BOOST_CHECK(metar.AltimeterA() == 29.98);
+  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(metar->AltimeterA() == 29.98);
 
-  BOOST_CHECK(metar.TemperatureNA() == 6.7);
-  BOOST_CHECK(metar.DewPointNA() == -5.6);
+  BOOST_CHECK(metar->TemperatureNA() == 6.7);
+  BOOST_CHECK(metar->DewPointNA() == -5.6);
   
-  BOOST_CHECK(metar.SeaLevelPressure() == 1016.0);
+  BOOST_CHECK(metar->SeaLevelPressure() == 1016.0);
 }
 
 BOOST_AUTO_TEST_CASE(real_METAR_8)
 {
   const char *metar_str = "KSTL 192051Z 20004KT 10SM -RA FEW034 SCT048 OVC110 22/18 A2993 RMK AO2 PK WND 27032/2004 LTG DSNT E AND SE RAB06 TSB03E42 PRESFR SLP129 OCNL LTGIC DSNT E CB DSNT E MOV E P0003 60003 T02220178 58006 $";
 
-  Metar metar(metar_str); 
+  auto metar = Metar::Create(metar_str); 
 
-  BOOST_CHECK(strcmp(metar.ICAO(), "KSTL") == 0);
+  BOOST_CHECK(strcmp(metar->ICAO(), "KSTL") == 0);
 
-  BOOST_CHECK(metar.Day() == 19);
-  BOOST_CHECK(metar.Hour() == 20);
-  BOOST_CHECK(metar.Minute() == 51);
+  BOOST_CHECK(metar->Day() == 19);
+  BOOST_CHECK(metar->Hour() == 20);
+  BOOST_CHECK(metar->Minute() == 51);
 
-  BOOST_CHECK(metar.WindDirection() == 200);
-  BOOST_CHECK(metar.WindSpeed() == 4);
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
+  BOOST_CHECK(metar->WindDirection() == 200);
+  BOOST_CHECK(metar->WindSpeed() == 4);
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
   
-  BOOST_CHECK(metar.Visibility() == 10);
-  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+  BOOST_CHECK(metar->Visibility() == 10);
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
   
-  BOOST_CHECK(metar.NumPhenomena() == 1);
+  BOOST_CHECK(metar->NumPhenomena() == 1);
 
-  const auto &p = *metar.Phenomenon(0);
+  const auto &p = *metar->Phenomenon(0);
 
   BOOST_CHECK(p[0] == Phenom::phenom::RAIN);
   BOOST_CHECK(p.Intensity() == Phenom::intensity::LIGHT);
   
-  BOOST_CHECK(metar.NumCloudLayers() == 3);
-  BOOST_CHECK(metar.Layer(0)->Cover() ==  Clouds::cover::FEW);
-  BOOST_CHECK(metar.Layer(0)->Altitude() == 3400);
-  BOOST_CHECK(metar.Layer(1)->Cover() ==  Clouds::cover::SCT);
-  BOOST_CHECK(metar.Layer(1)->Altitude() == 4800);
-  BOOST_CHECK(metar.Layer(2)->Cover() == Clouds::cover::OVC);
-  BOOST_CHECK(metar.Layer(2)->Altitude() == 11000);
+  BOOST_CHECK(metar->NumCloudLayers() == 3);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::FEW);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 3400);
+  BOOST_CHECK(metar->Layer(1)->Cover() == Clouds::cover::SCT);
+  BOOST_CHECK(metar->Layer(1)->Altitude() == 4800);
+  BOOST_CHECK(metar->Layer(2)->Cover() == Clouds::cover::OVC);
+  BOOST_CHECK(metar->Layer(2)->Altitude() == 11000);
   
-  BOOST_CHECK(metar.Temperature() == 22);
-  BOOST_CHECK(metar.DewPoint() == 18);
+  BOOST_CHECK(metar->Temperature() == 22);
+  BOOST_CHECK(metar->DewPoint() == 18);
  
-  BOOST_CHECK(metar.hasAltimeterA());
-  BOOST_CHECK(metar.AltimeterA() == 29.93);
+  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(metar->AltimeterA() == 29.93);
 
-  BOOST_CHECK(metar.TemperatureNA() == 22.2);
-  BOOST_CHECK(metar.DewPointNA() == 17.8);
+  BOOST_CHECK(metar->TemperatureNA() == 22.2);
+  BOOST_CHECK(metar->DewPointNA() == 17.8);
   
-  BOOST_CHECK(metar.SeaLevelPressure() == 1012.9);
+  BOOST_CHECK(metar->SeaLevelPressure() == 1012.9);
 }
 
 
@@ -1541,42 +1541,42 @@ BOOST_AUTO_TEST_CASE(real_METAR_9)
 {
   const char *metar_str = "KSTL 261605Z 10006KT 7SM -TSRA FEW050CB OVC090 06/01 A3014 RMK AO2 LTG DSNT S AND SW TSB05 OCNL LTGIC SW-W TS SW-W MOV NE P0001 T00610006";
 
-  Metar metar(metar_str); 
+  auto metar = Metar::Create(metar_str); 
 
-  BOOST_CHECK(strcmp(metar.ICAO(), "KSTL") == 0);
+  BOOST_CHECK(strcmp(metar->ICAO(), "KSTL") == 0);
 
-  BOOST_CHECK(metar.Day() == 26);
-  BOOST_CHECK(metar.Hour() == 16);
-  BOOST_CHECK(metar.Minute() == 5);
+  BOOST_CHECK(metar->Day() == 26);
+  BOOST_CHECK(metar->Hour() == 16);
+  BOOST_CHECK(metar->Minute() == 5);
 
-  BOOST_CHECK(metar.WindDirection() == 100);
-  BOOST_CHECK(metar.WindSpeed() == 6);
-  BOOST_CHECK(metar.WindSpeedUnits() == Metar::speed_units::KT);
+  BOOST_CHECK(metar->WindDirection() == 100);
+  BOOST_CHECK(metar->WindSpeed() == 6);
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
   
-  BOOST_CHECK(metar.Visibility() == 7);
-  BOOST_CHECK(metar.VisibilityUnits() == Metar::distance_units::SM);
+  BOOST_CHECK(metar->Visibility() == 7);
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
 
-  BOOST_CHECK(metar.NumPhenomena() == 1);
+  BOOST_CHECK(metar->NumPhenomena() == 1);
 
-  const auto &p = *metar.Phenomenon(0);
+  const auto &p = *metar->Phenomenon(0);
   
   BOOST_CHECK(p.Intensity() == Phenom::intensity::LIGHT);
   BOOST_CHECK(p[0] == Phenom::phenom::THUNDER_STORM);
   BOOST_CHECK(p[1] == Phenom::phenom::RAIN);
   
-  BOOST_CHECK(metar.NumCloudLayers() == 2);
-  BOOST_CHECK(metar.Layer(0)->Cover() ==  Clouds::cover::FEW);
-  BOOST_CHECK(metar.Layer(0)->Altitude() == 5000);
-  BOOST_CHECK(metar.Layer(0)->CloudType() == Clouds::type::CB);
-  BOOST_CHECK(metar.Layer(1)->Cover() ==  Clouds::cover::OVC);
-  BOOST_CHECK(metar.Layer(1)->Altitude() == 9000);
+  BOOST_CHECK(metar->NumCloudLayers() == 2);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::FEW);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 5000);
+  BOOST_CHECK(metar->Layer(0)->CloudType() == Clouds::type::CB);
+  BOOST_CHECK(metar->Layer(1)->Cover() == Clouds::cover::OVC);
+  BOOST_CHECK(metar->Layer(1)->Altitude() == 9000);
   
-  BOOST_CHECK(metar.Temperature() == 6);
-  BOOST_CHECK(metar.DewPoint() == 1);
+  BOOST_CHECK(metar->Temperature() == 6);
+  BOOST_CHECK(metar->DewPoint() == 1);
  
-  BOOST_CHECK(metar.hasAltimeterA());
-  BOOST_CHECK(metar.AltimeterA() == 30.14);
+  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(metar->AltimeterA() == 30.14);
 
-  BOOST_CHECK(metar.TemperatureNA() == 6.1);
-  BOOST_CHECK(metar.DewPointNA() == 0.6);
+  BOOST_CHECK(metar->TemperatureNA() == 6.1);
+  BOOST_CHECK(metar->DewPointNA() == 0.6);
 }

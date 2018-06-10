@@ -65,10 +65,10 @@ public:
   virtual bool Temporary() const { return _tempo; }
 
 private:
-    cover _cover;
-    int _alt;
-    bool _tempo;
-    type _type;
+  cover _cover;
+  int _alt;
+  bool _tempo;
+  type _type;
 };
 
 #ifndef NO_SHARED_PTR

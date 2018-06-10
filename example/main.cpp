@@ -138,42 +138,42 @@ int main(int argc, char **argv)
   {
     cout << metar_str << endl;
 
-    Metar metar(metar_str.c_str());
+    auto metar = Metar::Create(metar_str.c_str());
 
     double temp, dew;
-    if (metar.hasTemperatureNA())
+    if (metar->hasTemperatureNA())
     {
-      temp = metar.TemperatureNA();
-      dew = metar.DewPointNA();
+      temp = metar->TemperatureNA();
+      dew = metar->DewPointNA();
     }
     else
     {
-      temp = metar.Temperature();
-      dew = metar.DewPoint();
+      temp = metar->Temperature();
+      dew = metar->DewPoint();
     }
     
-    cout << metar.ICAO() << endl;
+    cout << metar->ICAO() << endl;
     cout << setprecision(1) << fixed;
 
     cout <<   "Temperature: ";
     print_temp(temp, fahrenheit_flag);  
 
     double feels_like(temp);
-    if (metar.hasWindSpeed())
+    if (metar->hasWindSpeed())
     {
       double wind_kph;
-      switch(metar.WindSpeedUnits())
+      switch(metar->WindSpeedUnits())
       {
         case Metar::speed_units::KT:
-          wind_kph = Convert::Kts2Kph(metar.WindSpeed());
+          wind_kph = Convert::Kts2Kph(metar->WindSpeed());
           break;
 
         case Metar::speed_units::MPS:
-          wind_kph = metar.WindSpeed() / 1000.0;
+          wind_kph = metar->WindSpeed() / 1000.0;
           break;
 
         default:
-          wind_kph = metar.WindSpeed();
+          wind_kph = metar->WindSpeed();
           break;
       }
       
@@ -198,36 +198,36 @@ int main(int argc, char **argv)
     cout << "\nHumidity:    " << humidity << "%" << endl;
 
     cout << "Pressure:    ";
-    if (metar.hasAltimeterA())
-      cout << metar.AltimeterA() << " inHg" << endl;
-    else if (metar.hasAltimeterQ())
-      cout << metar.AltimeterQ() << " hPa" << endl;
+    if (metar->hasAltimeterA())
+      cout << metar->AltimeterA() << " inHg" << endl;
+    else if (metar->hasAltimeterQ())
+      cout << metar->AltimeterQ() << " hPa" << endl;
 
-    if (metar.hasWindSpeed())
+    if (metar->hasWindSpeed())
     {
       cout << "\nWind:        ";
-      if (!metar.isVariableWindDirection())
+      if (!metar->isVariableWindDirection())
       { 
-        cout << metar.WindDirection() << DEG_SIM;
+        cout << metar->WindDirection() << DEG_SIM;
       }
       else
       {
         cout << "VRB";
       }
-      cout << " / " << metar.WindSpeed();
-      if (metar.hasWindGust())
+      cout << " / " << metar->WindSpeed();
+      if (metar->hasWindGust())
       {
-        cout << " (" << metar.WindGust() << ")";
+        cout << " (" << metar->WindGust() << ")";
       }
       cout << " "
-           << speed_units[static_cast<int>(metar.WindSpeedUnits())] << endl;
+           << speed_units[static_cast<int>(metar->WindSpeedUnits())] << endl;
     }
 
     cout << setprecision(2) << fixed;
-    if (metar.hasVisibility())
+    if (metar->hasVisibility())
     {
-      cout << "\nVisibility:  " << metar.Visibility() << " ";
-      if (metar.VisibilityUnits() == Metar::distance_units::M)
+      cout << "\nVisibility:  " << metar->Visibility() << " ";
+      if (metar->VisibilityUnits() == Metar::distance_units::M)
       {
         cout << "meters" << endl;
       }
@@ -238,9 +238,9 @@ int main(int argc, char **argv)
     }
     
     cout << endl;
-    for (unsigned int i = 0 ; i < metar.NumCloudLayers() ; i++)
+    for (unsigned int i = 0 ; i < metar->NumCloudLayers() ; i++)
     {
-      auto layer = metar.Layer(i);
+      auto layer = metar->Layer(i);
       if (!layer->Temporary())
       {
         cout << sky_conditions[static_cast<int>(layer->Cover())];
@@ -256,6 +256,10 @@ int main(int argc, char **argv)
         cout << endl;
       }
     }
+
+#ifdef NO_SHARED_PTR
+    delete metar;
+#endif
 
     return 0;
   }

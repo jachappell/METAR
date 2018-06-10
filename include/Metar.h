@@ -24,6 +24,30 @@ namespace Storage_B
     class Metar
     {
     public:
+      //
+      // Static Creator
+      //    metar_str - METAR to decode
+      //
+      static
+#ifndef NO_SHARED_PTR
+        std::shared_ptr<Metar>
+#else
+        Metar * // caller is responsible for deleting
+#endif
+          Create(const char *metar_str);
+
+      //
+      // Static Creator
+      //    metar_str - METAR to decode
+      //
+      static
+#ifndef NO_SHARED_PTR
+        std::shared_ptr<Metar>
+#else
+        Metar *  // caller is responsible for deleting
+#endif
+          Create(char *metar_str);
+      
       enum class message_type
       {
         undefined = -1,
@@ -46,23 +70,9 @@ namespace Storage_B
         SM  // statute miles
       };
 
-      //
-      // Constructor
-      //    metar_str - METAR to decode
-      //
-      Metar(const char *metar_str);
+      Metar() = default;
 
-      //
-      // Constructor
-      //    metar_str - METAR to decode
-      //
-      Metar(char *metar_str);
-
-#ifdef NO_SHARED_PTR
-      ~Metar();
-#else
-      ~Metar() = default;
-#endif
+      virtual ~Metar() = default;
 
       // no copy
       Metar(const Metar&) = delete;
@@ -71,73 +81,68 @@ namespace Storage_B
       //
       // Message type: METAR or SPECI
       //
-      message_type MessageType() const { return _message_type; }
-      bool hasMessageType() const
-      {
-        return _message_type != message_type::undefined;
-      }
+      virtual message_type MessageType() const = 0;
+      virtual bool hasMessageType() const = 0;
 
       //
       // Location identifier
       //
-      const char *ICAO() const { return _icao; }
-      bool hasICAO() const { return _icao[0] != '\0'; }
+      virtual const char *ICAO() const = 0;
+      virtual bool hasICAO() const = 0;
 
       //
       // Observation day of month (UTC)
       //
-      int Day() const { return _day; }
-      bool hasDay() const { return _day != _INTEGER_UNDEFINED; }
+      virtual int Day() const = 0;
+      virtual bool hasDay() const = 0;
 
       //
       //  Hour of observation (UTC)
       //
-      int Hour() const { return _hour; }
-      bool hasHour() const { return _hour != _INTEGER_UNDEFINED; }
+      virtual int Hour() const = 0;
+      virtual bool hasHour() const = 0;
 
       //
       //  Minute of observation (UTC)
       //
-      int Minute() const { return _min; }
-      bool hasMinute() const { return _min != _INTEGER_UNDEFINED; }
+      virtual int Minute() const = 0;
+      virtual bool hasMinute() const = 0;
 
       //
       //  Wind direction
       //
-      int WindDirection() const { return _wind_dir; }
-      bool hasWindDirection() const { return _wind_dir != _INTEGER_UNDEFINED; }
+      virtual int WindDirection() const = 0;
+      virtual bool hasWindDirection() const = 0;
 
       //
       // Variable wind direction
       //    If true, wind direction is variable (hasWindDirection() will 
       //    return false in this case)
-      bool isVariableWindDirection() const { return _vrb; }
+      virtual bool isVariableWindDirection() const = 0;
 
       //
       //  Wind speed
       //
-      int WindSpeed() const { return _wind_spd; }
-      bool hasWindSpeed() const { return _wind_spd != _INTEGER_UNDEFINED; }
+      virtual int WindSpeed() const = 0;
+      virtual bool hasWindSpeed() const = 0;
 
       //
       //  Wind gust
       //
-      int WindGust() const { return _gust; }
-      bool hasWindGust() const { return _gust != _INTEGER_UNDEFINED; }
+      virtual int WindGust() const = 0;
+      virtual bool hasWindGust() const = 0;
 
       //
       // Minimum wind direction
       //
-      int MinWindDirection() const { return _min_wind_dir; }
-      int hasMinWindDirection() const
-        { return _min_wind_dir != _INTEGER_UNDEFINED ; }
+      virtual int MinWindDirection() const = 0;
+      virtual int hasMinWindDirection() const = 0;
 
       //
       // Maximum wind direction
       //
-      int MaxWindDirection() const { return _max_wind_dir; }
-      int hasMaxWindDirection() const
-        { return _max_wind_dir != _INTEGER_UNDEFINED; }
+      virtual int MaxWindDirection() const = 0;
+      virtual int hasMaxWindDirection() const = 0;
 
       //
       // Wind speed units
@@ -145,254 +150,108 @@ namespace Storage_B
       //    MPS - meters per second
       //    KPH - kilometers per hour
       //
-      speed_units WindSpeedUnits() const { return _wind_speed_units; }
-      int hasWindSpeedUnits() const
-      {
-        return _wind_speed_units != speed_units::undefined;
-      }
+      virtual speed_units WindSpeedUnits() const = 0;
+      virtual int hasWindSpeedUnits() const = 0;
 
       //
       // Visibility
       //
-      double Visibility() const { return _vis; }
-      bool hasVisibility() const { return _vis != _DOUBLE_UNDEFINED; }
+      virtual double Visibility() const = 0;
+      virtual bool hasVisibility() const = 0;
 
       //
       // Visibility units
       //    SM - statute miles
       //    M  - meters
-      distance_units VisibilityUnits() const { return _vis_units; }
-      bool hasVisibilityUnits() const
-      {
-        return _vis_units != distance_units::undefined;
-      }
+      virtual distance_units VisibilityUnits() const = 0;
+      virtual bool hasVisibilityUnits() const = 0;
 
       //
       // Visibility less than
       //    If true, visibility is less than reported value
       //
-      bool isVisibilityLessThan() const { return _vis_lt; }
+      virtual bool isVisibilityLessThan() const = 0;
   
       //
       // CAVOK (Ceiling and Visibility OK)  
       //    If true, Ceiling and Visibility OK
       //
-      bool isCAVOK() const { return _cavok; }
+      virtual bool isCAVOK() const = 0;
 
       //
       // Vertical visibilty
       //    feet
-      int VerticalVisibility() const { return _vert_vis; }
-      bool hasVerticalVisibility() const
-        { return _vert_vis != _INTEGER_UNDEFINED; }
+      virtual int VerticalVisibility() const = 0;
+      virtual bool hasVerticalVisibility() const = 0;
 
       //
       // Temperature
       //    Celsius
       //
-      int Temperature() const { return _temp; }
-      bool hasTemperature() const { return _temp != _INTEGER_UNDEFINED; }
+      virtual int Temperature() const = 0;
+      virtual bool hasTemperature() const = 0;
 
       //
       // Dew point
       //    Celsius
       // 
-      int DewPoint() const { return _dew; }
-      bool hasDewPoint() const { return _dew != _INTEGER_UNDEFINED; }
+      virtual int DewPoint() const = 0;
+      virtual bool hasDewPoint() const = 0;
 
       //
       // Altimeter setting
       //    inHg
-      double AltimeterA() const { return _altimeterA; }
-      bool hasAltimeterA() const { return _altimeterA != _DOUBLE_UNDEFINED; }
+      virtual double AltimeterA() const = 0;
+      virtual bool hasAltimeterA() const = 0;
 
       //
       // Current altimeter setting (in QNH)
       //    hPa
-      int AltimeterQ() const { return _altimeterQ; }
-      bool hasAltimeterQ() const { return _altimeterQ != _INTEGER_UNDEFINED; }
+      virtual int AltimeterQ() const = 0;
+      virtual bool hasAltimeterQ() const = 0;
 
       //
       // Barometric pressure extrapolated to sea level 
       //    hPa
-      double SeaLevelPressure() const { return _slp; }
-      bool hasSeaLevelPressure() const { return _slp != _DOUBLE_UNDEFINED; }
+      virtual double SeaLevelPressure() const = 0;
+      virtual bool hasSeaLevelPressure() const = 0;
 
       //
       // Temperature
       //    Celsius
       //
-      double TemperatureNA() const { return _ftemp; }
-      bool hasTemperatureNA() const { return _ftemp != _DOUBLE_UNDEFINED; }
+      virtual double TemperatureNA() const = 0;
+      virtual bool hasTemperatureNA() const = 0;
 
       //
       // Dew point
       //    Celsius
       // 
-      double DewPointNA() const { return _fdew; }
-      bool hasDewPointNA() const { return _fdew != _DOUBLE_UNDEFINED; }
+      virtual double DewPointNA() const = 0;
+      virtual bool hasDewPointNA() const = 0;
 
       //
       // Number of Cloud Layers
       //
-#ifdef NO_SHARED_PTR
-      unsigned int
-#else
-      auto
-#endif
-      NumCloudLayers() const
-      { 
-#ifdef NO_SHARED_PTR
-        return _num_layers;
-#else
-        return _layers.size(); 
-#endif
-      }
+      virtual unsigned int NumCloudLayers() const = 0;
 
+      virtual
 #ifndef NO_SHARED_PTR
-      std::shared_ptr<Clouds>
+        std::shared_ptr<Clouds>
 #else
-      const Clouds *
+        const Clouds *
 #endif
-      Layer(unsigned int idx) const
-      {
-        if (idx < NumCloudLayers())
-        {
-          return _layers[idx];
-        }
+          Layer(unsigned int idx) const = 0;
 
-        return nullptr;
-      }
+      virtual unsigned int NumPhenomena() const = 0;
 
-#ifdef NO_SHARED_PTR
-      unsigned int
-#else
-      auto
-#endif
-      NumPhenomena() const
-      {
-#ifdef NO_SHARED_PTR
-        return _num_phenomena;
-#else
-        return _phenomena.size();
-#endif
-      }
-
+      virtual
 #ifndef NO_SHARED_PTR
-      std::shared_ptr<Phenom>
+        std::shared_ptr<Phenom>
 #else
-      const Phenom *
+        const Phenom *
 #endif
-      Phenomenon(unsigned int idx) const
-      {
-#ifndef NO_SHARED_PTR
-        return _phenomena.at(idx);
-#else
-        // for now
-        return _phenomena[idx];
-#endif
-      }
-
-    private:
-      Metar();
-
-      void parse(char *metar_str);
-      void parse(const char *metar_str);
-
-      void parse_message_type(const char *str);
-
-      void parse_icao(const char *str);
-
-      void parse_ot(const char *str);
-
-      void parse_wind(const char *str);
-
-      void parse_wind_var(const char *str);
-
-      void parse_vis(const char *str);
-
-      void parse_cloud_layer(const char *str);
-  
-      void parse_vert_vis(const char *str);
-  
-      void parse_temp(const char *str);
-
-      void parse_alt(const char *str);
-
-      void parse_slp(const char *str);
-
-      void parse_tempNA(const char *str);
-
-      void parse_phenom(const char *str);
-
-      message_type _message_type;
-
-      char _icao[5];
-
-      int _day;
-      int _hour;
-      int _min;
-
-      int _wind_dir;
-      int _wind_spd;
-      int _gust;
-      speed_units _wind_speed_units;
-
-      int _min_wind_dir;
-      int _max_wind_dir;
-      bool _vrb;
-
-      double _vis;
-      distance_units _vis_units;
-      bool _vis_lt;
-      bool _cavok;
-
-#ifndef NO_SHARED_PTR
-      std::vector<std::shared_ptr<Clouds>>
-#else
-      Clouds **
-#endif
-      _layers;
-
-#ifdef NO_SHARED_PTR
-      unsigned int _num_layers;
-#endif
-
-#ifndef NO_SHARED_PTR
-      std::vector<std::shared_ptr<Phenom>>
-#else
-      Phenom **
-#endif
-      _phenomena;
-#ifdef NO_SHARED_PTR
-      unsigned int _num_phenomena;
-#endif
-
-      int _vert_vis;
-
-      int _temp;
-      int _dew;
-
-      double _altimeterA;
-
-      int _altimeterQ;
-
-      bool _rmk;
-      bool _tempo;
-
-      double _slp;
-
-      double _ftemp;
-      double _fdew;
-
-      const char *_previous_element;
-
-      static const int _INTEGER_UNDEFINED;
-      static const double _DOUBLE_UNDEFINED;
-#ifdef NO_SHARED_PTR
-      static const unsigned int _MAX_CLOUD_LAYERS;
-      static const unsigned int _MAX_PHENOM;
-#endif
+          Phenomenon(unsigned int idx) const = 0;
     };
   }
 }
