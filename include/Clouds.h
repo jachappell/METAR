@@ -4,8 +4,8 @@
 // METAR clouds decoder
 //
 
-#ifndef __STORAGE_B_WEATHER_CLOUDS_H__
-#define __STORAGE_B_WEATHER_CLOUDS_H__
+#ifndef STORAGE_B_WEATHER_CLOUDS_H_
+#define STORAGE_B_WEATHER_CLOUDS_H_
 
 #include "defines.h"
 

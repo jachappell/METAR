@@ -22,6 +22,7 @@
 
 using namespace std;
 using namespace Storage_B::Weather;
+using namespace Storage_B::Curlpp;
 
 static const string URL = 
   "http://tgftp.nws.noaa.gov//data/observations/metar/stations/";

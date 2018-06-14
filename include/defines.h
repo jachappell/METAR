@@ -3,8 +3,8 @@
 //
 // defines
 //
-#ifndef __STORAGE_B_WEATHER_DEFINES_H__
-#define __STORAGE_B_WEATHER_DEFINES_H__
+#ifndef STORAGE_B_WEATHER_DEFINES_H_
+#define STORAGE_B_WEATHER_DEFINES_H_
 
 #ifdef ARDUINO
 #define NO_SHARED_PTR

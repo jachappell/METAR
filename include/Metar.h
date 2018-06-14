@@ -4,8 +4,8 @@
 // METAR decoder
 //
 
-#ifndef __STORAGE_B_WEATHER_METAR_H__
-#define __STORAGE_B_WEATHER_METAR_H__
+#ifndef STORAGE_B_WEATHER_METAR_H_
+#define STORAGE_B_WEATHER_METAR_H_
 
 #include "defines.h"
 

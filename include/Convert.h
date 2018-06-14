@@ -4,8 +4,8 @@
 // Units conversion
 //
 
-#ifndef __STORAGE_B_WEATHER_CONVERT_H__
-#define __STORAGE_B_WEATHER_CONVERT_H__
+#ifndef STORAGE_B_WEATHER_CONVERT_H_
+#define STORAGE_B_WEATHER_CONVERT_H_
 
 namespace Storage_B 
 {
