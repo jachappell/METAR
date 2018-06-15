@@ -63,7 +63,7 @@ namespace Storage_B
 #else
           Phenom *
 #endif
-              Create(const char *str, bool temp);
+              Create(const char *str, bool temp = false);
 
       virtual ~Phenom() = default;
 

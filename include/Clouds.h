@@ -45,7 +45,7 @@ namespace Storage_B
 #else
           Clouds *
 #endif
-              Create(const char *str, bool temp);
+              Create(const char *str, bool temp = false);
 
       virtual ~Clouds() = default;
 
