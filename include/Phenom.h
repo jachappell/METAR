@@ -57,7 +57,6 @@ namespace Storage_B
         HEAVY
       };
 
-
       static 
 #ifndef NO_SHARED_PTR
           std::shared_ptr<Phenom>

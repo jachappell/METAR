@@ -245,13 +245,7 @@ namespace Storage_B
 
       virtual unsigned int NumPhenomena() const = 0;
 
-      virtual
-#ifndef NO_SHARED_PTR
-        std::shared_ptr<Phenom>
-#else
-        const Phenom *
-#endif
-          Phenomenon(unsigned int idx) const = 0;
+      virtual const Phenom& Phenomenon(unsigned int idx) const = 0;
     };
   }
 }

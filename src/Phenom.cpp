@@ -81,8 +81,8 @@ public:
 #endif
   }
 
-  PhenomImpl(const Phenom&) = delete;
-  PhenomImpl& operator=(const Phenom&) = delete;
+  PhenomImpl(const PhenomImpl&) = delete;
+  PhenomImpl& operator=(const PhenomImpl&) = delete;
 
   ~PhenomImpl() = default;
 

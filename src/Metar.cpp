@@ -175,6 +175,40 @@ namespace
   }
 }
 
+class PhenomDefault : public Phenom
+{
+public:
+  PhenomDefault() {}
+  
+  PhenomDefault(const PhenomDefault&) = delete;
+  PhenomDefault& operator=(const PhenomDefault&) = delete;
+
+  ~PhenomDefault() = default;
+
+  virtual unsigned int NumPhenom() const { return 0; }
+
+  virtual phenom
+#ifndef NO_SHARED_PTR
+      operator[](typename std::vector<Phenom>::size_type
+#else
+      operator[](unsigned int
+#endif
+                 ) const 
+  {
+    return phenom::NONE;
+  }
+  
+  virtual intensity Intensity() const { return intensity::NORMAL; } 
+  virtual bool Blowing() const { return false; }
+  virtual bool Freezing() const { return false; }
+  virtual bool Drifting() const { return false; }
+  virtual bool Vicinity() const { return false; }
+  virtual bool Partial() const { return false; }
+  virtual bool Shallow() const { return false; } 
+  virtual bool Patches() const { return false; }
+  virtual bool Temporary() const { return false; }
+};
+
 class MetarImpl : public Metar
 {
 public:
@@ -319,19 +353,14 @@ public:
 #endif
   }
 
-#ifndef NO_SHARED_PTR
-  std::shared_ptr<Phenom>
-#else
-  const Phenom *
-#endif
-  Phenomenon(unsigned int idx) const
+  const Phenom& Phenomenon(unsigned int idx) const
   {
     if (idx < NumPhenomena())
     {
-      return _phenomena[idx];
+      return *_phenomena[idx];
     }
 
-    return nullptr;
+    return *_default_phenom;
   }
 
 private:
@@ -434,6 +463,13 @@ private:
   static const unsigned int _MAX_CLOUD_LAYERS;
   static const unsigned int _MAX_PHENOM;
 #endif
+
+#ifndef NO_SHARED_PTR
+  std::shared_ptr<Phenom>
+#else
+  Phenom *
+#endif
+  _default_phenom;
 };
    
 const int MetarImpl::_INTEGER_UNDEFINED = INT_MIN;
@@ -510,6 +546,13 @@ MetarImpl::MetarImpl()
   _layers = new Clouds*[_MAX_CLOUD_LAYERS];
   _phenomena = new Phenom*[_MAX_PHENOM];
 #endif
+
+#ifdef NO_SHARED_PTR
+  _default_phenom = new PhenomDefault();
+#else
+  _default_phenom = make_shared<PhenomDefault>();
+#endif
+
 }
 
 MetarImpl::MetarImpl(const char *metar_str) : MetarImpl()
@@ -537,6 +580,8 @@ MetarImpl::~MetarImpl()
   }
 
   delete[] _phenomena;
+
+  delete _default_phenom;
 }
 #endif
 
