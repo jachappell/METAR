@@ -6,12 +6,12 @@
 
 #include "Metar.h"
 
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
+#include <cstring>
+#include <cstdlib>
+#include <cctype>
 
-#include <limits.h>
-#include <float.h>
+#include <climits>
+#include <cfloat>
 
 using namespace std;
 using namespace Storage_B::Weather;

@@ -5,7 +5,7 @@
 //
 #include "Utils.h"
 
-#include <math.h>
+#include <cmath>
 
 #include <Convert.h>
 

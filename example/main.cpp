@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include <math.h>
+#include <cmath>
 #include <getopt.h>
 
 #include <boost/algorithm/string.hpp>

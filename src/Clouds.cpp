@@ -6,9 +6,9 @@
 
 #include "Clouds.h"
 
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
+#include <cstdlib>
+#include <cstring>
+#include <climits>
 
 using namespace std;
 using namespace Storage_B::Weather;
