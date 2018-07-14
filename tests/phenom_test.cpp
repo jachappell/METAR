@@ -235,12 +235,14 @@ BOOST_AUTO_TEST_CASE(phenoms)
   }
 
   {
-    auto result = Phenom::Create("TS");
+    auto result = Phenom::Create("TSRA");
 
     const auto& p = *result;
   
     BOOST_CHECK(p.NumPhenom() == 1);
-    BOOST_CHECK(p[0] == Phenom::phenom::THUNDER_STORM);
+    BOOST_CHECK(p[0] == Phenom::phenom::RAIN);
+    BOOST_CHECK(p.ThunderStorm());
+
     BOOST_CHECK(p.Intensity() == Phenom::intensity::NORMAL);
   }
 

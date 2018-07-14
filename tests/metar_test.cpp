@@ -881,8 +881,8 @@ BOOST_AUTO_TEST_CASE(real_METAR_6)
 
   BOOST_CHECK(metar->NumPhenomena() == 2);
 
-  BOOST_CHECK(metar->Phenomenon(0)[0] == Phenom::phenom::THUNDER_STORM);
-  BOOST_CHECK(metar->Phenomenon(0)[1] == Phenom::phenom::RAIN);
+  BOOST_CHECK(metar->Phenomenon(0).ThunderStorm());
+  BOOST_CHECK(metar->Phenomenon(0)[0] == Phenom::phenom::RAIN);
   BOOST_CHECK(metar->Phenomenon(0).Intensity() == Phenom::intensity::LIGHT);
 
   BOOST_CHECK(metar->Phenomenon(1)[0] == Phenom::phenom::MIST);
@@ -1014,8 +1014,8 @@ BOOST_AUTO_TEST_CASE(real_METAR_9)
   BOOST_CHECK(metar->NumPhenomena() == 1);
 
   BOOST_CHECK(metar->Phenomenon(0).Intensity() == Phenom::intensity::LIGHT);
-  BOOST_CHECK(metar->Phenomenon(0)[0] == Phenom::phenom::THUNDER_STORM);
-  BOOST_CHECK(metar->Phenomenon(0)[1] == Phenom::phenom::RAIN);
+  BOOST_CHECK(metar->Phenomenon(0).ThunderStorm());
+  BOOST_CHECK(metar->Phenomenon(0)[0] == Phenom::phenom::RAIN);
   
   BOOST_CHECK(metar->NumCloudLayers() == 2);
   BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::FEW);

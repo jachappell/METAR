@@ -45,7 +45,6 @@ namespace Storage_B
         SNOW,                   // SN
         SQUALLS,                // SQ
         SAND_STORM,             // SS
-        THUNDER_STORM,          // TS
         UNKNOWN_PRECIP,         // UP
         VOLCANIC_ASH,           // VA
       };
@@ -85,6 +84,7 @@ namespace Storage_B
       virtual bool Partial() const = 0;
       virtual bool Shallow() const = 0;
       virtual bool Patches() const = 0;
+      virtual bool ThunderStorm() const = 0;
       virtual bool Temporary() const = 0;
     };
   }

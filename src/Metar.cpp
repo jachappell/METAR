@@ -206,6 +206,7 @@ public:
   virtual bool Partial() const { return false; }
   virtual bool Shallow() const { return false; } 
   virtual bool Patches() const { return false; }
+  virtual bool ThunderStorm() const { return false; }
   virtual bool Temporary() const { return false; }
 };
 

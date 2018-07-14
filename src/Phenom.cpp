@@ -57,7 +57,8 @@ public:
              bool vicinity = false,
              bool partial = false,
              bool shallow = false,
-             bool patches = false)
+             bool patches = false,
+             bool ts = false)
 #ifndef NO_SHARED_PTR
     : _phenoms(p)
 #else
@@ -71,6 +72,7 @@ public:
     , _partial(partial)
     , _shallow(shallow)
     , _patches(patches)
+    , _ts(ts)
     , _tempo(tempo)
   {
 #ifdef NO_SHARED_PTR
@@ -119,6 +121,7 @@ public:
   virtual bool Partial() const { return _partial; }
   virtual bool Shallow() const { return _shallow; }
   virtual bool Patches() const { return _patches; }
+  virtual bool ThunderStorm() const { return _ts; }
   virtual bool Temporary() const { return _tempo; }
 
 private:
@@ -137,6 +140,7 @@ private:
   bool _partial;
   bool _shallow;
   bool _patches;
+  bool _ts;
   bool _tempo;
 };
 
@@ -147,7 +151,7 @@ private:
 #endif
 Phenom::Create(const char *str, bool tempo)
 {
-  #ifndef NO_SHARED_PTR
+#ifndef NO_SHARED_PTR
   vector<Phenom::phenom> p;
 #else
   unsigned int idx = 0;
@@ -161,6 +165,7 @@ Phenom::Create(const char *str, bool tempo)
   bool partial = false;
   bool shallow = false;
   bool patches = false;
+  bool ts = false;
 
   if (!isalpha(str[0]))
   {
@@ -217,11 +222,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, TS, 2))
     {
-#ifndef NO_SHARED_PTR
-      p.push_back(Phenom::phenom::THUNDER_STORM);
-#else
-      p[idx++] = Phenom::phenom::THUNDER_STORM;
-#endif
+      ts = true;
     }
     else if (!strncmp(str, SH, 2))
     {
@@ -422,7 +423,8 @@ Phenom::Create(const char *str, bool tempo)
                                    vicinity,
                                    partial,
                                    shallow,
-                                   patches);
+                                   patches,
+                                   ts);
 #else
   if (idx > 0)
   {
@@ -436,7 +438,8 @@ Phenom::Create(const char *str, bool tempo)
                           vicinity,
                           partial,
                           shallow,
-                          patches);
+                          patches,
+                          ts);
 #endif
   }
 
