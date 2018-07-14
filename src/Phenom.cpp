@@ -411,9 +411,23 @@ Phenom::Create(const char *str, bool tempo)
     str += 2;
   }
 
+  if (
 #ifndef NO_SHARED_PTR
-  if (p.size() > 0)
+      (p.size() > 0)
+#else
+      (idx > 0)
+#endif
+      || blowing
+      || freezing
+      || drifting
+      || vicinity
+      || partial
+      || shallow
+      || patches
+      || ts
+      )
   {
+#ifndef NO_SHARED_PTR
     return make_shared<PhenomImpl>(tempo,
                                    p,
                                    inten,
@@ -426,8 +440,6 @@ Phenom::Create(const char *str, bool tempo)
                                    patches,
                                    ts);
 #else
-  if (idx > 0)
-  {
     return new PhenomImpl(tempo,
                           p,
                           idx,
