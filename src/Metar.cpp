@@ -6,12 +6,21 @@
 
 #include "Metar.h"
 
+#ifndef NO_SHARED_PTR
 #include <cstring>
 #include <cstdlib>
 #include <cctype>
 
 #include <climits>
 #include <cfloat>
+#else
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#include <limits.h>
+#include <float.h>
+#endif
 
 using namespace std;
 using namespace Storage_B::Weather;

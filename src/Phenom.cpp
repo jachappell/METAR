@@ -5,8 +5,13 @@
 //
 #include "Phenom.h"
 
+#ifndef NO_SHARED_PTR
 #include <cstring>
 #include <cctype>
+#else
+#include <string.h>
+#include <ctype.h>
+#endif
 
 using namespace std;
 using namespace Storage_B::Weather;

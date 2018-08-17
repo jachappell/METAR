@@ -6,9 +6,17 @@
 
 #include "Clouds.h"
 
+#ifndef NO_SHARED_PTR
 #include <cstdlib>
 #include <cstring>
+#include <cstring>
 #include <climits>
+#else
+#include <stdlib.h>
+#include <string.h>
+#include <string.h>
+#include <limits.h>
+#endif
 
 using namespace std;
 using namespace Storage_B::Weather;

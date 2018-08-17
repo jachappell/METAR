@@ -5,7 +5,11 @@
 //
 #include "Utils.h"
 
+#ifndef NO_SHARED_PTR
 #include <cmath>
+#else
+#include <math.h>
+#endif
 
 #include <Convert.h>
 

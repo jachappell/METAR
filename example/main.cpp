@@ -20,6 +20,8 @@
 #include "Convert.h"
 #include "Utils.h"
 
+#include "Phenom2String.h"
+
 using namespace std;
 using namespace Storage_B::Weather;
 using namespace Storage_B::Curlpp;
@@ -256,6 +258,12 @@ int main(int argc, char **argv)
         }
         cout << endl;
       }
+    }
+
+    for (unsigned int i = 0 ; i < metar->NumPhenomena() ; i++)
+    {
+      const auto& p = metar->Phenomenon(i);
+      cout << Phenom2String(p) << endl;
     }
 
 #ifdef NO_SHARED_PTR

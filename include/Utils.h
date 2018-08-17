@@ -7,6 +7,8 @@
 #ifndef STORAGE_B_WEATHER_UTILS_H_
 #define STORAGE_B_WEATHER_UTILS_H_
 
+#include "defines.h"
+
 namespace Storage_B 
 {
   namespace Weather

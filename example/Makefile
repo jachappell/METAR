@@ -7,7 +7,7 @@ LDFLAGS = `pkg-config libcurl --libs` -L../lib -lMetar
 
 $(shell mkdir -p $(OBJDIR)) 
 
-OBJS = $(OBJDIR)/main.o $(OBJDIR)/Fetch.o
+OBJS = $(OBJDIR)/main.o $(OBJDIR)/Phenom2String.o $(OBJDIR)/Fetch.o
 
 $(PROG) : $(OBJS)
 	$(CC) $(OBJS) $(LDFLAGS) -o $(PROG)
