@@ -5,7 +5,7 @@
 //
 #include "Utils.h"
 
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
 #include <cmath>
 #else
 #include <math.h>

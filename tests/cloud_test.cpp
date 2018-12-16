@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_FEW)
   auto result = Clouds::Create("FEW105");
   
   BOOST_CHECK(result->Cover() == Clouds::cover::FEW);
-  BOOST_CHECK(result->Altitude() == 10500);
+  BOOST_CHECK(result->Altitude() == 105);
   BOOST_CHECK(!result->hasCloudType());
   BOOST_CHECK(!result->Temporary());
 }
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_SCT)
   auto result = Clouds::Create("SCT045");
   
   BOOST_CHECK(result->Cover() == Clouds::cover::SCT);
-  BOOST_CHECK(result->Altitude() == 4500);
+  BOOST_CHECK(result->Altitude() == 45);
   BOOST_CHECK(!result->hasCloudType());
 }
 
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_BKN)
   auto result = Clouds::Create("BKN005");
   
   BOOST_CHECK(result->Cover() == Clouds::cover::BKN);
-  BOOST_CHECK(result->Altitude() == 500);
+  BOOST_CHECK(result->Altitude() == 5);
   BOOST_CHECK(!result->hasCloudType());
 }
 
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_OVC)
   auto result = Clouds::Create("OVC050");
   
   BOOST_CHECK(result->Cover() == Clouds::cover::OVC);
-  BOOST_CHECK(result->Altitude() == 5000);
+  BOOST_CHECK(result->Altitude() == 50);
   BOOST_CHECK(!result->hasCloudType());
 }
 
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_TCU)
   auto result = Clouds::Create("OVC050TCU");
   
   BOOST_CHECK(result->Cover() == Clouds::cover::OVC);
-  BOOST_CHECK(result->Altitude() == 5000);
+  BOOST_CHECK(result->Altitude() == 50);
   BOOST_CHECK(result->hasCloudType());
   BOOST_CHECK(result->CloudType() == Clouds::type::TCU);
 }
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_CB)
   auto result = Clouds::Create("OVC050CB");
   
   BOOST_CHECK(result->Cover() == Clouds::cover::OVC);
-  BOOST_CHECK(result->Altitude() == 5000);
+  BOOST_CHECK(result->Altitude() == 50);
   BOOST_CHECK(result->hasCloudType());
   BOOST_CHECK(result->CloudType() == Clouds::type::CB);
 }
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_ACC)
   auto result = Clouds::Create("OVC050ACC");
   
   BOOST_CHECK(result->Cover() == Clouds::cover::OVC);
-  BOOST_CHECK(result->Altitude() == 5000);
+  BOOST_CHECK(result->Altitude() == 50);
   BOOST_CHECK(result->hasCloudType());
   BOOST_CHECK(result->CloudType() == Clouds::type::ACC);
 }

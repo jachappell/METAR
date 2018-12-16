@@ -9,7 +9,7 @@
 
 #include "defines.h"
 
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
 #include <memory>
 #include <vector>
 #endif
@@ -57,7 +57,7 @@ namespace Storage_B
       };
 
       static 
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
           std::shared_ptr<Phenom>
 #else
           Phenom *
@@ -69,7 +69,7 @@ namespace Storage_B
       virtual unsigned int NumPhenom() const = 0;
 
       virtual phenom
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       operator[](typename std::vector<Phenom>::size_type
 #else
       operator[](unsigned int

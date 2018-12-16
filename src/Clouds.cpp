@@ -6,7 +6,7 @@
 
 #include "Clouds.h"
 
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
 #include <cstdlib>
 #include <cstring>
 #include <cstring>
@@ -79,7 +79,7 @@ private:
   type _type;
 };
 
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
           std::shared_ptr<Clouds>
 #else
           Clouds *
@@ -104,7 +104,7 @@ Clouds::Create(const char *str, bool tempo)
   {
     if (str[3] == '\0')
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       return make_shared<CloudsImpl>(tempo,
                 static_cast<Clouds::cover>(idx));
 #else
@@ -114,13 +114,13 @@ Clouds::Create(const char *str, bool tempo)
     }
     else if (str[6] == '\0')
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       return make_shared<CloudsImpl>(tempo,
-              static_cast<Clouds::cover>(idx), atoi(str + 3) * 100);
+              static_cast<Clouds::cover>(idx), atoi(str + 3));
 #else
       return
           new CloudsImpl(tempo, static_cast<Clouds::cover>(idx), 
-                               atoi(str + 3) * 100);
+                               atoi(str + 3));
 #endif
     }
     else
@@ -134,13 +134,13 @@ Clouds::Create(const char *str, bool tempo)
           break;
         }
       } 
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       return make_shared<CloudsImpl>(tempo,
-              static_cast<Clouds::cover>(idx), atoi(str + 3) * 100, t);
+              static_cast<Clouds::cover>(idx), atoi(str + 3), t);
 #else
       return
           new CloudsImpl(tempo, static_cast<Clouds::cover>(idx), 
-                               atoi(str + 3) * 100, t);
+                               atoi(str + 3), t);
 #endif
     }
   }

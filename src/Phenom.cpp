@@ -5,7 +5,7 @@
 //
 #include "Phenom.h"
 
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
 #include <cstring>
 #include <cctype>
 #else
@@ -49,7 +49,7 @@ class PhenomImpl : public Phenom
 {
 public:
   PhenomImpl(bool tempo,
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
              vector<phenom>& p,
 #else
              const phenom *p,
@@ -64,7 +64,7 @@ public:
              bool shallow = false,
              bool patches = false,
              bool ts = false)
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
     : _phenoms(p)
 #else
     : _num_phenom(num_phenom)
@@ -80,7 +80,7 @@ public:
     , _ts(ts)
     , _tempo(tempo)
   {
-#ifdef NO_SHARED_PTR
+#ifdef NO_STD
     for (unsigned int i = 0 ; i < _num_phenom ; i++)
     {
       _phenoms[i] = p[i];
@@ -95,7 +95,7 @@ public:
 
   unsigned int NumPhenom() const 
   { 
-#ifdef NO_SHARED_PTR
+#ifdef NO_STD
     return _num_phenom;
 #else
     return _phenoms.size();
@@ -103,7 +103,7 @@ public:
   }
 
   virtual phenom
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
   operator[](typename vector<Phenom>::size_type
 #else
   operator[](unsigned int
@@ -130,7 +130,7 @@ public:
   virtual bool Temporary() const { return _tempo; }
 
 private:
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
   vector<phenom> _phenoms;
 #else
   phenom _phenoms[4];
@@ -149,14 +149,14 @@ private:
   bool _tempo;
 };
 
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
           std::shared_ptr<Phenom>
 #else
           Phenom *
 #endif
 Phenom::Create(const char *str, bool tempo)
 {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
   vector<Phenom::phenom> p;
 #else
   unsigned int idx = 0;
@@ -231,7 +231,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, SH, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::SHOWER);
 #else
       p[idx++] = Phenom::phenom::SHOWER;
@@ -239,7 +239,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, BR, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::MIST);
 #else
       p[idx++] = Phenom::phenom::MIST;
@@ -247,7 +247,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, DS, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::DUST_STORM);
 #else
       p[idx++] = Phenom::phenom::DUST_STORM;
@@ -255,7 +255,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, DU, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::DUST);
 #else
       p[idx++] = Phenom::phenom::DUST;
@@ -263,7 +263,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, DZ, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::DRIZZLE);
 #else
       p[idx++] = Phenom::phenom::DRIZZLE;
@@ -271,7 +271,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, FC, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::FUNNEL_CLOUD);
 #else
       p[idx++] = Phenom::phenom::FUNNEL_CLOUD;
@@ -279,7 +279,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, FG, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::FOG);
 #else
       p[idx++] = Phenom::phenom::FOG;
@@ -287,7 +287,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, FU, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::SMOKE);
 #else
       p[idx++] = Phenom::phenom::SMOKE;
@@ -295,7 +295,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, GR, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::HAIL);
 #else
       p[idx++] = Phenom::phenom::HAIL;
@@ -303,7 +303,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, GS, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::SMALL_HAIL);
 #else
       p[idx++] = Phenom::phenom::SMALL_HAIL;
@@ -311,7 +311,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, HZ, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::HAZE);
 #else
       p[idx++] = Phenom::phenom::HAZE;
@@ -319,7 +319,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, IC, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::ICE_CRYSTALS);
 #else
       p[idx++] = Phenom::phenom::ICE_CRYSTALS;
@@ -327,7 +327,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, PE, 2) || !strncmp(str, PL, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::ICE_PELLETS);
 #else
       p[idx++] = Phenom::phenom::ICE_PELLETS;
@@ -335,7 +335,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, PO, 2)) 
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::DUST_SAND_WHORLS);
 #else
       p[idx++] = Phenom::phenom::DUST_SAND_WHORLS;
@@ -343,7 +343,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, PY, 2)) 
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::SPRAY);
 #else
       p[idx++] = Phenom::phenom::SPRAY;
@@ -351,7 +351,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, RA, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::RAIN);
 #else
       p[idx++] = Phenom::phenom::RAIN;
@@ -359,7 +359,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, SA, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::SAND);
 #else
       p[idx++] = Phenom::phenom::SAND;
@@ -367,7 +367,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, SG, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::SNOW_GRAINS);
 #else
       p[idx++] = Phenom::phenom::SNOW_GRAINS;
@@ -375,7 +375,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, SN, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::SNOW);
 #else
       p[idx++] = Phenom::phenom::SNOW;
@@ -383,7 +383,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, SQ, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::SQUALLS);
 #else
       p[idx++] = Phenom::phenom::SQUALLS;
@@ -391,7 +391,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, SS, 2)) 
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::SAND_STORM);
 #else
       p[idx++] = Phenom::phenom::SAND_STORM;
@@ -399,7 +399,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, UP, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::UNKNOWN_PRECIP);
 #else
       p[idx++] = Phenom::phenom::UNKNOWN_PRECIP;
@@ -407,7 +407,7 @@ Phenom::Create(const char *str, bool tempo)
     }
     else if (!strncmp(str, VA, 2))
     {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       p.push_back(Phenom::phenom::VOLCANIC_ASH);
 #else
       p[idx++] = Phenom::phenom::VOLCANIC_ASH;
@@ -417,7 +417,7 @@ Phenom::Create(const char *str, bool tempo)
   }
 
   if (
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       (p.size() > 0)
 #else
       (idx > 0)
@@ -432,7 +432,7 @@ Phenom::Create(const char *str, bool tempo)
       || ts
       )
   {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
     return make_shared<PhenomImpl>(tempo,
                                    p,
                                    inten,

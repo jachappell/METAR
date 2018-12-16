@@ -27,7 +27,7 @@ using namespace Storage_B::Weather;
 using namespace Storage_B::Curlpp;
 
 static const string URL = 
-  "http://tgftp.nws.noaa.gov//data/observations/metar/stations/";
+  "http://tgftp.nws.noaa.gov/data/observations/metar/stations/";
 
 static void usage(const string& command)
 {
@@ -249,7 +249,7 @@ int main(int argc, char **argv)
         cout << sky_conditions[static_cast<int>(layer->Cover())];
         if (layer->hasAltitude())
         {
-          cout << ": " << layer->Altitude() << " feet";
+          cout << ": " << layer->Altitude() * 100  << " feet";
           if (layer->hasCloudType())
           {
             cout << " (" << cloud_types[static_cast<int>(layer->CloudType())] 
@@ -266,7 +266,7 @@ int main(int argc, char **argv)
       cout << Phenom2String(p) << endl;
     }
 
-#ifdef NO_SHARED_PTR
+#ifdef NO_STD
     delete metar;
 #endif
 

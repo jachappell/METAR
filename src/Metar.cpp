@@ -6,7 +6,7 @@
 
 #include "Metar.h"
 
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
 #include <cstring>
 #include <cstdlib>
 #include <cctype>
@@ -184,6 +184,7 @@ namespace
   }
 }
 
+#ifndef NO_PHENOM
 class PhenomDefault : public Phenom
 {
 public:
@@ -197,7 +198,7 @@ public:
   virtual unsigned int NumPhenom() const { return 0; }
 
   virtual phenom
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
       operator[](typename std::vector<Phenom>::size_type
 #else
       operator[](unsigned int
@@ -219,13 +220,15 @@ public:
   virtual bool Temporary() const { return false; }
 };
 
+#endif
+
 class MetarImpl : public Metar
 {
 public:
   MetarImpl(const char *metar_str);
   MetarImpl(char *metar_str);
 
-#ifdef NO_SHARED_PTR
+#ifdef NO_STD
   virtual ~MetarImpl();
 #else
   virtual ~MetarImpl() = default;
@@ -330,16 +333,17 @@ public:
   virtual double DewPointNA() const { return _fdew; }
   virtual bool hasDewPointNA() const { return _fdew != _DOUBLE_UNDEFINED; }
 
+#ifndef NO_CLOUDS
   virtual unsigned int NumCloudLayers() const
   { 
-#ifdef NO_SHARED_PTR
+#ifdef NO_STD
     return _num_layers;
 #else
     return _layers.size(); 
 #endif
   }
 
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
   std::shared_ptr<Clouds>
 #else
   const Clouds *
@@ -353,10 +357,12 @@ public:
 
     return nullptr;
   }
+#endif
 
+#ifndef NO_PHENOM
   unsigned int NumPhenomena() const
   {
-#ifdef NO_SHARED_PTR
+#ifdef NO_STD
     return _num_phenomena;
 #else
     return _phenomena.size();
@@ -372,6 +378,7 @@ public:
 
     return *_default_phenom;
   }
+#endif
 
 private:
   MetarImpl();
@@ -427,25 +434,29 @@ private:
   bool _vis_lt;
   bool _cavok;
 
-#ifndef NO_SHARED_PTR
+#ifndef NO_CLOUDS
+#ifndef NO_STD
   std::vector<std::shared_ptr<Clouds>>
 #else
   Clouds **
 #endif
     _layers;
 
-#ifdef NO_SHARED_PTR
+#ifdef NO_STD
   unsigned int _num_layers;
 #endif
+#endif
 
-#ifndef NO_SHARED_PTR
+#ifndef NO_PHENOM
+#ifndef NO_STD
   std::vector<std::shared_ptr<Phenom>>
 #else
   Phenom **
 #endif
     _phenomena;
-#ifdef NO_SHARED_PTR
+#ifdef NO_STD
  unsigned int _num_phenomena;
+#endif
 #endif
 
   int _vert_vis;
@@ -469,49 +480,60 @@ private:
 
   static const int _INTEGER_UNDEFINED;
   static const double _DOUBLE_UNDEFINED;
-#ifdef NO_SHARED_PTR
+
+#ifndef NO_CLOUDS
+#ifdef NO_STD
   static const unsigned int _MAX_CLOUD_LAYERS;
-  static const unsigned int _MAX_PHENOM;
+#endif
 #endif
 
-#ifndef NO_SHARED_PTR
+#ifndef NO_PHENOM
+#ifndef NO_STD
   std::shared_ptr<Phenom>
 #else
   Phenom *
 #endif
   _default_phenom;
+#ifdef NO_STD
+  static const unsigned int _MAX_PHENOM;
+#endif
+#endif
 };
    
 const int MetarImpl::_INTEGER_UNDEFINED = INT_MIN;
 const double MetarImpl::_DOUBLE_UNDEFINED = DBL_MAX;
 
-#ifdef NO_SHARED_PTR
+#ifdef NO_STD
+#ifndef NO_CLOUDS
 const unsigned int MetarImpl::_MAX_CLOUD_LAYERS = 6;
+#endif
+#ifndef NO_PHENOM
 const unsigned int MetarImpl::_MAX_PHENOM = 16;
 #endif
+#endif
 
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
 std::shared_ptr<Metar>
 #else
 Metar *
 #endif
 Metar::Create(const char *metar_str)
 {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
   return make_shared<MetarImpl>(metar_str);
 #else
   return new MetarImpl(metar_str);
 #endif
 }
 
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
 std::shared_ptr<Metar>
 #else
 Metar *
 #endif
 Metar::Create(char *metar_str)
 {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
   return make_shared<MetarImpl>(metar_str);
 #else
   return new MetarImpl(metar_str);
@@ -534,9 +556,13 @@ MetarImpl::MetarImpl()
   , _vis_units(distance_units::undefined)
   , _vis_lt(false)
   , _cavok(false)
-#ifdef NO_SHARED_PTR
+#ifdef NO_STD
+#ifndef NO_CLOUDS
   , _num_layers(0)
+#endif
+#ifndef NO_PHENOM
   , _num_phenomena(0)
+#endif
 #endif
   , _vert_vis(_INTEGER_UNDEFINED)
   , _temp(_INTEGER_UNDEFINED) 
@@ -552,15 +578,21 @@ MetarImpl::MetarImpl()
 {
   _icao[0] = '\0';
 
-#ifdef NO_SHARED_PTR
+#ifdef NO_STD
+#ifndef NO_CLOUDS
   _layers = new Clouds*[_MAX_CLOUD_LAYERS];
+#endif
+#ifndef NO_PHENOM
   _phenomena = new Phenom*[_MAX_PHENOM];
 #endif
+#endif
 
-#ifdef NO_SHARED_PTR
+#ifndef NO_PHENOM
+#ifdef NO_STD
   _default_phenom = new PhenomDefault();
 #else
   _default_phenom = make_shared<PhenomDefault>();
+#endif
 #endif
 
 }
@@ -575,15 +607,18 @@ MetarImpl::MetarImpl(char *metar_str) : MetarImpl()
   parse(metar_str);
 }
 
-#ifdef NO_SHARED_PTR
+#ifdef NO_STD
 MetarImpl::~MetarImpl()
 {
+#ifndef NO_CLOUDS
   for (size_t i = 0 ; i < _num_layers ; i++)
   {
     delete _layers[i];
   }
   delete[] _layers;
+#endif
 
+#ifndef NO_PHENOM
   for (size_t i = 0 ; i < _num_phenomena ; i++)
   {
     delete _phenomena[i];
@@ -592,6 +627,7 @@ MetarImpl::~MetarImpl()
   delete[] _phenomena;
 
   delete _default_phenom;
+#endif
 }
 #endif
 
@@ -817,16 +853,18 @@ void MetarImpl::parse_vis(const char *str)
 
 void MetarImpl::parse_cloud_layer(const char *str)
 {
+#ifndef NO_CLOUDS
   auto c = Clouds::Create(str, _tempo);
 
   if (c != nullptr)
   {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
         _layers.push_back(c);
 #else
         _layers[_num_layers++] = c;
 #endif
   }
+#endif
 }
 
 void MetarImpl::parse_vert_vis(const char *str)
@@ -862,17 +900,19 @@ void MetarImpl::parse_alt(const char *str)
 
 void MetarImpl::parse_phenom(const char *str)
 {
+#ifndef NO_PHENOM
 
   auto p = Phenom::Create(str, _tempo);
 
   if (p != nullptr)
   {
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
     _phenomena.push_back(p);
 #else
     _phenomena[_num_phenomena++] = p;
 #endif
   }
+#endif
 }
 
 void MetarImpl::parse_slp(const char *str)

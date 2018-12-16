@@ -9,7 +9,7 @@
 
 #include "defines.h"
 
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
 #include <memory>
 #endif
 
@@ -40,7 +40,7 @@ namespace Storage_B
       };
 
       static
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
           std::shared_ptr<Clouds>
 #else
           Clouds *
@@ -50,10 +50,16 @@ namespace Storage_B
       virtual ~Clouds() = default;
 
       virtual cover Cover() const = 0;
+
+      //
+      // Layer altitude in multiples of 100 feet or 30 meters
+      //
       virtual int Altitude() const = 0;
       virtual bool hasAltitude() const = 0;
+
       virtual type CloudType() const = 0;
       virtual bool hasCloudType() const = 0;
+
       virtual bool Temporary() const = 0;
     };
   }

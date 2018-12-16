@@ -9,13 +9,18 @@
 
 #include "defines.h"
 
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
 #include <memory>
 #include <vector>
 #endif
 
+#ifndef NO_PHENOM
 #include "Phenom.h"
+#endif
+
+#ifndef NO_CLOUDS
 #include "Clouds.h"
+#endif
 
 namespace Storage_B
 {
@@ -29,7 +34,7 @@ namespace Storage_B
       //    metar_str - METAR to decode
       //
       static
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
         std::shared_ptr<Metar>
 #else
         Metar * // caller is responsible for deleting
@@ -41,7 +46,7 @@ namespace Storage_B
       //    metar_str - METAR to decode
       //
       static
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
         std::shared_ptr<Metar>
 #else
         Metar *  // caller is responsible for deleting
@@ -230,22 +235,26 @@ namespace Storage_B
       virtual double DewPointNA() const = 0;
       virtual bool hasDewPointNA() const = 0;
 
+#ifndef NO_CLOUDS
       //
       // Number of Cloud Layers
       //
       virtual unsigned int NumCloudLayers() const = 0;
 
       virtual
-#ifndef NO_SHARED_PTR
+#ifndef NO_STD
         std::shared_ptr<Clouds>
 #else
         const Clouds *
 #endif
           Layer(unsigned int idx) const = 0;
+#endif
 
+#ifndef NO_PHENOM
       virtual unsigned int NumPhenomena() const = 0;
 
       virtual const Phenom& Phenomenon(unsigned int idx) const = 0;
+#endif
     };
   }
 }

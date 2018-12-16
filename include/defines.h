@@ -7,7 +7,12 @@
 #define STORAGE_B_WEATHER_DEFINES_H_
 
 #ifdef ARDUINO
-#define NO_SHARED_PTR
+#define NO_STD
+
+#ifndef __AVR_ATmega2560__
+// #define NO_CLOUDS
+#define NO_PHENOM
+#endif 
 #endif
 
 #endif
