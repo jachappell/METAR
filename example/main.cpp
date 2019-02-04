@@ -27,7 +27,7 @@ using namespace Storage_B::Weather;
 using namespace Storage_B::Curlpp;
 
 static const string URL = 
-  "http://tgftp.nws.noaa.gov/data/observations/metar/stations/";
+  "https://tgftp.nws.noaa.gov/data/observations/metar/stations/";
 
 static void usage(const string& command)
 {
