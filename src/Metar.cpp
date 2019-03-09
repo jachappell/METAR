@@ -168,7 +168,7 @@ namespace
 
   inline bool is_tempNA(const char *str)
   {
-    return match("T########", str);
+    return match("T########", str) || match("T####", str);
   }
     
   inline int temp(char *val)
@@ -928,6 +928,9 @@ void MetarImpl::parse_tempNA(const char *str)
   val[4] = '\0';
   _ftemp = tempNA(val);
 
-  strcpy(val, str + 5);
-  _fdew = tempNA(val);
+  if (strlen(str) > 5)
+  {
+    strcpy(val, str + 5);
+    _fdew = tempNA(val);
+  }
 }

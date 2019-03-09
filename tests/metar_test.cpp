@@ -167,6 +167,19 @@ BOOST_AUTO_TEST_CASE(temperatureNA_both_negative)
   BOOST_CHECK(metar->DewPointNA() == -1.8);
 }
 
+BOOST_AUTO_TEST_CASE(temperatureNA_NoDew)
+{
+  char buffer[10];
+  strcpy(buffer, "T0028");
+
+  auto metar = Metar::Create(buffer);
+
+  BOOST_CHECK(metar->hasTemperatureNA());
+  BOOST_CHECK(!metar->hasDewPointNA());
+
+  BOOST_CHECK(metar->TemperatureNA() == 2.8);
+}
+
 BOOST_AUTO_TEST_CASE(uninitialized_wind)
 {
   auto metar = Metar::Create("");
