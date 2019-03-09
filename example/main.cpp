@@ -143,17 +143,10 @@ int main(int argc, char **argv)
 
     auto metar = Metar::Create(metar_str.c_str());
 
-    double temp, dew;
-    if (metar->hasTemperatureNA())
-    {
-      temp = metar->TemperatureNA();
-      dew = metar->DewPointNA();
-    }
-    else
-    {
-      temp = metar->Temperature();
-      dew = metar->DewPoint();
-    }
+    double temp =
+      metar->hasTemperatureNA() ? metar->TemperatureNA() : metar->Temperature();  
+    double dew =
+      metar->hasDewPointNA() ? metar->DewPointNA() : metar->DewPoint();  ;
     
     cout << metar->ICAO() << endl;
     cout << setprecision(1) << fixed;
@@ -183,24 +176,27 @@ int main(int argc, char **argv)
       feels_like = Utils::WindChill(temp, wind_kph);
     }
 
-    double humidity =  Utils::Humidity(temp, dew);
-    if (feels_like == temp)
+    if (metar->hasDewPoint() || metar->hasDewPointNA())
     {
-      feels_like = Utils::HeatIndex(temp, humidity, true);
-    }
+      double humidity =  Utils::Humidity(temp, dew);
+      if (feels_like == temp)
+      {
+        feels_like = Utils::HeatIndex(temp, humidity, true);
+      }
       
-    if (feels_like != temp)
-    {
-      cout <<   "\nFeels Like:  ";
-      print_temp(feels_like, fahrenheit_flag);
+      if (feels_like != temp)
+      {
+        cout <<   "\nFeels Like:  ";
+        print_temp(feels_like, fahrenheit_flag);
+      }
+
+      cout << "\nDew Point:   ";
+      print_temp(dew, fahrenheit_flag);
+
+      cout << "\nHumidity:    " << humidity << "%";
     }
 
-    cout << "\nDew Point:   ";
-    print_temp(dew, fahrenheit_flag);
-
-    cout << "\nHumidity:    " << humidity << "%" << endl;
-
-    cout << "Pressure:    ";
+    cout << "\nPressure:    ";
     if (metar->hasAltimeterA())
       cout << metar->AltimeterA() << " inHg" << endl;
     else if (metar->hasAltimeterQ())
