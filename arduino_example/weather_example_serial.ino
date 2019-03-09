@@ -5,7 +5,6 @@
 //
 
 #include <Ethernet.h>
-
 #include <Metar.h>
 #include <Convert.h>
 #include <Utils.h>
@@ -13,6 +12,9 @@
 // See - https://en.wikipedia.org/wiki/List_of_airports_by_ICAO_code:_A
 // to find a station near your location
 static const char *STATION = "KSTL";
+
+static const char *USERNAME = "anonymous";
+static const char *PASSWORD = USERNAME;
 
 // TODO - add ability to specify more units
 static const bool FAHRENHEIT = true;
@@ -39,6 +41,7 @@ void setup()
 void loop()
 {
   displayPage(Serial, STATION, FAHRENHEIT);
+
   delay(3600000);
 }
 
@@ -84,267 +87,285 @@ static void printTemp(Stream& stream, double temp, bool fahr_flag, char *disp)
   sprintf(disp, "%s", disp);
   stream.print(disp);
   printDeg(stream);
-  stream.println(fahr_flag ? 'F' : 'C');  
+  stream.println(fahr_flag ? 'F' : 'C');
 }
 
-static int connect(Client& client, const char *station)
+static void receiveFail(Client& client)
 {
+  client.println("QUIT");
+
+  while (!client.available()) delay(1);
+
+  while (client.available())
+  {
+    auto c = client.read();
+    Serial.write(c);
+  }
+
+  client.stop();
+}
+
+static bool receive(Client& client, char *outBuf, bool data_flg = false)
+{
+  while (!client.available()) delay(1);
+
+  byte respCode = client.peek();
+
+  if (respCode >= '4')
+  {
+    receiveFail(client);
+    return false;
+  }
+
+  int idx = 0;
+
+  int lines = 0;
+
+  delay(10);
+  while (client.available())
+  {
+    auto c = client.read();
+
+    if (idx < BUF_SIZE)
+    {
+      if (data_flg)
+      {
+        if (c == '\n') lines++;
+      }
+
+      if (!data_flg)
+      {
+        outBuf[idx++] = c;
+      }
+      else if (lines)
+      {
+        if (c != '\n')
+          outBuf[idx++] = c;
+      }
+    }
+  }
+  outBuf[idx < BUF_SIZE ? idx : BUF_SIZE - 1] = '\0';
+
+  return true;
+}
+
+static int getData(const char *station, char *buffer)
+{
+  EthernetClient client;
   const char *address = "tgftp.nws.noaa.gov";
 
-  int status = client.connect(address, 80);
+  int status = client.connect(address, 21);
   if (status > 0) {
-    client.print("GET /data/observations/metar/stations/");
-    client.print(station);
-    client.println(".TXT HTTP/1.1");
-    client.print("Host: ");
-    client.println(address);
-    client.println("Connection: close");
-    client.println();
-  }
+    if (!receive(client, buffer)) return 0;
+    client.print("USER ");
+    client.println(USERNAME);
 
-  return status;
-}
+    if (!receive(client, buffer)) return 0;
+    client.print("PASS ");
+    client.println(PASSWORD);
 
-static int getStatus(char *buf)
-{
-  strncpy(buf, buf + 9, 3);
-  buf[3] = '\0';
+    if (!receive(client, buffer)) return 0;
+    client.println("PASV");
 
-  return atoi(buf);
-}
+    if (!receive(client, buffer)) return 0;
 
-static int getRequestBody(Client& client, char *buffer)
-{
-  int status(-1);
-  int idx(0);
-  int lineCount(0);
-
-  while (true)
-  {
-    if (client.available())
-    {
-      char c =  client.read();
-      if (status < 0)
+    char *tStr = strtok(buffer, "(,");
+    int array_pasv[6];
+    for ( int i = 0; i < 6; i++) {
+      tStr = strtok(nullptr, "(,");
+      array_pasv[i] = atoi(tStr);
+      if (tStr == nullptr)
       {
-        buffer[idx++] = c;
-        if (idx > 12) {
-          idx = 0;
-          status = getStatus(buffer);
-        }
-      }
-      else if (status == 200)
-      {
-        if (lineCount < 15)
-        {
-          if (c == '\n')
-          {
-            lineCount++;
-          }
-        }
-        else
-        {
-          if ((idx < BUF_SIZE) && (c != '\n'))
-          {
-            buffer[idx++] = c;
-          }
-        }
+        Serial.println("Bad PASV Answer");
+        receiveFail(client);
+        return 0;
       }
     }
-    // if the server's disconnected, stop the client:
-    if (!client.connected())
-    {
+    unsigned int hiPort, loPort;
+
+    hiPort = array_pasv[4] << 8;
+    loPort = array_pasv[5] & 255;
+
+    hiPort = hiPort | loPort;
+
+    EthernetClient dclient;
+    if (dclient.connect(address, hiPort)) {
+      client.print("CWD ");
+      client.println("data/observations/metar/stations");
+      if (!receive(client, buffer)) return 0;
+      client.print("RETR ");
+      client.print(station);
+      client.println(".TXT");
+      if (!receive(client, buffer)) return 0;
+      if (receive(dclient, buffer, true))
+      {
+        dclient.stop();
+      }
+      else
+      {
+        status = 0;
+      }
+      client.println("QUIT");
       client.stop();
-      break;
     }
   }
 
-  buffer[idx < BUF_SIZE ? idx : BUF_SIZE - 1] = '\0';
-
   return status;
 }
-
 
 static void displayPage(Stream& stream, const char *station, bool fahr_flag)
 {
-  EthernetClient metar_client;
-  int status = connect(metar_client, station);
+  char buffer[BUF_SIZE];
+  int status = getData(station, buffer);
   if (status > 0)
   {
-    char buffer[BUF_SIZE];
-    int status = getRequestBody(metar_client, buffer);
+    stream.println();
+    stream.println(buffer);
+    stream.println();
 
-    if (status == 200)
+    auto metar = Metar::Create(buffer);
+
+    sprintf(buffer, "%02d:%02dZ", metar->Hour(), metar->Minute());
+
+    stream.println(metar->ICAO());
+    stream.print("Observation time: ");
+    stream.println(buffer);
+    stream.println();
+
+    double temp = metar->hasTemperatureNA() ? metar->TemperatureNA() : static_cast<double>(metar->Temperature());
+    stream.print("Temperature: ");
+    printTemp(stream, temp, fahr_flag, buffer);
+
+    double feels_like(temp);
+    if (metar->hasWindSpeed())
     {
-      auto metar = Metar::Create(buffer);
+      double wind_kph;
+      switch (metar->WindSpeedUnits())
+      {
+        case Metar::speed_units::KT:
+          wind_kph = Convert::Kts2Kph(metar->WindSpeed());
+          break;
 
-      sprintf(buffer, "%02d:%02dZ", metar->Hour(), metar->Minute());
+        case Metar::speed_units::MPS:
+          wind_kph = metar->WindSpeed() / 1000.0;
+          break;
 
-      stream.println(metar->ICAO());
-      stream.print("Observation time: ");
-      stream.println(buffer);
+        default:
+          wind_kph = metar->WindSpeed();
+          break;
+      }
+
+      feels_like = Utils::WindChill(temp, wind_kph);
+    }
+
+    double dew = metar->hasDewPointNA() ? metar->DewPointNA() : static_cast<double>(metar->DewPoint());
+
+    double humidity =  Utils::Humidity(temp, dew);
+
+    if (feels_like == temp)
+    {
+      feels_like = Utils::HeatIndex(temp, humidity, true);
+    }
+
+    if (feels_like != temp)
+    {
+      stream.print("Feels Like:  ");
+      printTemp(stream, feels_like, fahr_flag, buffer);
+    }
+
+    stream.print("Dew Point:   ");
+    printTemp(stream, dew, fahr_flag, buffer);
+
+    dtostrf(Utils::Humidity(temp, dew), 4, 1, buffer);
+
+    sprintf(buffer, "%s%%", buffer);
+
+    stream.print("Humidity:    ");
+    stream.println(buffer);
+
+    stream.println();
+
+    stream.print("Pressure:    ");
+
+    if (metar->hasAltimeterA())
+    {
+      stream.print(metar->AltimeterA());
+      stream.println(" inHg");
+    }
+    else if (metar->hasAltimeterQ())
+    {
+      stream.print(metar->AltimeterQ());
+      stream.println(" hPa");
+    }
+    stream.println();
+
+    if (metar->hasWindSpeed())
+    {
+      stream.print("Wind:        ");
+      if (!metar->isVariableWindDirection())
+      {
+        stream.print(metar->WindDirection());
+        printDeg(stream);
+        stream.print(" / ");
+      }
+      else
+      {
+        stream.print("VRB / ");
+      }
+      stream.print(metar->WindSpeed());
+      if (metar->hasWindGust())
+      {
+        stream.print(" (");
+        stream.print(metar->WindGust());
+        stream.print(")");
+      }
+      stream.print(" ");
+      stream.println(speed_units[static_cast<int>(metar->WindSpeedUnits())]);
       stream.println();
+    }
 
-      double temp = metar->hasTemperatureNA() ? metar->TemperatureNA() : static_cast<double>(metar->Temperature());
-      stream.print("Temperature: ");
-      printTemp(stream, temp, fahr_flag, buffer);
-
-      double feels_like(temp);
-      if (metar->hasWindSpeed())
+    if (metar->hasVisibility())
+    {
+      stream.print("Visibility:  ");
+      stream.print(metar->Visibility());
+      if (metar->VisibilityUnits() == Metar::distance_units::M)
       {
-        double wind_kph;
-        switch (metar->WindSpeedUnits())
-        {
-          case Metar::speed_units::KT:
-            wind_kph = Convert::Kts2Kph(metar->WindSpeed());
-            break;
-
-          case Metar::speed_units::MPS:
-            wind_kph = metar->WindSpeed() / 1000.0;
-            break;
-
-          default:
-            wind_kph = metar->WindSpeed();
-            break;
-        }
-
-        feels_like = Utils::WindChill(temp, wind_kph);
+        stream.println(" meters");
       }
-
-      double dew = metar->hasDewPointNA() ? metar->DewPointNA() : static_cast<double>(metar->DewPoint());
-
-      double humidity =  Utils::Humidity(temp, dew);
-
-      if (feels_like == temp)
+      else
       {
-        feels_like = Utils::HeatIndex(temp, humidity, true);
-      }
-
-      if (feels_like != temp)
-      {
-        stream.print("Feels Like:  ");
-        printTemp(stream, feels_like, fahr_flag, buffer);
-      }
-
-      stream.print("Dew Point:   ");
-      printTemp(stream, dew, fahr_flag, buffer);
-
-      dtostrf(Utils::Humidity(temp, dew), 4, 1, buffer);
-
-      sprintf(buffer, "%s%%", buffer);
-
-      stream.print("Humidity:    ");
-      stream.println(buffer);
-
-      stream.println();
-
-      stream.print("Pressure:    ");
-
-      if (metar->hasAltimeterA())
-      {
-        stream.print(metar->AltimeterA());
-        stream.println(" inHg");
-      }
-      else if (metar->hasAltimeterQ())
-      {
-        stream.print(metar->AltimeterQ());
-        stream.println(" hPa");
+        stream.println(" miles");
       }
       stream.println();
-
-      if (metar->hasWindSpeed())
-      {
-        stream.print("Wind:        ");
-        if (!metar->isVariableWindDirection())
-        {
-          stream.print(metar->WindDirection());
-          printDeg(stream);
-          stream.print(" / ");
-        }
-        else
-        {
-          stream.print("VRB / ");
-        }
-        stream.print(metar->WindSpeed());
-        if (metar->hasWindGust())
-        {
-          stream.print(" (");
-          stream.print(metar->WindGust());
-          stream.print(")");
-        }
-        stream.print(" ");
-        stream.println(speed_units[static_cast<int>(metar->WindSpeedUnits())]);
-        stream.println();
-      }
-
-      if (metar->hasVisibility())
-      {
-        stream.print("Visibility:  ");
-        stream.print(metar->Visibility());
-        if (metar->VisibilityUnits() == Metar::distance_units::M)
-        {
-          stream.println(" meters");
-        }
-        else
-        {
-          stream.println(" miles");
-        }
-        stream.println();
-      }
+    }
 #ifndef NO_CLOUDS
-      for (unsigned int i = 0 ; i < metar->NumCloudLayers() ; i++)
-      {
-        auto layer = metar->Layer(i);
-        if (!layer->Temporary())
-        {
-          stream.print(sky_conditions[static_cast<int>(layer->Cover())]);
-          if (layer->hasAltitude())
-          {
-            stream.print(": ");
-            stream.print(layer->Altitude() * 100);
-            stream.print(" feet");
-            if (layer->hasCloudType())
-            {
-              stream.print(" (");
-              stream.print(cloud_types[static_cast<int>(layer->CloudType())]);
-              stream.print(")");
-            }
-          }
-          stream.println();
-        }
-      }
-#endif
-      delete metar;
-    }
-    else
+    for (unsigned int i = 0 ; i < metar->NumCloudLayers() ; i++)
     {
-      stream.print(status);
+      auto layer = metar->Layer(i);
+      if (!layer->Temporary())
+      {
+        stream.print(sky_conditions[static_cast<int>(layer->Cover())]);
+        if (layer->hasAltitude())
+        {
+          stream.print(": ");
+          stream.print(layer->Altitude() * 100);
+          stream.print(" feet");
+          if (layer->hasCloudType())
+          {
+            stream.print(" (");
+            stream.print(cloud_types[static_cast<int>(layer->CloudType())]);
+            stream.print(")");
+          }
+        }
+        stream.println();
+      }
     }
+#endif
+    delete metar;
   }
   else
   {
-    switch (status)
-    {
-      case -1:
-        stream.print("timed out");
-        break;
-
-      case -2:
-        stream.print("invalid server");
-        break;
-
-      case -3:
-        stream.print("truncated");
-        break;
-
-      case -4:
-        stream.print("invalid response");
-        break;
-
-      default:
-        stream.print(status);
-        stream.print(": connection failed");
-        break;
-    }
+    stream.print(status);
+    stream.print(": connection failed");
   }
 }
-
