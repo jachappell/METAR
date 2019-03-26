@@ -168,7 +168,7 @@ namespace
 
   inline bool is_tempNA(const char *str)
   {
-    return match("T########", str) || match("T####", str);
+    return starts_with("T####", str);
   }
     
   inline int temp(char *val)
@@ -713,14 +713,7 @@ void MetarImpl::parse(char *metar_str)
 
 void MetarImpl::parse_message_type(const char *str)
 {
-  if (strcmp(str, "SPECI") == 0)
-  {
-    _message_type = message_type::SPECI;
-  }
-  else
-  {
-    _message_type = message_type::METAR;
-  }
+  _message_type = str[0] == 'S' ? message_type::SPECI : message_type::METAR;
 }
 
 void MetarImpl::parse_icao(const char *str)
