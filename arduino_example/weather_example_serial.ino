@@ -259,11 +259,12 @@ static void displayPage(Stream& stream, const char *station, bool fahr_flag)
     }
 
     double humidity;
-    if (metar->hasDewPointNA() ||  metar->DewPointNA())
+    double dew;
+    if (metar->hasDewPointNA() || metar->DewPointNA())
     {
-      double dew = metar->hasDewPointNA() ? metar->DewPointNA() : static_cast<double>(metar->DewPoint());
+      dew = metar->hasDewPointNA() ? metar->DewPointNA() : static_cast<double>(metar->DewPoint());
 
-      double humidity =  Utils::Humidity(temp, dew);
+      humidity =  Utils::Humidity(temp, dew);
    
 
       if (feels_like == temp)
@@ -271,12 +272,16 @@ static void displayPage(Stream& stream, const char *station, bool fahr_flag)
         feels_like = Utils::HeatIndex(temp, humidity, true);
       }
     
+    }
 
-      if (feels_like != temp)
-      {
-        stream.print("Feels Like:  ");
-        printTemp(stream, feels_like, fahr_flag, buffer);
-      }
+    if (feels_like != temp)
+    {
+      stream.print("Feels Like:  ");
+      printTemp(stream, feels_like, fahr_flag, buffer);
+    }
+
+    if (metar->hasDewPointNA() || metar->DewPointNA())
+    {  
   
       stream.print("Dew Point:   ");
       printTemp(stream, dew, fahr_flag, buffer);
