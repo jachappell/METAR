@@ -258,30 +258,36 @@ static void displayPage(Stream& stream, const char *station, bool fahr_flag)
       feels_like = Utils::WindChill(temp, wind_kph);
     }
 
-    double dew = metar->hasDewPointNA() ? metar->DewPointNA() : static_cast<double>(metar->DewPoint());
-
-    double humidity =  Utils::Humidity(temp, dew);
-
-    if (feels_like == temp)
+    double humidity;
+    if (metar->hasDewPointNA() ||  metar->DewPointNA())
     {
-      feels_like = Utils::HeatIndex(temp, humidity, true);
+      double dew = metar->hasDewPointNA() ? metar->DewPointNA() : static_cast<double>(metar->DewPoint());
+
+      double humidity =  Utils::Humidity(temp, dew);
+   
+
+      if (feels_like == temp)
+      {
+        feels_like = Utils::HeatIndex(temp, humidity, true);
+      }
+    
+
+      if (feels_like != temp)
+      {
+        stream.print("Feels Like:  ");
+        printTemp(stream, feels_like, fahr_flag, buffer);
+      }
+  
+      stream.print("Dew Point:   ");
+      printTemp(stream, dew, fahr_flag, buffer);
+  
+      dtostrf(humidity, 4, 1, buffer);
+  
+      sprintf(buffer, "%s%%", buffer);
+  
+      stream.print("Humidity:    ");
+      stream.println(buffer);
     }
-
-    if (feels_like != temp)
-    {
-      stream.print("Feels Like:  ");
-      printTemp(stream, feels_like, fahr_flag, buffer);
-    }
-
-    stream.print("Dew Point:   ");
-    printTemp(stream, dew, fahr_flag, buffer);
-
-    dtostrf(Utils::Humidity(temp, dew), 4, 1, buffer);
-
-    sprintf(buffer, "%s%%", buffer);
-
-    stream.print("Humidity:    ");
-    stream.println(buffer);
 
     stream.println();
 
