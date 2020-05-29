@@ -13,7 +13,7 @@ namespace
     {Phenom::phenom::NONE,             ""},
     {Phenom::phenom::MIST,             "mist"},
     {Phenom::phenom::DUST_STORM,       "dust storm"},
-    {Phenom::phenom::DUST,             "dist"},
+    {Phenom::phenom::DUST,             "dust"},
     {Phenom::phenom::DRIZZLE,          "drizzle"},
     {Phenom::phenom::FUNNEL_CLOUD,     "funnel cloud"},
     {Phenom::phenom::FOG,              "fog"},
