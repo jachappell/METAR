@@ -144,39 +144,41 @@ int main(int argc, char **argv)
     auto metar = Metar::Create(metar_str.c_str());
 
     double temp =
-      metar->hasTemperatureNA() ? metar->TemperatureNA() : metar->Temperature();  
+      metar->TemperatureNA().has_value() ?
+          metar->TemperatureNA().value() : metar->Temperature().value();  
     double dew =
-      metar->hasDewPointNA() ? metar->DewPointNA() : metar->DewPoint();  ;
+          metar->DewPointNA().has_value() ?
+              metar->DewPointNA().value() : metar->DewPoint().value();
     
-    cout << metar->ICAO() << endl;
+    cout << metar->ICAO().value() << endl;
     cout << setprecision(1) << fixed;
 
     cout <<   "Temperature: ";
     print_temp(temp, fahrenheit_flag);  
 
     double feels_like(temp);
-    if (metar->hasWindSpeed())
+    if (metar->WindSpeed().has_value())
     {
       double wind_kph;
-      switch(metar->WindSpeedUnits())
+      switch(metar->WindSpeedUnits().value())
       {
         case Metar::speed_units::KT:
-          wind_kph = Convert::Kts2Kph(metar->WindSpeed());
+          wind_kph = Convert::Kts2Kph(metar->WindSpeed().value());
           break;
 
         case Metar::speed_units::MPS:
-          wind_kph = metar->WindSpeed() / 1000.0;
+          wind_kph = metar->WindSpeed().value() / 1000.0;
           break;
 
         default:
-          wind_kph = metar->WindSpeed();
+          wind_kph = metar->WindSpeed().value();
           break;
       }
       
       feels_like = Utils::WindChill(temp, wind_kph);
     }
 
-    if (metar->hasDewPoint() || metar->hasDewPointNA())
+    if (metar->DewPoint().has_value() || metar->DewPointNA().has_value())
     {
       double humidity =  Utils::Humidity(temp, dew);
       if (feels_like == temp)
@@ -197,35 +199,36 @@ int main(int argc, char **argv)
     }
 
     cout << "\nPressure:    ";
-    if (metar->hasAltimeterA())
-      cout << metar->AltimeterA() << " inHg" << endl;
-    else if (metar->hasAltimeterQ())
-      cout << metar->AltimeterQ() << " hPa" << endl;
+    if (metar->AltimeterA().has_value())
+      cout << metar->AltimeterA().value() << " inHg" << endl;
+    else if (metar->AltimeterQ().has_value())
+      cout << metar->AltimeterQ().value() << " hPa" << endl;
 
-    if (metar->hasWindSpeed())
+    if (metar->WindSpeed().has_value())
     {
       cout << "\nWind:        ";
       if (!metar->isVariableWindDirection())
       { 
-        cout << metar->WindDirection() << DEG_SIM;
+        cout << metar->WindDirection().value() << DEG_SIM;
       }
       else
       {
         cout << "VRB";
       }
-      cout << " / " << metar->WindSpeed();
-      if (metar->hasWindGust())
+      cout << " / " << metar->WindSpeed().value();
+      if (metar->WindGust().has_value())
       {
-        cout << " (" << metar->WindGust() << ")";
+        cout << " (" << metar->WindGust().value() << ")";
       }
       cout << " "
-           << speed_units[static_cast<int>(metar->WindSpeedUnits())] << endl;
+           << speed_units[
+              static_cast<int>(metar->WindSpeedUnits().value())] << endl;
     }
 
     cout << setprecision(2) << fixed;
-    if (metar->hasVisibility())
+    if (metar->Visibility().has_value())
     {
-      cout << "\nVisibility:  " << metar->Visibility() << " ";
+      cout << "\nVisibility:  " << metar->Visibility().value() << " ";
       if (metar->VisibilityUnits() == Metar::distance_units::M)
       {
         cout << "meters" << endl;
@@ -243,12 +246,13 @@ int main(int argc, char **argv)
       if (!layer->Temporary())
       {
         cout << sky_conditions[static_cast<int>(layer->Cover())];
-        if (layer->hasAltitude())
+        if (layer->Altitude().has_value())
         {
-          cout << ": " << layer->Altitude() * 100  << " feet";
-          if (layer->hasCloudType())
+          cout << ": " << layer->Altitude().value() * 100  << " feet";
+          if (layer->CloudType().has_value())
           {
-            cout << " (" << cloud_types[static_cast<int>(layer->CloudType())] 
+            cout << " ("
+                 << cloud_types[static_cast<int>(layer->CloudType().value())] 
                  << ")";
           }
         }
@@ -261,10 +265,6 @@ int main(int argc, char **argv)
       const auto& p = metar->Phenomenon(i);
       cout << Phenom2String(p) << endl;
     }
-
-#ifdef NO_STD
-    delete metar;
-#endif
 
     return 0;
   }

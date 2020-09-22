@@ -18,8 +18,8 @@ BOOST_AUTO_TEST_CASE(cloud_layer_CLR)
   auto result = Clouds::Create("CLR");
   
   BOOST_CHECK(result->Cover() == Clouds::cover::CLR);
-  BOOST_CHECK(!result->hasAltitude());
-  BOOST_CHECK(!result->hasCloudType());
+  BOOST_CHECK(!result->Altitude().has_value());
+  BOOST_CHECK(!result->CloudType().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_SKC)
@@ -27,8 +27,8 @@ BOOST_AUTO_TEST_CASE(cloud_layer_SKC)
   auto result = Clouds::Create("SKC");
   
   BOOST_CHECK(result->Cover() == Clouds::cover::SKC);
-  BOOST_CHECK(!result->hasAltitude());
-  BOOST_CHECK(!result->hasCloudType());
+  BOOST_CHECK(!result->Altitude().has_value());
+  BOOST_CHECK(!result->CloudType().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_NSC)
@@ -36,8 +36,8 @@ BOOST_AUTO_TEST_CASE(cloud_layer_NSC)
   auto result = Clouds::Create("NSC");
   
   BOOST_CHECK(result->Cover() == Clouds::cover::NSC);
-  BOOST_CHECK(!result->hasAltitude());
-  BOOST_CHECK(!result->hasCloudType());
+  BOOST_CHECK(!result->Altitude().has_value());
+  BOOST_CHECK(!result->CloudType().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_FEW)
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_FEW)
   
   BOOST_CHECK(result->Cover() == Clouds::cover::FEW);
   BOOST_CHECK(result->Altitude() == 105);
-  BOOST_CHECK(!result->hasCloudType());
+  BOOST_CHECK(!result->CloudType().has_value());
   BOOST_CHECK(!result->Temporary());
 }
 
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_SCT)
   
   BOOST_CHECK(result->Cover() == Clouds::cover::SCT);
   BOOST_CHECK(result->Altitude() == 45);
-  BOOST_CHECK(!result->hasCloudType());
+  BOOST_CHECK(!result->CloudType().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_BKN)
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_BKN)
   
   BOOST_CHECK(result->Cover() == Clouds::cover::BKN);
   BOOST_CHECK(result->Altitude() == 5);
-  BOOST_CHECK(!result->hasCloudType());
+  BOOST_CHECK(!result->CloudType().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_OVC)
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_OVC)
   
   BOOST_CHECK(result->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(result->Altitude() == 50);
-  BOOST_CHECK(!result->hasCloudType());
+  BOOST_CHECK(!result->CloudType().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_TCU)
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_TCU)
   
   BOOST_CHECK(result->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(result->Altitude() == 50);
-  BOOST_CHECK(result->hasCloudType());
+  BOOST_CHECK(result->CloudType().has_value());
   BOOST_CHECK(result->CloudType() == Clouds::type::TCU);
 }
 
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(cloud_layer_CB)
   
   BOOST_CHECK(result->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(result->Altitude() == 50);
-  BOOST_CHECK(result->hasCloudType());
+  BOOST_CHECK(result->CloudType().has_value());
   BOOST_CHECK(result->CloudType() == Clouds::type::CB);
 }
 
@@ -103,6 +103,6 @@ BOOST_AUTO_TEST_CASE(cloud_layer_ACC)
   
   BOOST_CHECK(result->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(result->Altitude() == 50);
-  BOOST_CHECK(result->hasCloudType());
+  BOOST_CHECK(result->CloudType().has_value());
   BOOST_CHECK(result->CloudType() == Clouds::type::ACC);
 }

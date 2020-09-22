@@ -1,18 +1,12 @@
 //
-// Copyright (c) 2018 James A. Chappell (rlrrlrll@gmail.com)
+// Copyright (c) 2020 James A. Chappell (rlrrlrll@gmail.com)
 //
 // METAR weather phenomena decoder
 //
+#pragma once
 
-#ifndef STORAGE_B_WEATHER_PHENOM_H_
-#define STORAGE_B_WEATHER_PHENOM_H_
-
-#include "defines.h"
-
-#ifndef NO_STD
 #include <memory>
 #include <vector>
-#endif
 
 namespace Storage_B
 {
@@ -56,25 +50,15 @@ namespace Storage_B
         HEAVY
       };
 
-      static 
-#ifndef NO_STD
-          std::shared_ptr<Phenom>
-#else
-          Phenom *
-#endif
-              Create(const char *str, bool temp = false);
+      static std::shared_ptr<Phenom> Create(const char *str, bool temp = false);
 
       virtual ~Phenom() = default;
 
       virtual unsigned int NumPhenom() const = 0;
 
       virtual phenom
-#ifndef NO_STD
-      operator[](typename std::vector<Phenom>::size_type
-#else
-      operator[](unsigned int
-#endif
-                 idx) const = 0;
+
+      operator[](typename std::vector<Phenom>::size_type idx) const = 0;
         
       virtual intensity Intensity() const = 0;
       virtual bool Blowing() const = 0;
@@ -89,5 +73,3 @@ namespace Storage_B
     };
   }
 }
-
-#endif

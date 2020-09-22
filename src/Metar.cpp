@@ -1,26 +1,17 @@
 //
-// Copyright (c) 2018 James A. Chappell (rlrrlrll@gmail.com)
+// Copyright (c) 2020 James A. Chappell (rlrrlrll@gmail.com)
 //
 // METAR decoder
 //
 
 #include "Metar.h"
 
-#ifndef NO_STD
 #include <cstring>
 #include <cstdlib>
 #include <cctype>
 
 #include <climits>
 #include <cfloat>
-#else
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
-
-#include <limits.h>
-#include <float.h>
-#endif
 
 using namespace std;
 using namespace Storage_B::Weather;
@@ -184,7 +175,6 @@ namespace
   }
 }
 
-#ifndef NO_PHENOM
 class PhenomDefault : public Phenom
 {
 public:
@@ -197,13 +187,7 @@ public:
 
   virtual unsigned int NumPhenom() const { return 0; }
 
-  virtual phenom
-#ifndef NO_STD
-      operator[](typename std::vector<Phenom>::size_type
-#else
-      operator[](unsigned int
-#endif
-                 ) const 
+  virtual phenom operator[](typename std::vector<Phenom>::size_type) const 
   {
     return phenom::NONE;
   }
@@ -220,135 +204,77 @@ public:
   virtual bool Temporary() const { return false; }
 };
 
-#endif
-
 class MetarImpl : public Metar
 {
 public:
   MetarImpl(const char *metar_str);
   MetarImpl(char *metar_str);
 
-#ifdef NO_STD
-  virtual ~MetarImpl();
-#else
   virtual ~MetarImpl() = default;
-#endif
 
   MetarImpl(const MetarImpl&) = delete;
   MetarImpl& operator=(const MetarImpl&) = delete;
 
-  virtual message_type MessageType() const { return _message_type; }
-  virtual bool hasMessageType() const
-  {
-    return _message_type != message_type::undefined;
-  }
+  virtual optional<message_type> MessageType() const { return _message_type; }
 
-  virtual const char *ICAO() const { return _icao; }
-  virtual bool hasICAO() const { return _icao[0] != '\0'; }
+  virtual optional<string> ICAO() const { return _icao; }
       
-  virtual int Day() const { return _day; }
-  virtual bool hasDay() const { return _day != _INTEGER_UNDEFINED; }
+  virtual optional<int> Day() const { return _day; }
 
-  virtual int Hour() const { return _hour; }
-  virtual bool hasHour() const { return _hour != _INTEGER_UNDEFINED; }
+  virtual optional<int> Hour() const { return _hour; }
 
-  virtual int Minute() const { return _min; }
-  virtual bool hasMinute() const { return _min != _INTEGER_UNDEFINED; }
+  virtual optional<int> Minute() const { return _min; }
 
-  virtual int WindDirection() const { return _wind_dir; }
-  virtual bool hasWindDirection() const
-  { 
-    return _wind_dir != _INTEGER_UNDEFINED;
-  }
+  virtual optional<int> WindDirection() const { return _wind_dir; }
 
   virtual bool isVariableWindDirection() const { return _vrb; }
 
-  virtual int WindSpeed() const { return _wind_spd; }
-  virtual bool hasWindSpeed() const { return _wind_spd != _INTEGER_UNDEFINED; }
+  virtual optional<int> WindSpeed() const { return _wind_spd; }
 
-  virtual int WindGust() const { return _gust; }
-  virtual bool hasWindGust() const { return _gust != _INTEGER_UNDEFINED; }
+  virtual optional<int> WindGust() const { return _gust; }
 
-  virtual int MinWindDirection() const { return _min_wind_dir; }
-  virtual int hasMinWindDirection() const
+  virtual optional<int> MinWindDirection() const { return _min_wind_dir; }
+
+  virtual optional<int> MaxWindDirection() const { return _max_wind_dir; }
+
+  virtual optional<speed_units> WindSpeedUnits() const
   {
-    return _min_wind_dir != _INTEGER_UNDEFINED;
+    return _wind_speed_units;
   }
 
-  virtual int MaxWindDirection() const { return _max_wind_dir; }
-  virtual int hasMaxWindDirection() const
-  {
-    return _max_wind_dir != _INTEGER_UNDEFINED;
-  }
+  virtual optional<double> Visibility() const { return _vis; }
 
-  virtual speed_units WindSpeedUnits() const { return _wind_speed_units; }
-  virtual int hasWindSpeedUnits() const
+  virtual optional<distance_units> VisibilityUnits() const
   {
-    return _wind_speed_units != speed_units::undefined;
-  }
-
-  virtual double Visibility() const { return _vis; }
-  virtual bool hasVisibility() const { return _vis != _DOUBLE_UNDEFINED; }
-
-  virtual distance_units VisibilityUnits() const { return _vis_units; }
-  virtual bool hasVisibilityUnits() const
-  {
-    return _vis_units != distance_units::undefined;
+    return _vis_units;
   }
 
   virtual bool isVisibilityLessThan() const { return _vis_lt; }
   
   virtual bool isCAVOK() const { return _cavok; }
       
-  virtual int VerticalVisibility() const { return _vert_vis; }
-  virtual bool hasVerticalVisibility() const
-  {
-    return _vert_vis != _INTEGER_UNDEFINED;
-  }
+  virtual optional<int> VerticalVisibility() const { return _vert_vis; }
   
-  virtual int Temperature() const { return _temp; }
-  virtual bool hasTemperature() const { return _temp != _INTEGER_UNDEFINED; }
+  virtual optional<int> Temperature() const { return _temp; }
 
-  virtual int DewPoint() const { return _dew; }
-  virtual bool hasDewPoint() const { return _dew != _INTEGER_UNDEFINED; }
+  virtual optional<int> DewPoint() const { return _dew; }
 
-  virtual double AltimeterA() const { return _altimeterA; }
-  virtual bool hasAltimeterA() const
-  {
-    return _altimeterA != _DOUBLE_UNDEFINED;
-  }
+  virtual optional<double> AltimeterA() const { return _altimeterA; }
 
-  virtual int AltimeterQ() const { return _altimeterQ; }
-  virtual bool hasAltimeterQ() const
-  {
-    return _altimeterQ != _INTEGER_UNDEFINED;
-  }
+  virtual optional<int> AltimeterQ() const { return _altimeterQ; }
 
-  virtual double SeaLevelPressure() const { return _slp; }
-  virtual bool hasSeaLevelPressure() const { return _slp != _DOUBLE_UNDEFINED; }
+  virtual optional<double> SeaLevelPressure() const { return _slp; }
 
-  virtual double TemperatureNA() const { return _ftemp; }
-  virtual bool hasTemperatureNA() const { return _ftemp != _DOUBLE_UNDEFINED; }
+  virtual optional<double> TemperatureNA() const { return _ftemp; }
 
-  virtual double DewPointNA() const { return _fdew; }
-  virtual bool hasDewPointNA() const { return _fdew != _DOUBLE_UNDEFINED; }
+  virtual optional<double> DewPointNA() const { return _fdew; }
 
-#ifndef NO_CLOUDS
   virtual unsigned int NumCloudLayers() const
   { 
-#ifdef NO_STD
-    return _num_layers;
-#else
     return _layers.size(); 
-#endif
   }
 
-#ifndef NO_STD
-  std::shared_ptr<Clouds>
-#else
-  const Clouds *
-#endif
-  Layer(unsigned int idx) const
+  std::shared_ptr<Clouds> Layer(unsigned int idx) const
   {
     if (idx < NumCloudLayers())
     {
@@ -357,16 +283,10 @@ public:
 
     return nullptr;
   }
-#endif
 
-#ifndef NO_PHENOM
   unsigned int NumPhenomena() const
   {
-#ifdef NO_STD
-    return _num_phenomena;
-#else
     return _phenomena.size();
-#endif
   }
 
   const Phenom& Phenomenon(unsigned int idx) const
@@ -378,7 +298,6 @@ public:
 
     return *_default_phenom;
   }
-#endif
 
 private:
   MetarImpl();
@@ -412,189 +331,73 @@ private:
 
   void parse_phenom(const char *str);
 
-  message_type _message_type;
+  optional<message_type> _message_type;
 
-  char _icao[5];
+  optional<string> _icao;
 
-  int _day;
-  int _hour;
-  int _min;
+  optional<int> _day;
+  optional<int> _hour;
+  optional<int> _min;
 
-  int _wind_dir;
-  int _wind_spd;
-  int _gust;
-  speed_units _wind_speed_units;
+  optional<int> _wind_dir;
+  optional<int> _wind_spd;
+  optional<int> _gust;
+  optional<speed_units> _wind_speed_units;
 
-  int _min_wind_dir;
-  int _max_wind_dir;
+  optional<int> _min_wind_dir;
+  optional<int> _max_wind_dir;
   bool _vrb;
 
-  double _vis;
-  distance_units _vis_units;
+  optional<double> _vis;
+  optional<distance_units> _vis_units;
   bool _vis_lt;
   bool _cavok;
 
-#ifndef NO_CLOUDS
-#ifndef NO_STD
-  std::vector<std::shared_ptr<Clouds>>
-#else
-  Clouds **
-#endif
-    _layers;
+  std::vector<std::shared_ptr<Clouds>> _layers;
 
-#ifdef NO_STD
-  unsigned int _num_layers;
-#endif
-#endif
+  std::vector<std::shared_ptr<Phenom>> _phenomena;
 
-#ifndef NO_PHENOM
-#ifndef NO_STD
-  std::vector<std::shared_ptr<Phenom>>
-#else
-  Phenom **
-#endif
-    _phenomena;
-#ifdef NO_STD
- unsigned int _num_phenomena;
-#endif
-#endif
+  optional<int> _vert_vis;
 
-  int _vert_vis;
+  optional<int> _temp;
+  optional<int> _dew;
 
-  int _temp;
-  int _dew;
+  optional<double> _altimeterA;
 
-  double _altimeterA;
-
-  int _altimeterQ;
+  optional<int> _altimeterQ;
 
   bool _rmk;
   bool _tempo;
 
-  double _slp;
+  optional<double> _slp;
 
-  double _ftemp;
-  double _fdew;
+  optional<double> _ftemp;
+  optional<double> _fdew;
 
   const char *_previous_element;
 
-  static const int _INTEGER_UNDEFINED;
-  static const double _DOUBLE_UNDEFINED;
-
-#ifndef NO_CLOUDS
-#ifdef NO_STD
-  static const unsigned int _MAX_CLOUD_LAYERS;
-#endif
-#endif
-
-#ifndef NO_PHENOM
-#ifndef NO_STD
-  std::shared_ptr<Phenom>
-#else
-  Phenom *
-#endif
-  _default_phenom;
-#ifdef NO_STD
-  static const unsigned int _MAX_PHENOM;
-#endif
-#endif
+  std::shared_ptr<Phenom> _default_phenom;
 };
-   
-const int MetarImpl::_INTEGER_UNDEFINED = INT_MIN;
-const double MetarImpl::_DOUBLE_UNDEFINED = DBL_MAX;
 
-#ifdef NO_STD
-#ifndef NO_CLOUDS
-const unsigned int MetarImpl::_MAX_CLOUD_LAYERS = 6;
-#endif
-#ifndef NO_PHENOM
-const unsigned int MetarImpl::_MAX_PHENOM = 16;
-#endif
-#endif
-
-#ifndef NO_STD
-std::shared_ptr<Metar>
-#else
-Metar *
-#endif
-Metar::Create(const char *metar_str)
+std::shared_ptr<Metar> Metar::Create(const char *metar_str)
 {
-#ifndef NO_STD
   return make_shared<MetarImpl>(metar_str);
-#else
-  return new MetarImpl(metar_str);
-#endif
 }
 
-#ifndef NO_STD
-std::shared_ptr<Metar>
-#else
-Metar *
-#endif
-Metar::Create(char *metar_str)
+std::shared_ptr<Metar> Metar::Create(char *metar_str)
 {
-#ifndef NO_STD
   return make_shared<MetarImpl>(metar_str);
-#else
-  return new MetarImpl(metar_str);
-#endif
 }
 
 MetarImpl::MetarImpl()
-  : _message_type(message_type::undefined)
-  , _day(_INTEGER_UNDEFINED)
-  , _hour(_INTEGER_UNDEFINED)
-  , _min(_INTEGER_UNDEFINED)
-  , _wind_dir(_INTEGER_UNDEFINED) 
-  , _wind_spd(_INTEGER_UNDEFINED)
-  , _gust(_INTEGER_UNDEFINED)
-  , _wind_speed_units(speed_units::undefined)
-  , _min_wind_dir(_INTEGER_UNDEFINED)
-  , _max_wind_dir(_INTEGER_UNDEFINED)
-  , _vrb(false)
-  , _vis(_DOUBLE_UNDEFINED)
-  , _vis_units(distance_units::undefined)
+  : _vrb(false)
   , _vis_lt(false)
   , _cavok(false)
-#ifdef NO_STD
-#ifndef NO_CLOUDS
-  , _num_layers(0)
-#endif
-#ifndef NO_PHENOM
-  , _num_phenomena(0)
-#endif
-#endif
-  , _vert_vis(_INTEGER_UNDEFINED)
-  , _temp(_INTEGER_UNDEFINED) 
-  , _dew(_INTEGER_UNDEFINED)
-  , _altimeterA(_DOUBLE_UNDEFINED)
-  , _altimeterQ(_INTEGER_UNDEFINED)
   , _rmk(false)
   , _tempo(false)
-  , _slp(_DOUBLE_UNDEFINED)
-  , _ftemp(_DOUBLE_UNDEFINED) 
-  , _fdew(_DOUBLE_UNDEFINED)
   , _previous_element(nullptr)
 {
-  _icao[0] = '\0';
-
-#ifdef NO_STD
-#ifndef NO_CLOUDS
-  _layers = new Clouds*[_MAX_CLOUD_LAYERS];
-#endif
-#ifndef NO_PHENOM
-  _phenomena = new Phenom*[_MAX_PHENOM];
-#endif
-#endif
-
-#ifndef NO_PHENOM
-#ifdef NO_STD
-  _default_phenom = new PhenomDefault();
-#else
   _default_phenom = make_shared<PhenomDefault>();
-#endif
-#endif
-
 }
 
 MetarImpl::MetarImpl(const char *metar_str) : MetarImpl()
@@ -606,30 +409,6 @@ MetarImpl::MetarImpl(char *metar_str) : MetarImpl()
 {
   parse(metar_str);
 }
-
-#ifdef NO_STD
-MetarImpl::~MetarImpl()
-{
-#ifndef NO_CLOUDS
-  for (size_t i = 0 ; i < _num_layers ; i++)
-  {
-    delete _layers[i];
-  }
-  delete[] _layers;
-#endif
-
-#ifndef NO_PHENOM
-  for (size_t i = 0 ; i < _num_phenomena ; i++)
-  {
-    delete _phenomena[i];
-  }
-
-  delete[] _phenomena;
-
-  delete _default_phenom;
-#endif
-}
-#endif
 
 void MetarImpl::parse(const char *metar_str)
 {
@@ -643,43 +422,43 @@ void MetarImpl::parse(char *metar_str)
   char *el = strtok(metar_str, " ");
   while (el)
   {
-    if (!hasMessageType() && is_message_type(el))
+    if (!_message_type.has_value() && is_message_type(el))
     {
       parse_message_type(el);
     }
-    else if (!hasICAO() && is_icao(el))
+    else if (!_icao.has_value() && is_icao(el))
     {
       parse_icao(el);
     }
-    else if (!hasMinute() && is_ot(el))
+    else if (!_min.has_value() && is_ot(el))
     {
       parse_ot(el);
     }
-    else if (!hasWindSpeed() && is_wind(el))
+    else if (!_wind_spd.has_value() && is_wind(el))
     {
       parse_wind(el);
     }
-    else if (!hasMinWindDirection() && is_wind_var(el))
+    else if (!_min_wind_dir.has_value() && is_wind_var(el))
     {
       parse_wind_var(el);
     }
-    else if (!hasVisibility() && !_cavok && is_vis(el))
+    else if (!_vis.has_value() && !_cavok && is_vis(el))
     {
       parse_vis(el);
     }
-    else if (!hasVerticalVisibility() && is_vert_vis(el))
+    else if (!_vert_vis.has_value() && is_vert_vis(el))
     {
       parse_vert_vis(el);
     }
-    else if (!hasTemperature() && is_temp(el))
+    else if (!_temp.has_value() && is_temp(el))
     {
       parse_temp(el);
     } 
-    else if (!hasAltimeterA() && is_altA(el))
+    else if (!_altimeterA.has_value() && is_altA(el))
     {
       parse_alt(el);
     }
-    else if (!hasAltimeterQ() && is_altQ(el))
+    else if (!_altimeterQ.has_value() && is_altQ(el))
     {
       parse_alt(el);
     }
@@ -691,11 +470,11 @@ void MetarImpl::parse(char *metar_str)
     {
       _rmk = true;
     }
-    else if (!hasSeaLevelPressure() && is_slp(el))
+    else if (!_slp.has_value() && is_slp(el))
     {
       parse_slp(el);
     }
-    else if (!hasTemperatureNA() && is_tempNA(el))
+    else if (!_ftemp.has_value() && is_tempNA(el))
     {
       parse_tempNA(el);
     }
@@ -718,7 +497,7 @@ void MetarImpl::parse_message_type(const char *str)
 
 void MetarImpl::parse_icao(const char *str)
 {
-  strcpy(_icao, str);
+  _icao = str;
 }
 
 void MetarImpl::parse_ot(const char *str)
@@ -834,11 +613,12 @@ void MetarImpl::parse_vis(const char *str)
       val[len] = '\0';
       double denominator = atof(val);
 
-      _vis = numerator / denominator;
+      double vis = numerator / denominator;
       if (match("#", _previous_element))
       {
-        _vis += atof(_previous_element);
+        vis += atof(_previous_element);
       }
+      _vis = vis;
     }
     _vis_units = distance_units::SM;
   }
@@ -846,18 +626,12 @@ void MetarImpl::parse_vis(const char *str)
 
 void MetarImpl::parse_cloud_layer(const char *str)
 {
-#ifndef NO_CLOUDS
   auto c = Clouds::Create(str, _tempo);
 
   if (c != nullptr)
   {
-#ifndef NO_STD
-        _layers.push_back(c);
-#else
-        _layers[_num_layers++] = c;
-#endif
+    _layers.push_back(c);
   }
-#endif
 }
 
 void MetarImpl::parse_vert_vis(const char *str)
@@ -893,19 +667,12 @@ void MetarImpl::parse_alt(const char *str)
 
 void MetarImpl::parse_phenom(const char *str)
 {
-#ifndef NO_PHENOM
-
   auto p = Phenom::Create(str, _tempo);
 
   if (p != nullptr)
   {
-#ifndef NO_STD
     _phenomena.push_back(p);
-#else
-    _phenomena[_num_phenomena++] = p;
-#endif
   }
-#endif
 }
 
 void MetarImpl::parse_slp(const char *str)

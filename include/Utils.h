@@ -1,13 +1,10 @@
 //
-// Copyright (c) 2018 James A. Chappell
+// Copyright (c) 2020 James A. Chappell
 //
 // Weather utilities
 //
 
-#ifndef STORAGE_B_WEATHER_UTILS_H_
-#define STORAGE_B_WEATHER_UTILS_H_
-
-#include "defines.h"
+#pragma once
 
 namespace Storage_B 
 {
@@ -28,5 +25,3 @@ namespace Storage_B
     };
   }
 }
-
-#endif

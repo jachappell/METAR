@@ -6,7 +6,7 @@ PROG5=phenom_test
 OBJDIR=.obj
 CC=g++
 
-CFLAGS = -Wall -I../include 
+CFLAGS = -Wall -I../include --std=c++17
 LDFLAGS = -L../lib -lMetar
 
 all: $(PROG1) $(PROG2) $(PROG3) $(PROG4) $(PROG5)

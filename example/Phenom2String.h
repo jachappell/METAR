@@ -1,5 +1,4 @@
-#ifndef STORAGE_B_WEATHER_PHENOM2STRING_
-#define STORAGE_B_WEATHER_PHENOM2STRING_
+#pragma once
 
 #include <string>
 
@@ -12,4 +11,3 @@ namespace Storage_B
     std::string Phenom2String(const Phenom& phenom);
   }
 }
-#endif

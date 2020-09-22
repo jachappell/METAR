@@ -1,11 +1,10 @@
 //
-// Copyright (c) 2018 James A. Chappell (rlrrlrll@gmail.com)
+// Copyright (c) 2020 James A. Chappell (rlrrlrll@gmail.com)
 //
 // Units conversion
 //
 
-#ifndef STORAGE_B_WEATHER_CONVERT_H_
-#define STORAGE_B_WEATHER_CONVERT_H_
+#pragma once
 
 namespace Storage_B 
 {
@@ -97,4 +96,3 @@ namespace Storage_B
   }
 }
 
-#endif

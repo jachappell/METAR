@@ -1,15 +1,11 @@
 //
-// Copyright (c) 2018 James A. Chappell (rlrrlrll@gmail.com)
+// Copyright (c) 2020 James A. Chappell (rlrrlrll@gmail.com)
 //
 // Misc. weather utilities
 //
 #include "Utils.h"
 
-#ifndef NO_STD
 #include <cmath>
-#else
-#include <math.h>
-#endif
 
 #include <Convert.h>
 

@@ -1,17 +1,13 @@
 //
-// Copyright (c) 2018 James A. Chappell (rlrrlrll@gmail.com)
+// Copyright (c) 2020 James A. Chappell (rlrrlrll@gmail.com)
 //
 // METAR clouds decoder
 //
 
-#ifndef STORAGE_B_WEATHER_CLOUDS_H_
-#define STORAGE_B_WEATHER_CLOUDS_H_
+#pragma once
 
-#include "defines.h"
-
-#ifndef NO_STD
 #include <memory>
-#endif
+#include <optional>
 
 namespace Storage_B
 {
@@ -33,19 +29,12 @@ namespace Storage_B
 
       enum class type
       {
-        undefined = -1,
         TCU,
         CB,
         ACC 
       };
 
-      static
-#ifndef NO_STD
-          std::shared_ptr<Clouds>
-#else
-          Clouds *
-#endif
-              Create(const char *str, bool temp = false);
+      static std::shared_ptr<Clouds> Create(const char *str, bool temp = false);
 
       virtual ~Clouds() = default;
 
@@ -54,15 +43,11 @@ namespace Storage_B
       //
       // Layer altitude in multiples of 100 feet or 30 meters
       //
-      virtual int Altitude() const = 0;
-      virtual bool hasAltitude() const = 0;
+      virtual std::optional<int> Altitude() const = 0;
 
-      virtual type CloudType() const = 0;
-      virtual bool hasCloudType() const = 0;
+      virtual std::optional<type> CloudType() const = 0;
 
       virtual bool Temporary() const = 0;
     };
   }
 }
-
-#endif

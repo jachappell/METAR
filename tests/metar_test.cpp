@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2018 James A. Chappell
+// Copyright (c) 2020 James A. Chappell
 //
 // METAR decoder tests
 //
@@ -17,9 +17,9 @@ BOOST_AUTO_TEST_CASE(uninitialized_observation_time)
 {
   auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar->hasDay());
-  BOOST_CHECK(!metar->hasHour());
-  BOOST_CHECK(!metar->hasMinute());
+  BOOST_CHECK(!metar->Day().has_value());
+  BOOST_CHECK(!metar->Hour().has_value());
+  BOOST_CHECK(!metar->Minute().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(observation_time)
@@ -35,8 +35,8 @@ BOOST_AUTO_TEST_CASE(uninitialized_temperature)
 {
   auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar->hasTemperature());
-  BOOST_CHECK(!metar->hasDewPoint());
+  BOOST_CHECK(!metar->Temperature().has_value());
+  BOOST_CHECK(!metar->DewPoint().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(temperature_both_positive1)
@@ -47,8 +47,8 @@ BOOST_AUTO_TEST_CASE(temperature_both_positive1)
 
   auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar->hasTemperature());
-  BOOST_CHECK(metar->hasDewPoint());
+  BOOST_CHECK(metar->Temperature().has_value());
+  BOOST_CHECK(metar->DewPoint().has_value());
 
   BOOST_CHECK(metar->Temperature() == 8);
   BOOST_CHECK(metar->DewPoint() == 6);
@@ -61,8 +61,8 @@ BOOST_AUTO_TEST_CASE(temperature_negative_dew_point)
   
   auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar->hasTemperature());
-  BOOST_CHECK(metar->hasDewPoint());
+  BOOST_CHECK(metar->Temperature().has_value());
+  BOOST_CHECK(metar->DewPoint().has_value());
 
   BOOST_CHECK(metar->Temperature() == 1);
   BOOST_CHECK(metar->DewPoint() == -1);
@@ -75,8 +75,8 @@ BOOST_AUTO_TEST_CASE(temperature_both_negative)
 
   auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar->hasTemperature());
-  BOOST_CHECK(metar->hasDewPoint());
+  BOOST_CHECK(metar->Temperature().has_value());
+  BOOST_CHECK(metar->DewPoint().has_value());
 
   BOOST_CHECK(metar->Temperature() == -14);
   BOOST_CHECK(metar->DewPoint() == -15);
@@ -89,8 +89,8 @@ BOOST_AUTO_TEST_CASE(temperature_both_positive2)
 
   auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar->hasTemperature());
-  BOOST_CHECK(metar->hasDewPoint());
+  BOOST_CHECK(metar->Temperature().has_value());
+  BOOST_CHECK(metar->DewPoint().has_value());
 
   BOOST_CHECK(metar->Temperature() == 15);
   BOOST_CHECK(metar->DewPoint() == 14);
@@ -100,8 +100,8 @@ BOOST_AUTO_TEST_CASE(temperature_no_dew_positive)
 {
   auto metar = Metar::Create("15/");
 
-  BOOST_CHECK(metar->hasTemperature());
-  BOOST_CHECK(!metar->hasDewPoint());
+  BOOST_CHECK(metar->Temperature().has_value());
+  BOOST_CHECK(!metar->DewPoint().has_value());
 
   BOOST_CHECK(metar->Temperature() == 15);
 }
@@ -110,8 +110,8 @@ BOOST_AUTO_TEST_CASE(temperature_no_dew_negative)
 {
   auto metar = Metar::Create("M07/");
 
-  BOOST_CHECK(metar->hasTemperature());
-  BOOST_CHECK(!metar->hasDewPoint());
+  BOOST_CHECK(metar->Temperature().has_value());
+  BOOST_CHECK(!metar->DewPoint().has_value());
 
   BOOST_CHECK(metar->Temperature() == -7);
 }
@@ -120,8 +120,8 @@ BOOST_AUTO_TEST_CASE(uninitialized_temperatureNA)
 {
   auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar->hasTemperatureNA());
-  BOOST_CHECK(!metar->hasDewPointNA());
+  BOOST_CHECK(!metar->TemperatureNA().has_value());
+  BOOST_CHECK(!metar->DewPointNA().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(temperatureNA_1)
@@ -131,8 +131,8 @@ BOOST_AUTO_TEST_CASE(temperatureNA_1)
 
   auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar->hasTemperatureNA());
-  BOOST_CHECK(metar->hasDewPointNA());
+  BOOST_CHECK(metar->TemperatureNA().has_value());
+  BOOST_CHECK(metar->DewPointNA().has_value());
 
   BOOST_CHECK(metar->TemperatureNA() == 8.3);
   BOOST_CHECK(metar->DewPointNA() == 6.7);
@@ -146,8 +146,8 @@ BOOST_AUTO_TEST_CASE(temperatureNA_2)
 
   auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar->hasTemperatureNA());
-  BOOST_CHECK(metar->hasDewPointNA());
+  BOOST_CHECK(metar->TemperatureNA().has_value());
+  BOOST_CHECK(metar->DewPointNA().has_value());
 
   BOOST_CHECK(metar->TemperatureNA() == 18.3);
   BOOST_CHECK(metar->DewPointNA() == 16.7);
@@ -160,8 +160,8 @@ BOOST_AUTO_TEST_CASE(temperatureNA_both_negative)
 
   auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar->hasTemperatureNA());
-  BOOST_CHECK(metar->hasDewPointNA());
+  BOOST_CHECK(metar->TemperatureNA().has_value());
+  BOOST_CHECK(metar->DewPointNA().has_value());
 
   BOOST_CHECK(metar->TemperatureNA() == -1.7);
   BOOST_CHECK(metar->DewPointNA() == -1.8);
@@ -174,8 +174,8 @@ BOOST_AUTO_TEST_CASE(temperatureNA_NoDew)
 
   auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar->hasTemperatureNA());
-  BOOST_CHECK(!metar->hasDewPointNA());
+  BOOST_CHECK(metar->TemperatureNA().has_value());
+  BOOST_CHECK(!metar->DewPointNA().has_value());
 
   BOOST_CHECK(metar->TemperatureNA() == 2.8);
 }
@@ -184,10 +184,10 @@ BOOST_AUTO_TEST_CASE(uninitialized_wind)
 {
   auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar->hasWindSpeed());
-  BOOST_CHECK(!metar->hasWindDirection());
-  BOOST_CHECK(!metar->hasWindGust());
-  BOOST_CHECK(!metar->hasWindSpeedUnits());
+  BOOST_CHECK(!metar->WindSpeed().has_value());
+  BOOST_CHECK(!metar->WindDirection().has_value());
+  BOOST_CHECK(!metar->WindGust().has_value());
+  BOOST_CHECK(!metar->WindSpeedUnits().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(wind_kt)
@@ -197,43 +197,43 @@ BOOST_AUTO_TEST_CASE(wind_kt)
 
   auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar->hasWindSpeed());
-  BOOST_CHECK(metar->hasWindDirection());
+  BOOST_CHECK(metar->WindSpeed().has_value());
+  BOOST_CHECK(metar->WindDirection().has_value());
 
   BOOST_CHECK(metar->WindDirection() == 250);
   BOOST_CHECK(metar->WindSpeed() == 5);
 
   BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
   
-  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(!metar->WindGust().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(wind_kt_3digit)
 {
   auto metar = Metar::Create("240105KT");
 
-  BOOST_CHECK(metar->hasWindSpeed());
-  BOOST_CHECK(metar->hasWindDirection());
+  BOOST_CHECK(metar->WindSpeed().has_value());
+  BOOST_CHECK(metar->WindDirection().has_value());
 
   BOOST_CHECK(metar->WindDirection() == 240);
   BOOST_CHECK(metar->WindSpeed() == 105);
 
   BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
   
-  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(!metar->WindGust().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(wind_kt_3digit_gust)
 {
   auto metar = Metar::Create("240105G121KT");
 
-  BOOST_CHECK(metar->hasWindSpeed());
-  BOOST_CHECK(metar->hasWindDirection());
+  BOOST_CHECK(metar->WindSpeed().has_value());
+  BOOST_CHECK(metar->WindDirection().has_value());
 
   BOOST_CHECK(metar->WindDirection() == 240);
   BOOST_CHECK(metar->WindSpeed() == 105);
   
-  BOOST_CHECK(metar->hasWindGust());
+  BOOST_CHECK(metar->WindGust().has_value());
   BOOST_CHECK(metar->WindGust() == 121);
 
   BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
@@ -243,13 +243,13 @@ BOOST_AUTO_TEST_CASE(wind_vrb_kt_3digit_gust)
 {
   auto metar = Metar::Create("VRB105G121KT");
 
-  BOOST_CHECK(metar->hasWindSpeed());
-  BOOST_CHECK(!metar->hasWindDirection());
+  BOOST_CHECK(metar->WindSpeed().has_value());
+  BOOST_CHECK(!metar->WindDirection().has_value());
   BOOST_CHECK(metar->isVariableWindDirection());
 
   BOOST_CHECK(metar->WindSpeed() == 105);
   
-  BOOST_CHECK(metar->hasWindGust());
+  BOOST_CHECK(metar->WindGust().has_value());
   BOOST_CHECK(metar->WindGust() == 121);
 
   BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
@@ -259,14 +259,14 @@ BOOST_AUTO_TEST_CASE(wind_kt_gust)
 {
   auto metar = Metar::Create("25005G12KT");
 
-  BOOST_CHECK(metar->hasWindSpeed());
-  BOOST_CHECK(metar->hasWindDirection());
+  BOOST_CHECK(metar->WindSpeed().has_value());
+  BOOST_CHECK(metar->WindDirection().has_value());
   BOOST_CHECK(!metar->isVariableWindDirection());
 
   BOOST_CHECK(metar->WindDirection() == 250);
   BOOST_CHECK(metar->WindSpeed() == 5);
 
-  BOOST_CHECK(metar->hasWindGust());
+  BOOST_CHECK(metar->WindGust().has_value());
   BOOST_CHECK(metar->WindGust() == 12);
 
   BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
@@ -279,42 +279,42 @@ BOOST_AUTO_TEST_CASE(wind_mps)
 
   auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar->hasWindSpeed());
-  BOOST_CHECK(metar->hasWindDirection());
+  BOOST_CHECK(metar->WindSpeed().has_value());
+  BOOST_CHECK(metar->WindDirection().has_value());
 
   BOOST_CHECK(metar->WindDirection() == 45);
   BOOST_CHECK(metar->WindSpeed() == 3);
 
   BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::MPS);
   
-  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(!metar->WindGust().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(wind_mps_vrb)
 {
   auto metar = Metar::Create("VRB03MPS");
 
-  BOOST_CHECK(metar->hasWindSpeed());
-  BOOST_CHECK(!metar->hasWindDirection());
+  BOOST_CHECK(metar->WindSpeed().has_value());
+  BOOST_CHECK(!metar->WindDirection().has_value());
 
   BOOST_CHECK(metar->WindSpeed() == 3);
 
   BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::MPS);
   
-  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(!metar->WindGust().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(wind_mps_3digit_gust)
 {
   auto metar = Metar::Create("08090G102MPS");
 
-  BOOST_CHECK(metar->hasWindSpeed());
-  BOOST_CHECK(metar->hasWindDirection());
+  BOOST_CHECK(metar->WindSpeed().has_value());
+  BOOST_CHECK(metar->WindDirection().has_value());
 
   BOOST_CHECK(metar->WindDirection() == 80);
   BOOST_CHECK(metar->WindSpeed() == 90);
   
-  BOOST_CHECK(metar->hasWindGust());
+  BOOST_CHECK(metar->WindGust().has_value());
   BOOST_CHECK(metar->WindGust() == 102);
 
   BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::MPS);
@@ -327,27 +327,27 @@ BOOST_AUTO_TEST_CASE(wind_kph)
 
   auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar->hasWindSpeed());
-  BOOST_CHECK(metar->hasWindDirection());
+  BOOST_CHECK(metar->WindSpeed().has_value());
+  BOOST_CHECK(metar->WindDirection().has_value());
 
   BOOST_CHECK(metar->WindDirection() == 40);
   BOOST_CHECK(metar->WindSpeed() == 5);
 
   BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KPH);
   
-  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(!metar->WindGust().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(wind_vrb_kph_2digit_gust)
 {
   auto metar = Metar::Create("VRB05G21KPH");
 
-  BOOST_CHECK(metar->hasWindSpeed());
-  BOOST_CHECK(!metar->hasWindDirection());
+  BOOST_CHECK(metar->WindSpeed().has_value());
+  BOOST_CHECK(!metar->WindDirection().has_value());
 
   BOOST_CHECK(metar->WindSpeed() == 5);
   
-  BOOST_CHECK(metar->hasWindGust());
+  BOOST_CHECK(metar->WindGust().has_value());
   BOOST_CHECK(metar->WindGust() == 21);
 
   BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KPH);
@@ -357,23 +357,23 @@ BOOST_AUTO_TEST_CASE(uninitialized_altA)
 {
   auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar->hasAltimeterA());
+  BOOST_CHECK(!metar->AltimeterA().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(uninitialized_wind_var)
 {
   auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar->hasMinWindDirection());
-  BOOST_CHECK(!metar->hasMaxWindDirection());
+  BOOST_CHECK(!metar->MinWindDirection().has_value());
+  BOOST_CHECK(!metar->MaxWindDirection().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(wind_var)
 {
   auto metar = Metar::Create("090V150");
 
-  BOOST_CHECK(metar->hasMinWindDirection());
-  BOOST_CHECK(metar->hasMaxWindDirection());
+  BOOST_CHECK(metar->MinWindDirection().has_value());
+  BOOST_CHECK(metar->MaxWindDirection().has_value());
 
   BOOST_CHECK(metar->MinWindDirection() == 90);
   BOOST_CHECK(metar->MaxWindDirection() == 150);
@@ -386,7 +386,7 @@ BOOST_AUTO_TEST_CASE(altA)
 
   auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(metar->AltimeterA().has_value());
   BOOST_CHECK(metar->AltimeterA() == 30.06);
 }
 
@@ -394,7 +394,7 @@ BOOST_AUTO_TEST_CASE(uninitialized_altQ)
 {
   auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar->hasAltimeterQ());
+  BOOST_CHECK(!metar->AltimeterQ().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(altQ)
@@ -404,7 +404,7 @@ BOOST_AUTO_TEST_CASE(altQ)
 
   auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar->hasAltimeterQ());
+  BOOST_CHECK(metar->AltimeterQ().has_value());
   BOOST_CHECK(metar->AltimeterQ() == 1020);
 }
 
@@ -412,7 +412,7 @@ BOOST_AUTO_TEST_CASE(uninitialized_slp)
 {
   auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar->hasSeaLevelPressure());
+  BOOST_CHECK(!metar->SeaLevelPressure().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(slp)
@@ -422,7 +422,7 @@ BOOST_AUTO_TEST_CASE(slp)
 
   auto metar = Metar::Create(buffer);
 
-  BOOST_CHECK(metar->hasSeaLevelPressure());
+  BOOST_CHECK(metar->SeaLevelPressure().has_value());
   BOOST_CHECK(metar->SeaLevelPressure() == 1017.7);
 }
 
@@ -430,18 +430,18 @@ BOOST_AUTO_TEST_CASE(uninitialized_visibility)
 {
   auto metar = Metar::Create("");
 
-  BOOST_CHECK(!metar->hasVisibility());
-  BOOST_CHECK(!metar->hasVisibilityUnits());
+  BOOST_CHECK(!metar->Visibility().has_value());
+  BOOST_CHECK(!metar->VisibilityUnits().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(visibility_meters)
 {
   auto metar = Metar::Create("1500");
 
-  BOOST_CHECK(metar->hasVisibility());
+  BOOST_CHECK(metar->Visibility().has_value());
   BOOST_CHECK(metar->Visibility() == 1500);
 
-  BOOST_CHECK(metar->hasVisibilityUnits());
+  BOOST_CHECK(metar->VisibilityUnits().has_value());
   BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::M);
 }
 
@@ -449,10 +449,10 @@ BOOST_AUTO_TEST_CASE(visibility_integer_sm)
 {
   auto metar = Metar::Create("10SM");
 
-  BOOST_CHECK(metar->hasVisibility());
+  BOOST_CHECK(metar->Visibility().has_value());
   BOOST_CHECK(metar->Visibility() == 10);
 
-  BOOST_CHECK(metar->hasVisibilityUnits());
+  BOOST_CHECK(metar->VisibilityUnits().has_value());
   BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
 }
 
@@ -460,10 +460,10 @@ BOOST_AUTO_TEST_CASE(visibility_fraction_sm_1)
 {
   auto metar = Metar::Create("1/4SM");
 
-  BOOST_CHECK(metar->hasVisibility());
+  BOOST_CHECK(metar->Visibility().has_value());
   BOOST_CHECK(metar->Visibility() == 0.25);
 
-  BOOST_CHECK(metar->hasVisibilityUnits());
+  BOOST_CHECK(metar->VisibilityUnits().has_value());
   BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
   BOOST_CHECK(!metar->isVisibilityLessThan());
 }
@@ -472,10 +472,10 @@ BOOST_AUTO_TEST_CASE(visibility_fraction_sm_2)
 {
   auto metar = Metar::Create("5/16SM");
 
-  BOOST_CHECK(metar->hasVisibility());
+  BOOST_CHECK(metar->Visibility().has_value());
   BOOST_CHECK(metar->Visibility() == (5.0 / 16.0));
 
-  BOOST_CHECK(metar->hasVisibilityUnits());
+  BOOST_CHECK(metar->VisibilityUnits().has_value());
   BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
 }
 
@@ -483,10 +483,10 @@ BOOST_AUTO_TEST_CASE(visibility_fraction_sm_3)
 {
   auto metar = Metar::Create("2 1/2SM");
 
-  BOOST_CHECK(metar->hasVisibility());
+  BOOST_CHECK(metar->Visibility().has_value());
   BOOST_CHECK(metar->Visibility() == 2.5);
 
-  BOOST_CHECK(metar->hasVisibilityUnits());
+  BOOST_CHECK(metar->VisibilityUnits().has_value());
   BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
 }
 
@@ -494,10 +494,10 @@ BOOST_AUTO_TEST_CASE(visibility_LT)
 {
   auto metar = Metar::Create("M1/4SM");
 
-  BOOST_CHECK(metar->hasVisibility());
+  BOOST_CHECK(metar->Visibility().has_value());
   BOOST_CHECK(metar->Visibility() == 0.25);
 
-  BOOST_CHECK(metar->hasVisibilityUnits());
+  BOOST_CHECK(metar->VisibilityUnits().has_value());
   BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
   BOOST_CHECK(metar->isVisibilityLessThan());
   BOOST_CHECK(!metar->isCAVOK());
@@ -507,8 +507,8 @@ BOOST_AUTO_TEST_CASE(visibility_CAVOK)
 {
   auto metar = Metar::Create("CAVOK");
 
-  BOOST_CHECK(!metar->hasVisibility());
-  BOOST_CHECK(!metar->hasVisibilityUnits());
+  BOOST_CHECK(!metar->Visibility().has_value());
+  BOOST_CHECK(!metar->VisibilityUnits().has_value());
   BOOST_CHECK(metar->isCAVOK());
 }
 
@@ -516,14 +516,14 @@ BOOST_AUTO_TEST_CASE(uninitialized_vert_visibility)
 {
   auto metar = Metar::Create("");
   
-  BOOST_CHECK(!metar->hasVerticalVisibility());
+  BOOST_CHECK(!metar->VerticalVisibility().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(vert_visibility)
 {
   auto metar = Metar::Create("VV105");
   
-  BOOST_CHECK(metar->hasVerticalVisibility());
+  BOOST_CHECK(metar->VerticalVisibility().has_value());
   BOOST_CHECK(metar->VerticalVisibility() == 10500);
 }
 
@@ -542,10 +542,10 @@ BOOST_AUTO_TEST_CASE(cloud_layer_2_layers)
   BOOST_CHECK(metar->NumCloudLayers() == 2);
   BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::BKN);
   BOOST_CHECK(metar->Layer(0)->Altitude() == 4);
-  BOOST_CHECK(!metar->Layer(0)->hasCloudType());
+  BOOST_CHECK(!metar->Layer(0)->CloudType().has_value());
   BOOST_CHECK(metar->Layer(1)->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(metar->Layer(1)->Altitude() == 8);
-  BOOST_CHECK(!metar->Layer(1)->hasCloudType());
+  BOOST_CHECK(!metar->Layer(1)->CloudType().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_3_layers)
@@ -555,13 +555,13 @@ BOOST_AUTO_TEST_CASE(cloud_layer_3_layers)
   BOOST_CHECK(metar->NumCloudLayers() == 3);
   BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::FEW);
   BOOST_CHECK(metar->Layer(0)->Altitude() == 4);
-  BOOST_CHECK(!metar->Layer(0)->hasCloudType());
+  BOOST_CHECK(!metar->Layer(0)->CloudType().has_value());
   BOOST_CHECK(metar->Layer(1)->Cover() == Clouds::cover::SCT);
   BOOST_CHECK(metar->Layer(1)->Altitude() == 80);
-  BOOST_CHECK(!metar->Layer(1)->hasCloudType());
+  BOOST_CHECK(!metar->Layer(1)->CloudType().has_value());
   BOOST_CHECK(metar->Layer(2)->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(metar->Layer(2)->Altitude() == 120);
-  BOOST_CHECK(!metar->Layer(2)->hasCloudType());
+  BOOST_CHECK(!metar->Layer(2)->CloudType().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(cloud_layer_3_layers_tempo)
@@ -571,15 +571,15 @@ BOOST_AUTO_TEST_CASE(cloud_layer_3_layers_tempo)
   BOOST_CHECK(metar->NumCloudLayers() == 3);
   BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::FEW);
   BOOST_CHECK(metar->Layer(0)->Altitude() == 4);
-  BOOST_CHECK(!metar->Layer(0)->hasCloudType());
+  BOOST_CHECK(!metar->Layer(0)->CloudType().has_value());
   BOOST_CHECK(!metar->Layer(0)->Temporary());
   BOOST_CHECK(metar->Layer(1)->Cover() == Clouds::cover::SCT);
   BOOST_CHECK(metar->Layer(1)->Altitude() == 80);
-  BOOST_CHECK(!metar->Layer(1)->hasCloudType());
+  BOOST_CHECK(!metar->Layer(1)->CloudType().has_value());
   BOOST_CHECK(!metar->Layer(1)->Temporary());
   BOOST_CHECK(metar->Layer(2)->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(metar->Layer(2)->Altitude() == 120);
-  BOOST_CHECK(!metar->Layer(2)->hasCloudType());
+  BOOST_CHECK(!metar->Layer(2)->CloudType().has_value());
   BOOST_CHECK(metar->Layer(2)->Temporary());
 }
 
@@ -622,10 +622,10 @@ BOOST_AUTO_TEST_CASE(real_METAR_1)
 
   auto metar = Metar::Create(buffer);
   
-  BOOST_CHECK(!metar->hasMessageType());
+  BOOST_CHECK(!metar->MessageType().has_value());
 
-  BOOST_CHECK(metar->hasICAO());
-  BOOST_CHECK(strcmp(metar->ICAO(), "KSTL") == 0);
+  BOOST_CHECK(metar->ICAO().has_value());
+  BOOST_CHECK(metar->ICAO() == "KSTL");
 
   BOOST_CHECK(metar->Day() == 23);
   BOOST_CHECK(metar->Hour() == 17);
@@ -633,11 +633,11 @@ BOOST_AUTO_TEST_CASE(real_METAR_1)
 
   BOOST_CHECK(metar->WindDirection() == 270);
   BOOST_CHECK(metar->WindSpeed() == 9);
-  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(!metar->WindGust().has_value());
   BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
 
-  BOOST_CHECK(!metar->hasMinWindDirection());
-  BOOST_CHECK(!metar->hasMaxWindDirection());
+  BOOST_CHECK(!metar->MinWindDirection().has_value());
+  BOOST_CHECK(!metar->MaxWindDirection().has_value());
   
   BOOST_CHECK(metar->Visibility() == 10);
   BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
@@ -646,16 +646,16 @@ BOOST_AUTO_TEST_CASE(real_METAR_1)
   BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(metar->Layer(0)->Altitude() == 15);
   
-  BOOST_CHECK(!metar->hasVerticalVisibility());
+  BOOST_CHECK(!metar->VerticalVisibility().has_value());
 
   BOOST_CHECK(metar->Temperature() == 9);
   BOOST_CHECK(metar->DewPoint() == 6);
   
-  BOOST_CHECK(!metar->hasAltimeterQ());
-  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(!metar->AltimeterQ().has_value());
+  BOOST_CHECK(metar->AltimeterA().has_value());
   BOOST_CHECK(metar->AltimeterA() == 30.29);
 
-  BOOST_CHECK(metar->hasSeaLevelPressure());
+  BOOST_CHECK(metar->SeaLevelPressure().has_value());
   BOOST_CHECK(metar->SeaLevelPressure() == 1026.0);
 
   BOOST_CHECK(metar->TemperatureNA() == 9.4);
@@ -668,11 +668,11 @@ BOOST_AUTO_TEST_CASE(real_METAR_2)
 
   auto metar = Metar::Create(metar_str.c_str());
 
-  BOOST_CHECK(metar->hasMessageType());
+  BOOST_CHECK(metar->MessageType().has_value());
   BOOST_CHECK(metar->MessageType() == Metar::message_type::METAR);
 
-  BOOST_CHECK(metar->hasICAO());
-  BOOST_CHECK(strcmp(metar->ICAO(), "LBBG") == 0);
+  BOOST_CHECK(metar->ICAO().has_value());
+  BOOST_CHECK(metar->ICAO() == "LBBG");
 
   BOOST_CHECK(metar->Day() == 4);
   BOOST_CHECK(metar->Hour() == 16);
@@ -680,11 +680,11 @@ BOOST_AUTO_TEST_CASE(real_METAR_2)
 
   BOOST_CHECK(metar->WindDirection() == 120);
   BOOST_CHECK(metar->WindSpeed() == 12);
-  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(!metar->WindGust().has_value());
   BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::MPS);
 
-  BOOST_CHECK(metar->hasMinWindDirection());
-  BOOST_CHECK(metar->hasMaxWindDirection());
+  BOOST_CHECK(metar->MinWindDirection().has_value());
+  BOOST_CHECK(metar->MaxWindDirection().has_value());
 
   BOOST_CHECK(metar->MinWindDirection() == 90);
   BOOST_CHECK(metar->MaxWindDirection() == 150);
@@ -703,19 +703,19 @@ BOOST_AUTO_TEST_CASE(real_METAR_2)
   BOOST_CHECK(metar->Layer(1)->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(metar->Layer(1)->Altitude() == 50);
   
-  BOOST_CHECK(!metar->hasVerticalVisibility());
+  BOOST_CHECK(!metar->VerticalVisibility().has_value());
 
   BOOST_CHECK(metar->Temperature() == -4);
   BOOST_CHECK(metar->DewPoint() == -7);
   
-  BOOST_CHECK(!metar->hasAltimeterA());
-  BOOST_CHECK(metar->hasAltimeterQ());
+  BOOST_CHECK(!metar->AltimeterA().has_value());
+  BOOST_CHECK(metar->AltimeterQ().has_value());
   BOOST_CHECK(metar->AltimeterQ() == 1020);
   
-  BOOST_CHECK(!metar->hasSeaLevelPressure());
+  BOOST_CHECK(!metar->SeaLevelPressure().has_value());
 
-  BOOST_CHECK(!metar->hasTemperatureNA());
-  BOOST_CHECK(!metar->hasDewPointNA());
+  BOOST_CHECK(!metar->TemperatureNA().has_value());
+  BOOST_CHECK(!metar->DewPointNA().has_value());
 }
 
 BOOST_AUTO_TEST_CASE(real_METAR_3)
@@ -724,11 +724,11 @@ BOOST_AUTO_TEST_CASE(real_METAR_3)
 
   auto metar = Metar::Create(metar_str.c_str()); 
 
-  BOOST_CHECK(metar->hasMessageType());
+  BOOST_CHECK(metar->MessageType().has_value());
   BOOST_CHECK(metar->MessageType() == Metar::message_type::SPECI);
 
-  BOOST_CHECK(metar->hasICAO());
-  BOOST_CHECK(strcmp(metar->ICAO(), "KSTL") == 0);
+  BOOST_CHECK(metar->ICAO().has_value());
+  BOOST_CHECK(metar->ICAO() == "KSTL");
 
   BOOST_CHECK(metar->Day() == 22);
   BOOST_CHECK(metar->Hour() == 15);
@@ -736,11 +736,11 @@ BOOST_AUTO_TEST_CASE(real_METAR_3)
 
   BOOST_CHECK(metar->WindDirection() == 70);
   BOOST_CHECK(metar->WindSpeed() == 5);
-  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(!metar->WindGust().has_value());
   BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
 
-  BOOST_CHECK(!metar->hasMinWindDirection());
-  BOOST_CHECK(!metar->hasMaxWindDirection());
+  BOOST_CHECK(!metar->MinWindDirection().has_value());
+  BOOST_CHECK(!metar->MaxWindDirection().has_value());
   
   BOOST_CHECK(metar->Visibility() == 2);
   BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
@@ -757,16 +757,16 @@ BOOST_AUTO_TEST_CASE(real_METAR_3)
   BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::OVC);
   BOOST_CHECK(metar->Layer(0)->Altitude() == 5);
   
-  BOOST_CHECK(!metar->hasVerticalVisibility());
+  BOOST_CHECK(!metar->VerticalVisibility().has_value());
 
   BOOST_CHECK(metar->Temperature() == 2);
   BOOST_CHECK(metar->DewPoint() == 2);
  
-  BOOST_CHECK(!metar->hasAltimeterQ());
-  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(!metar->AltimeterQ().has_value());
+  BOOST_CHECK(metar->AltimeterA().has_value());
   BOOST_CHECK(metar->AltimeterA() == 30.41);
 
-  BOOST_CHECK(!metar->hasSeaLevelPressure());
+  BOOST_CHECK(!metar->SeaLevelPressure().has_value());
 
   BOOST_CHECK(metar->TemperatureNA() == 2.2);
   BOOST_CHECK(metar->DewPointNA() == 2.2);
@@ -778,21 +778,21 @@ BOOST_AUTO_TEST_CASE(real_METAR_4)
 
   auto metar = Metar::Create(metar_str); 
 
-  BOOST_CHECK(metar->hasICAO());
-  BOOST_CHECK(strcmp(metar->ICAO(), "KSTL") == 0);
+  BOOST_CHECK(metar->ICAO().has_value());
+  BOOST_CHECK(metar->ICAO() == "KSTL");
 
   BOOST_CHECK(metar->Day() == 26);
   BOOST_CHECK(metar->Hour() == 20);
   BOOST_CHECK(metar->Minute() == 51);
 
-  BOOST_CHECK(!metar->hasWindDirection());
+  BOOST_CHECK(!metar->WindDirection().has_value());
   BOOST_CHECK(metar->isVariableWindDirection());
   BOOST_CHECK(metar->WindSpeed() == 4);
-  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(!metar->WindGust().has_value());
   BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
 
-  BOOST_CHECK(!metar->hasMinWindDirection());
-  BOOST_CHECK(!metar->hasMaxWindDirection());
+  BOOST_CHECK(!metar->MinWindDirection().has_value());
+  BOOST_CHECK(!metar->MaxWindDirection().has_value());
   
   BOOST_CHECK(metar->Visibility() == 10);
   BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
@@ -804,18 +804,18 @@ BOOST_AUTO_TEST_CASE(real_METAR_4)
   
   BOOST_CHECK(metar->NumCloudLayers() == 1);
   BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::CLR);
-  BOOST_CHECK(!metar->Layer(0)->hasAltitude());
+  BOOST_CHECK(!metar->Layer(0)->Altitude().has_value());
   
-  BOOST_CHECK(!metar->hasVerticalVisibility());
+  BOOST_CHECK(!metar->VerticalVisibility().has_value());
 
   BOOST_CHECK(metar->Temperature() == 16);
   BOOST_CHECK(metar->DewPoint() == -1);
  
-  BOOST_CHECK(!metar->hasAltimeterQ());
-  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(!metar->AltimeterQ().has_value());
+  BOOST_CHECK(metar->AltimeterA().has_value());
   BOOST_CHECK(metar->AltimeterA() == 30.23);
 
-  BOOST_CHECK(metar->hasSeaLevelPressure());
+  BOOST_CHECK(metar->SeaLevelPressure().has_value());
   BOOST_CHECK(metar->SeaLevelPressure() == 1024.2);
 
   BOOST_CHECK(metar->TemperatureNA() == 15.6);
@@ -828,8 +828,8 @@ BOOST_AUTO_TEST_CASE(real_METAR_5)
 
   auto metar = Metar::Create(metar_str); 
 
-  BOOST_CHECK(metar->hasICAO());
-  BOOST_CHECK(strcmp(metar->ICAO(), "KHLN") == 0);
+  BOOST_CHECK(metar->ICAO().has_value());
+  BOOST_CHECK(metar->ICAO() == "KHLN");
 
   BOOST_CHECK(metar->Day() == 4);
   BOOST_CHECK(metar->Hour() == 16);
@@ -837,11 +837,11 @@ BOOST_AUTO_TEST_CASE(real_METAR_5)
 
   BOOST_CHECK(metar->WindDirection() == 280);
   BOOST_CHECK(metar->WindSpeed() == 9);
-  BOOST_CHECK(!metar->hasWindGust());
+  BOOST_CHECK(!metar->WindGust().has_value());
   BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
 
-  BOOST_CHECK(!metar->hasMinWindDirection());
-  BOOST_CHECK(!metar->hasMaxWindDirection());
+  BOOST_CHECK(!metar->MinWindDirection().has_value());
+  BOOST_CHECK(!metar->MaxWindDirection().has_value());
 
   BOOST_CHECK(metar->NumPhenomena() == 2);
 
@@ -857,17 +857,17 @@ BOOST_AUTO_TEST_CASE(real_METAR_5)
   
   BOOST_CHECK(metar->NumCloudLayers() == 0);
 
-  BOOST_CHECK(metar->hasVerticalVisibility());
+  BOOST_CHECK(metar->VerticalVisibility().has_value());
   BOOST_CHECK(metar->VerticalVisibility() == 700);
 
   BOOST_CHECK(metar->Temperature() == -10);
   BOOST_CHECK(metar->DewPoint() == -12);
  
-  BOOST_CHECK(!metar->hasAltimeterQ());
-  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(!metar->AltimeterQ().has_value());
+  BOOST_CHECK(metar->AltimeterA().has_value());
   BOOST_CHECK(metar->AltimeterA() == 29.98);
 
-  BOOST_CHECK(!metar->hasSeaLevelPressure());
+  BOOST_CHECK(!metar->SeaLevelPressure().has_value());
 
   BOOST_CHECK(metar->TemperatureNA() == -10.0);
   BOOST_CHECK(metar->DewPointNA() == -11.7);
@@ -879,7 +879,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_6)
 
   auto metar = Metar::Create(metar_str); 
 
-  BOOST_CHECK(strcmp(metar->ICAO(), "KSTL") == 0);
+  BOOST_CHECK(metar->ICAO() == "KSTL");
 
   BOOST_CHECK(metar->Day() == 5);
   BOOST_CHECK(metar->Hour() == 15);
@@ -906,12 +906,12 @@ BOOST_AUTO_TEST_CASE(real_METAR_6)
   BOOST_CHECK(metar->Layer(0)->Altitude() == 7);
   BOOST_CHECK(metar->Layer(0)->CloudType() == Clouds::type::CB);
   
-  BOOST_CHECK(!metar->hasVerticalVisibility());
+  BOOST_CHECK(!metar->VerticalVisibility().has_value());
 
   BOOST_CHECK(metar->Temperature() == 6);
   BOOST_CHECK(metar->DewPoint() == 5);
  
-  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(metar->AltimeterA().has_value());
   BOOST_CHECK(metar->AltimeterA() == 29.89);
 
   BOOST_CHECK(metar->TemperatureNA() == 5.6);
@@ -924,7 +924,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_7)
 
   auto metar = Metar::Create(metar_str); 
 
-  BOOST_CHECK(strcmp(metar->ICAO(), "KSTL") == 0);
+  BOOST_CHECK(metar->ICAO() == "KSTL");
 
   BOOST_CHECK(metar->Day() == 9);
   BOOST_CHECK(metar->Hour() == 16);
@@ -946,12 +946,12 @@ BOOST_AUTO_TEST_CASE(real_METAR_7)
   BOOST_CHECK(metar->Layer(1)->Cover() == Clouds::cover::BKN);
   BOOST_CHECK(metar->Layer(1)->Altitude() == 250);
   
-  BOOST_CHECK(!metar->hasVerticalVisibility());
+  BOOST_CHECK(!metar->VerticalVisibility().has_value());
 
   BOOST_CHECK(metar->Temperature() == 7);
   BOOST_CHECK(metar->DewPoint() == -6);
  
-  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(metar->AltimeterA().has_value());
   BOOST_CHECK(metar->AltimeterA() == 29.98);
 
   BOOST_CHECK(metar->TemperatureNA() == 6.7);
@@ -966,7 +966,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_8)
 
   auto metar = Metar::Create(metar_str); 
 
-  BOOST_CHECK(strcmp(metar->ICAO(), "KSTL") == 0);
+  BOOST_CHECK(metar->ICAO() == "KSTL");
 
   BOOST_CHECK(metar->Day() == 19);
   BOOST_CHECK(metar->Hour() == 20);
@@ -995,7 +995,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_8)
   BOOST_CHECK(metar->Temperature() == 22);
   BOOST_CHECK(metar->DewPoint() == 18);
  
-  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(metar->AltimeterA().has_value());
   BOOST_CHECK(metar->AltimeterA() == 29.93);
 
   BOOST_CHECK(metar->TemperatureNA() == 22.2);
@@ -1011,7 +1011,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_9)
 
   auto metar = Metar::Create(metar_str); 
 
-  BOOST_CHECK(strcmp(metar->ICAO(), "KSTL") == 0);
+  BOOST_CHECK(metar->ICAO() == "KSTL");
 
   BOOST_CHECK(metar->Day() == 26);
   BOOST_CHECK(metar->Hour() == 16);
@@ -1040,7 +1040,7 @@ BOOST_AUTO_TEST_CASE(real_METAR_9)
   BOOST_CHECK(metar->Temperature() == 6);
   BOOST_CHECK(metar->DewPoint() == 1);
  
-  BOOST_CHECK(metar->hasAltimeterA());
+  BOOST_CHECK(metar->AltimeterA().has_value());
   BOOST_CHECK(metar->AltimeterA() == 30.14);
 
   BOOST_CHECK(metar->TemperatureNA() == 6.1);

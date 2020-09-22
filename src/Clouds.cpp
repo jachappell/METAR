@@ -1,22 +1,14 @@
 //
-// Copyright (c) 2018 James A. Chappell (rlrrlrll@gmail.com)
+// Copyright (c) 2020 James A. Chappell (rlrrlrll@gmail.com)
 //
 // METAR clouds decoder
 //
 
 #include "Clouds.h"
 
-#ifndef NO_STD
 #include <cstdlib>
 #include <cstring>
 #include <cstring>
-#include <climits>
-#else
-#include <stdlib.h>
-#include <string.h>
-#include <string.h>
-#include <limits.h>
-#endif
 
 using namespace std;
 using namespace Storage_B::Weather;
@@ -49,12 +41,24 @@ namespace
 class CloudsImpl : public Clouds
 {
 public:
-  CloudsImpl(bool temp, cover c, int a = INT_MIN,
-                   type t = type::undefined)
-    : _cover(c)
-    , _alt(a)
-    , _tempo(temp)
+  CloudsImpl(bool temp, cover c, int alt, type t)
+    : _tempo(temp)
+    , _cover(c)
+    , _alt(alt)
     , _type(t)
+  {
+  }
+  
+  CloudsImpl(bool temp, cover c, int alt)
+    : _tempo(temp)
+    , _cover(c)
+    , _alt(alt)
+  {
+  }
+  
+  CloudsImpl(bool temp, cover c)
+    : _tempo(temp)
+    , _cover(c)
   {
   }
 
@@ -66,25 +70,18 @@ public:
   CloudsImpl& operator=(const CloudsImpl&) = delete;
 
   virtual cover Cover() const { return _cover; } 
-  virtual int Altitude() const { return _alt; }
-  virtual bool hasAltitude() const { return _alt != INT_MIN; }
-  virtual type CloudType() const { return _type; }
-  virtual bool hasCloudType() const { return _type != type::undefined; }
+  virtual optional<int> Altitude() const { return _alt; }
+  virtual optional<type> CloudType() const { return _type; }
   virtual bool Temporary() const { return _tempo; }
 
 private:
-  cover _cover;
-  int _alt;
   bool _tempo;
-  type _type;
+  cover _cover;
+  optional<int> _alt;
+  optional<type> _type;
 };
 
-#ifndef NO_STD
-          std::shared_ptr<Clouds>
-#else
-          Clouds *
-#endif
-Clouds::Create(const char *str, bool tempo)
+std::shared_ptr<Clouds> Clouds::Create(const char *str, bool tempo)
 {
   bool cloud_flg = false;
 
@@ -104,28 +101,17 @@ Clouds::Create(const char *str, bool tempo)
   {
     if (str[3] == '\0')
     {
-#ifndef NO_STD
       return make_shared<CloudsImpl>(tempo,
                 static_cast<Clouds::cover>(idx));
-#else
-      return new CloudsImpl(tempo,
-                static_cast<Clouds::cover>(idx)); 
-#endif
     }
     else if (str[6] == '\0')
     {
-#ifndef NO_STD
       return make_shared<CloudsImpl>(tempo,
               static_cast<Clouds::cover>(idx), atoi(str + 3));
-#else
-      return
-          new CloudsImpl(tempo, static_cast<Clouds::cover>(idx), 
-                               atoi(str + 3));
-#endif
     }
     else
     {
-      Clouds::type t = Clouds::type::undefined;
+      Clouds::type t;
       for (size_t j = 0 ; j < NUM_CLOUDS ; j++)
       {
         if (!strcmp(str + 6, cloud_types[j]))
@@ -134,17 +120,10 @@ Clouds::Create(const char *str, bool tempo)
           break;
         }
       } 
-#ifndef NO_STD
       return make_shared<CloudsImpl>(tempo,
               static_cast<Clouds::cover>(idx), atoi(str + 3), t);
-#else
-      return
-          new CloudsImpl(tempo, static_cast<Clouds::cover>(idx), 
-                               atoi(str + 3), t);
-#endif
     }
   }
 
   return nullptr;
 }
-
