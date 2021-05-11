@@ -62,10 +62,29 @@ static const char *cloud_types[] =
   "ACC" 
 };
 
-static void print_temp(double temp, bool fahrenheit_flag)
+static optional<double> Temp(const optional<double>& td,
+                             const optional<int>& ti)
 {
-  cout << (fahrenheit_flag ? Convert::c2f(temp) : temp) 
-         << DEG_SIM << (fahrenheit_flag ? 'F' : 'C');
+  if (td.has_value())
+    return *td;
+  else if (ti.has_value())
+    return static_cast<double>(*ti);
+  else
+    return {};
+}
+                             
+
+static void print_temp(const optional<double>& temp, bool fahrenheit_flag)
+{
+  if (temp.has_value())
+  {
+    cout << (fahrenheit_flag ? Convert::c2f(*temp) : *temp);
+  }
+  else
+  {
+    cout << "???";
+  }
+  cout << DEG_SIM << (fahrenheit_flag ? 'F' : 'C');
 }
 
 int main(int argc, char **argv)
@@ -134,7 +153,7 @@ int main(int argc, char **argv)
     vector<string> list;
     boost::split(list, data, boost::is_any_of("\n"));
 
-    metar_str = list[1].c_str();
+    metar_str = list[1];
   }
 
   if (!metar_str.empty())
@@ -143,12 +162,10 @@ int main(int argc, char **argv)
 
     auto metar = Metar::Create(metar_str.c_str());
 
-    double temp =
-      metar->TemperatureNA().has_value() ?
-          metar->TemperatureNA().value() : metar->Temperature().value();  
-    double dew =
-          metar->DewPointNA().has_value() ?
-              metar->DewPointNA().value() : metar->DewPoint().value();
+    optional<double> temp =
+        Temp(metar->TemperatureNA(), metar->Temperature());  
+    optional<double> dew =
+        Temp(metar->DewPointNA(), metar->DewPoint());
     
     cout << metar->ICAO().value() << endl;
     cout << setprecision(1) << fixed;
@@ -156,8 +173,8 @@ int main(int argc, char **argv)
     cout <<   "Temperature: ";
     print_temp(temp, fahrenheit_flag);  
 
-    double feels_like(temp);
-    if (metar->WindSpeed().has_value())
+    optional<double> feels_like;
+    if (metar->WindSpeed().has_value() && temp.has_value())
     {
       double wind_kph;
       switch(metar->WindSpeedUnits().value())
@@ -174,28 +191,34 @@ int main(int argc, char **argv)
           wind_kph = metar->WindSpeed().value();
           break;
       }
-      
-      feels_like = Utils::WindChill(temp, wind_kph);
+     
+      feels_like = Utils::WindChill(*temp, wind_kph);
+      if (feels_like == temp) feels_like.reset();
     }
 
-    if (metar->DewPoint().has_value() || metar->DewPointNA().has_value())
+    optional<double> humidity;
+    if (temp.has_value() && dew.has_value())
     {
-      double humidity =  Utils::Humidity(temp, dew);
-      if (feels_like == temp)
+      humidity = Utils::Humidity(*temp, *dew);
+      if (!feels_like.has_value())
       {
-        feels_like = Utils::HeatIndex(temp, humidity, true);
+        feels_like = Utils::HeatIndex(*temp, *humidity, true);
+        if (feels_like == temp) feels_like.reset();
       }
+    }
       
-      if (feels_like != temp)
-      {
-        cout <<   "\nFeels Like:  ";
-        print_temp(feels_like, fahrenheit_flag);
-      }
+    if (feels_like.has_value())
+    {
+      cout <<   "\nFeels Like:  ";
+      print_temp(feels_like, fahrenheit_flag);
+    }
 
-      cout << "\nDew Point:   ";
-      print_temp(dew, fahrenheit_flag);
+    cout << "\nDew Point:   ";
+    print_temp(dew, fahrenheit_flag);
 
-      cout << "\nHumidity:    " << humidity << "%";
+    if (humidity.has_value())
+    {
+      cout << "\nHumidity:    " << *humidity << "%";
     }
 
     cout << "\nPressure:    ";

@@ -2,14 +2,14 @@ PROG=weather
 OBJDIR=.obj
 CC=g++
 
-CFLAGS = -Wall --std=c++17 -I../include `pkg-config libcurl --libs`
+CFLAGS = -Wall --std=c++17 -O2 -I../include `pkg-config libcurl --libs`
 LDFLAGS = `pkg-config libcurl --libs` -L../lib -lMetar
 
 $(shell mkdir -p $(OBJDIR)) 
 
 OBJS = $(OBJDIR)/main.o $(OBJDIR)/Phenom2String.o $(OBJDIR)/Fetch.o
 
-$(PROG) : $(OBJS)
+$(PROG) : $(OBJS) ../lib/libMetar.a
 	$(CC) $(OBJS) $(LDFLAGS) -o $(PROG)
 
 -include $(OBJS:.o=.d)

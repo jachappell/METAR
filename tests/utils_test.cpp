@@ -36,18 +36,18 @@ BOOST_AUTO_TEST_CASE(wind_chill, * boost::unit_test::tolerance(0.05))
 
 BOOST_AUTO_TEST_CASE(heat_index_none, * boost::unit_test::tolerance(0.05))
 {
-  BOOST_TEST(Utils::HeatIndex(80.0, 40.0) == 80.0);
-  BOOST_TEST(Utils::HeatIndex(85.0, 30.0) == 85.0);
-  BOOST_TEST(Utils::HeatIndex(79.0, 50.0) == 79.0);
+  BOOST_TEST(Utils::HeatIndex(80.0, 40.0, false) == 80.0);
+  BOOST_TEST(Utils::HeatIndex(85.0, 30.0, false) == 85.0);
+  BOOST_TEST(Utils::HeatIndex(79.0, 50.0, false) == 79.0);
 }
 
 BOOST_AUTO_TEST_CASE(heat_index, * boost::unit_test::tolerance(0.05))
 {
-  BOOST_TEST(Utils::HeatIndex(80.0, 50.0) == 81.0);
-  BOOST_TEST(Utils::HeatIndex(80.0, 100.0) == 87.0);
-  BOOST_TEST(Utils::HeatIndex(82.0, 40.0) == 81.0);
-  BOOST_TEST(Utils::HeatIndex(110, 40.0) == 136.0);
-  BOOST_TEST(Utils::HeatIndex(90, 100.0) == 132.0);
+  BOOST_TEST(Utils::HeatIndex(80.0, 50.0, false) == 81.0);
+  BOOST_TEST(Utils::HeatIndex(80.0, 100.0, false) == 87.0);
+  BOOST_TEST(Utils::HeatIndex(82.0, 40.0, false) == 81.0);
+  BOOST_TEST(Utils::HeatIndex(110, 40.0, false) == 136.0);
+  BOOST_TEST(Utils::HeatIndex(90, 100.0, false) == 132.0);
   
-  BOOST_TEST(Utils::HeatIndex(30.0, 75.0, true) == 36.0);
+  BOOST_TEST(Utils::HeatIndex(30.0, 75.0) == 36.0);
 }

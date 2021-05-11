@@ -15,7 +15,7 @@ This is a work in progress.  So far, the following have been implemented:
   * Pressure
   * Temperature
 
-Look <a href="https://github.com/jachappell/METAR/blob/master/example/main.cpp">here</a> to see an example.
+Look <a href="https://github.com/jachappell/METAR/blob/master/example/main.cpp">here</a> to see it in action.
 
 To build the library:<br />
 $ make

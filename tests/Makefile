@@ -25,7 +25,7 @@ $(PROG1) : $(OBJS1) ../lib/libMetar.a
 $(PROG2) : $(OBJS2)
 	$(CC) $(OBJS2) $(LDFLAGS) -o $(PROG2)
 
-$(PROG3) : $(OBJS3)
+$(PROG3) : $(OBJS3) ../lib/libMetar.a
 	$(CC) $(OBJS3) $(LDFLAGS) -o $(PROG3)
 
 $(PROG4) : $(OBJS4) ../lib/libMetar.a

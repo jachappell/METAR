@@ -14,9 +14,13 @@ namespace Storage_B
     {
     public:
       static double Humidity(double t, double td);
+
       static double WindChill(double temp, double wind_speed);
-      static double HeatIndex(double temp, double humidity,
-                              bool celsius_flg = false);
+
+      static double HeatIndex(
+          double temp, 
+          double humidity,
+          bool celsius_flg = true);
 
       Utils() = delete;
       Utils(const Utils&) = delete;
