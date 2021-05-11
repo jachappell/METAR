@@ -13,7 +13,6 @@
 #include <climits>
 #include <cfloat>
 
-using namespace std;
 using namespace Storage_B::Weather;
 
 namespace
@@ -215,36 +214,36 @@ public:
   MetarImpl(const MetarImpl&) = delete;
   MetarImpl& operator=(const MetarImpl&) = delete;
 
-  virtual optional<message_type> MessageType() const { return _message_type; }
+  virtual std::optional<message_type> MessageType() const { return _message_type; }
 
-  virtual optional<string> ICAO() const { return _icao; }
+  virtual std::optional<std::string> ICAO() const { return _icao; }
       
-  virtual optional<int> Day() const { return _day; }
+  virtual std::optional<int> Day() const { return _day; }
 
-  virtual optional<int> Hour() const { return _hour; }
+  virtual std::optional<int> Hour() const { return _hour; }
 
-  virtual optional<int> Minute() const { return _min; }
+  virtual std::optional<int> Minute() const { return _min; }
 
-  virtual optional<int> WindDirection() const { return _wind_dir; }
+  virtual std::optional<int> WindDirection() const { return _wind_dir; }
 
   virtual bool isVariableWindDirection() const { return _vrb; }
 
-  virtual optional<int> WindSpeed() const { return _wind_spd; }
+  virtual std::optional<int> WindSpeed() const { return _wind_spd; }
 
-  virtual optional<int> WindGust() const { return _gust; }
+  virtual std::optional<int> WindGust() const { return _gust; }
 
-  virtual optional<int> MinWindDirection() const { return _min_wind_dir; }
+  virtual std::optional<int> MinWindDirection() const { return _min_wind_dir; }
 
-  virtual optional<int> MaxWindDirection() const { return _max_wind_dir; }
+  virtual std::optional<int> MaxWindDirection() const { return _max_wind_dir; }
 
-  virtual optional<speed_units> WindSpeedUnits() const
+  virtual std::optional<speed_units> WindSpeedUnits() const
   {
     return _wind_speed_units;
   }
 
-  virtual optional<double> Visibility() const { return _vis; }
+  virtual std::optional<double> Visibility() const { return _vis; }
 
-  virtual optional<distance_units> VisibilityUnits() const
+  virtual std::optional<distance_units> VisibilityUnits() const
   {
     return _vis_units;
   }
@@ -253,21 +252,21 @@ public:
   
   virtual bool isCAVOK() const { return _cavok; }
       
-  virtual optional<int> VerticalVisibility() const { return _vert_vis; }
+  virtual std::optional<int> VerticalVisibility() const { return _vert_vis; }
   
-  virtual optional<int> Temperature() const { return _temp; }
+  virtual std::optional<int> Temperature() const { return _temp; }
 
-  virtual optional<int> DewPoint() const { return _dew; }
+  virtual std::optional<int> DewPoint() const { return _dew; }
 
-  virtual optional<double> AltimeterA() const { return _altimeterA; }
+  virtual std::optional<double> AltimeterA() const { return _altimeterA; }
 
-  virtual optional<int> AltimeterQ() const { return _altimeterQ; }
+  virtual std::optional<int> AltimeterQ() const { return _altimeterQ; }
 
-  virtual optional<double> SeaLevelPressure() const { return _slp; }
+  virtual std::optional<double> SeaLevelPressure() const { return _slp; }
 
-  virtual optional<double> TemperatureNA() const { return _ftemp; }
+  virtual std::optional<double> TemperatureNA() const { return _ftemp; }
 
-  virtual optional<double> DewPointNA() const { return _fdew; }
+  virtual std::optional<double> DewPointNA() const { return _fdew; }
 
   virtual unsigned int NumCloudLayers() const
   { 
@@ -331,25 +330,25 @@ private:
 
   void parse_phenom(const char *str);
 
-  optional<message_type> _message_type;
+  std::optional<message_type> _message_type;
 
-  optional<string> _icao;
+  std::optional<std::string> _icao;
 
-  optional<int> _day;
-  optional<int> _hour;
-  optional<int> _min;
+  std::optional<int> _day;
+  std::optional<int> _hour;
+  std::optional<int> _min;
 
-  optional<int> _wind_dir;
-  optional<int> _wind_spd;
-  optional<int> _gust;
-  optional<speed_units> _wind_speed_units;
+  std::optional<int> _wind_dir;
+  std::optional<int> _wind_spd;
+  std::optional<int> _gust;
+  std::optional<speed_units> _wind_speed_units;
 
-  optional<int> _min_wind_dir;
-  optional<int> _max_wind_dir;
+  std::optional<int> _min_wind_dir;
+  std::optional<int> _max_wind_dir;
   bool _vrb;
 
-  optional<double> _vis;
-  optional<distance_units> _vis_units;
+  std::optional<double> _vis;
+  std::optional<distance_units> _vis_units;
   bool _vis_lt;
   bool _cavok;
 
@@ -357,22 +356,22 @@ private:
 
   std::vector<std::shared_ptr<Phenom>> _phenomena;
 
-  optional<int> _vert_vis;
+  std::optional<int> _vert_vis;
 
-  optional<int> _temp;
-  optional<int> _dew;
+  std::optional<int> _temp;
+  std::optional<int> _dew;
 
-  optional<double> _altimeterA;
+  std::optional<double> _altimeterA;
 
-  optional<int> _altimeterQ;
+  std::optional<int> _altimeterQ;
 
   bool _rmk;
   bool _tempo;
 
-  optional<double> _slp;
+  std::optional<double> _slp;
 
-  optional<double> _ftemp;
-  optional<double> _fdew;
+  std::optional<double> _ftemp;
+  std::optional<double> _fdew;
 
   const char *_previous_element;
 
@@ -381,12 +380,12 @@ private:
 
 std::shared_ptr<Metar> Metar::Create(const char *metar_str)
 {
-  return make_shared<MetarImpl>(metar_str);
+  return std::make_shared<MetarImpl>(metar_str);
 }
 
 std::shared_ptr<Metar> Metar::Create(char *metar_str)
 {
-  return make_shared<MetarImpl>(metar_str);
+  return std::make_shared<MetarImpl>(metar_str);
 }
 
 MetarImpl::MetarImpl()
@@ -397,7 +396,7 @@ MetarImpl::MetarImpl()
   , _tempo(false)
   , _previous_element(nullptr)
 {
-  _default_phenom = make_shared<PhenomDefault>();
+  _default_phenom = std::make_shared<PhenomDefault>();
 }
 
 MetarImpl::MetarImpl(const char *metar_str) : MetarImpl()

@@ -8,9 +8,7 @@
 
 #include <cstdlib>
 #include <cstring>
-#include <cstring>
 
-using namespace std;
 using namespace Storage_B::Weather;
 
 namespace
@@ -70,15 +68,15 @@ public:
   CloudsImpl& operator=(const CloudsImpl&) = delete;
 
   virtual cover Cover() const { return _cover; } 
-  virtual optional<int> Altitude() const { return _alt; }
-  virtual optional<type> CloudType() const { return _type; }
+  virtual std::optional<int> Altitude() const { return _alt; }
+  virtual std::optional<type> CloudType() const { return _type; }
   virtual bool Temporary() const { return _tempo; }
 
 private:
   bool _tempo;
   cover _cover;
-  optional<int> _alt;
-  optional<type> _type;
+  std::optional<int> _alt;
+  std::optional<type> _type;
 };
 
 std::shared_ptr<Clouds> Clouds::Create(const char *str, bool tempo)
@@ -101,12 +99,12 @@ std::shared_ptr<Clouds> Clouds::Create(const char *str, bool tempo)
   {
     if (str[3] == '\0')
     {
-      return make_shared<CloudsImpl>(tempo,
+      return std::make_shared<CloudsImpl>(tempo,
                 static_cast<Clouds::cover>(idx));
     }
     else if (str[6] == '\0')
     {
-      return make_shared<CloudsImpl>(tempo,
+      return std::make_shared<CloudsImpl>(tempo,
               static_cast<Clouds::cover>(idx), atoi(str + 3));
     }
     else
@@ -120,7 +118,7 @@ std::shared_ptr<Clouds> Clouds::Create(const char *str, bool tempo)
           break;
         }
       } 
-      return make_shared<CloudsImpl>(tempo,
+      return std::make_shared<CloudsImpl>(tempo,
               static_cast<Clouds::cover>(idx), atoi(str + 3), t);
     }
   }

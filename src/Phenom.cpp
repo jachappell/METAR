@@ -8,7 +8,6 @@
 #include <cstring>
 #include <cctype>
 
-using namespace std;
 using namespace Storage_B::Weather;
 
 namespace
@@ -44,7 +43,7 @@ class PhenomImpl : public Phenom
 {
 public:
   PhenomImpl(bool tempo,
-             vector<phenom>& p,
+             std::vector<phenom>& p,
              intensity i = intensity::NORMAL,
              bool blowing = false,
              bool freezing = false,
@@ -78,7 +77,7 @@ public:
     return _phenoms.size();
   }
 
-  virtual phenom operator[](typename vector<Phenom>::size_type
+  virtual phenom operator[](typename std::vector<Phenom>::size_type
                             idx) const
   {
     if (idx < NumPhenom())
@@ -101,7 +100,7 @@ public:
   virtual bool Temporary() const { return _tempo; }
 
 private:
-  vector<phenom> _phenoms;
+  std::vector<phenom> _phenoms;
   intensity _intensity;
   bool _blowing;
   bool _freezing;
@@ -117,7 +116,7 @@ private:
 
 std::shared_ptr<Phenom> Phenom::Create(const char *str, bool tempo)
 {
-  vector<Phenom::phenom> p;
+  std::vector<Phenom::phenom> p;
   Phenom::intensity inten = Phenom::intensity::NORMAL;
   bool blowing = false;
   bool freezing = false;
@@ -292,7 +291,7 @@ std::shared_ptr<Phenom> Phenom::Create(const char *str, bool tempo)
       || ts
       )
   {
-    return make_shared<PhenomImpl>(tempo,
+    return std::make_shared<PhenomImpl>(tempo,
                                    p,
                                    inten,
                                    blowing,
