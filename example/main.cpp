@@ -137,7 +137,7 @@ int main(int argc, char **argv)
     Fetch fetch(url.c_str());
     string data;
   
-    long result = fetch(data);
+    auto result = fetch(data);
 
     if (!Curl::httpStatusOK(result))
     {
@@ -162,9 +162,9 @@ int main(int argc, char **argv)
 
     auto metar = Metar::Create(metar_str.c_str());
 
-    optional<double> temp =
+    auto temp =
         Temp(metar->TemperatureNA(), metar->Temperature());  
-    optional<double> dew =
+    auto dew =
         Temp(metar->DewPointNA(), metar->DewPoint());
     
     cout << metar->ICAO().value() << endl;
