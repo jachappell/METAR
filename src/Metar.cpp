@@ -418,7 +418,8 @@ void MetarImpl::parse(const char *metar_str)
 
 void MetarImpl::parse(char *metar_str)
 {
-  char *el = strtok(metar_str, " ");
+  char *sp;
+  char *el = strtok_r(metar_str, " ", &sp);
   while (el)
   {
     if (!_message_type.has_value() && is_message_type(el))
@@ -485,7 +486,7 @@ void MetarImpl::parse(char *metar_str)
 
     _previous_element = el;
 
-    el = strtok(nullptr, " ");
+    el = strtok_r(nullptr, " ", &sp);
   }
 }
 

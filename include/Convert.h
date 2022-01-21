@@ -28,10 +28,10 @@ namespace Storage_B
       static constexpr double miles2Km = 1.60934;
 
     public:
-	    static double c2f(double temp) 
+      static double c2f(double temp) 
       {
-		    return (temp * 1.8) + 32.0;
-	    }
+			  return (temp * 1.8) + 32.0;
+      }
 
       static double f2c(double temp)
       {
