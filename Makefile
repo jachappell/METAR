@@ -4,7 +4,7 @@ OBJDIR=.obj
 CC=g++
 AR=ar
 
-CFLAGS = -Wall -I include --std=c++17 -O2
+CFLAGS = -Wall -I include -std=c++20 -O2
 
 $(shell mkdir -p $(LIBDIR)) 
 $(shell mkdir -p $(OBJDIR)) 
