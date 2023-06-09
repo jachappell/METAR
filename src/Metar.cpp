@@ -6,6 +6,9 @@
 
 #include "Metar.h"
 
+#include "Phenom.h"
+#include "Clouds.h"
+
 #include <cstring>
 #include <cstdlib>
 #include <cctype>

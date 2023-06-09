@@ -11,28 +11,27 @@
 
 #include <cmath>
 #include <getopt.h>
-
-#include <boost/algorithm/string.hpp>
+#include <libgen.h>
 
 #include "Fetch.h"
 
 #include "Metar.h"
+#include "Clouds.h"
 #include "Convert.h"
 #include "Utils.h"
 
 #include "Phenom2String.h"
 
-using namespace std;
 using namespace Storage_B::Weather;
 using namespace Storage_B::Curlpp;
 
-static const string URL = 
+static const std::string URL = 
   "https://tgftp.nws.noaa.gov/data/observations/metar/stations/";
 
-static void usage(const string& command)
+static void usage(const std::string& command)
 {
-  cerr << "usage: " << command << " [options..] <stationString>\n"; 
-  cerr << " -f, --fahrenheit Print temperature in Fahrenheit\n";
+  std::cerr << "usage: " << command << " [options..] <stationString>\n"; 
+  std::cerr << " -f, --fahrenheit Print temperature in Fahrenheit\n";
 }
 
 static const char *DEG_SIM = "\u00B0";
@@ -62,8 +61,8 @@ static const char *cloud_types[] =
   "ACC" 
 };
 
-static optional<double> Temp(const optional<double>& td,
-                             const optional<int>& ti)
+static std::optional<double> Temp(const std::optional<double>& td,
+                             const std::optional<int>& ti)
 {
   if (td.has_value())
     return *td;
@@ -74,17 +73,18 @@ static optional<double> Temp(const optional<double>& td,
 }
                              
 
-static void print_temp(const optional<double>& temp, bool fahrenheit_flag)
+static void print_temp(const std::optional<double>& temp,
+                       bool fahrenheit_flag)
 {
   if (temp.has_value())
   {
-    cout << (fahrenheit_flag ? Convert::c2f(*temp) : *temp);
+    std::cout << (fahrenheit_flag ? Convert::c2f(*temp) : *temp);
   }
   else
   {
-    cout << "???";
+    std::cout << "???";
   }
-  cout << DEG_SIM << (fahrenheit_flag ? 'F' : 'C');
+  std::cout << DEG_SIM << (fahrenheit_flag ? 'F' : 'C');
 }
 
 int main(int argc, char **argv)
@@ -101,9 +101,9 @@ int main(int argc, char **argv)
   int c;
   bool dflag(false);
 
-  string metar_str;
+  std::string metar_str;
   
-  string command = basename(argv[0]);
+  std::string command = basename(argv[0]);
 
   opterr = 0;
   while((c = getopt_long(argc, argv, "hfd:", long_options,
@@ -132,16 +132,16 @@ int main(int argc, char **argv)
 
   if (argv[optind] && !dflag)
   {
-    string url(URL + argv[optind] + ".TXT");
+    std::string url(URL + argv[optind] + ".TXT");
     
     Fetch fetch(url.c_str());
-    string data;
+    std::string data;
   
     auto result = fetch(data);
 
     if (!Curl::httpStatusOK(result))
     {
-      cerr << "http_status = " << result << endl;
+      std::cerr << "http_status = " << result << std::endl;
       return 1;
     }
 
@@ -150,15 +150,18 @@ int main(int argc, char **argv)
     //   * The first line is the observation time and date (UTC)
     //   * The second line is the METAR string
     //
-    vector<string> list;
-    boost::split(list, data, boost::is_any_of("\n"));
+    auto pos = data.find('\n');
+    metar_str = data.substr(pos);
 
-    metar_str = list[1];
+    const std::string ws(" \t\v\r\n");
+    pos = metar_str.find_first_not_of(ws);
+    auto end = metar_str.find_last_not_of(ws);
+    metar_str = metar_str.substr(pos, end);
   }
 
   if (!metar_str.empty())
   {
-    cout << metar_str << endl;
+    std::cout << metar_str << '\n';
 
     auto metar = Metar::Create(metar_str.c_str());
 
@@ -167,13 +170,13 @@ int main(int argc, char **argv)
     auto dew =
         Temp(metar->DewPointNA(), metar->DewPoint());
     
-    cout << metar->ICAO().value() << endl;
-    cout << setprecision(1) << fixed;
+    std::cout << metar->ICAO().value() << '\n';
+    std::cout << std::setprecision(1) << std::fixed;
 
-    cout <<   "Temperature: ";
+    std::cout <<   "Temperature: ";
     print_temp(temp, fahrenheit_flag);  
 
-    optional<double> feels_like;
+    std::optional<double> feels_like;
     if (metar->WindSpeed().has_value() && temp.has_value())
     {
       double wind_kph;
@@ -196,7 +199,7 @@ int main(int argc, char **argv)
       if (feels_like == temp) feels_like.reset();
     }
 
-    optional<double> humidity;
+    std::optional<double> humidity;
     if (temp.has_value() && dew.has_value())
     {
       humidity = Utils::Humidity(*temp, *dew);
@@ -209,84 +212,86 @@ int main(int argc, char **argv)
       
     if (feels_like.has_value())
     {
-      cout <<   "\nFeels Like:  ";
+      std::cout <<   "\nFeels Like:  ";
       print_temp(feels_like, fahrenheit_flag);
     }
 
-    cout << "\nDew Point:   ";
+    std::cout << "\nDew Point:   ";
     print_temp(dew, fahrenheit_flag);
 
     if (humidity.has_value())
     {
-      cout << "\nHumidity:    " << *humidity << "%";
+      std::cout << "\nHumidity:    " << *humidity << "%";
     }
 
-    cout << "\nPressure:    ";
+    std::cout << "\nPressure:    ";
     if (metar->AltimeterA().has_value())
-      cout << metar->AltimeterA().value() << " inHg" << endl;
+      std::cout << metar->AltimeterA().value() << " inHg" << '\n';
     else if (metar->AltimeterQ().has_value())
-      cout << metar->AltimeterQ().value() << " hPa" << endl;
+      std::cout << metar->AltimeterQ().value() << " hPa" << '\n';
 
     if (metar->WindSpeed().has_value())
     {
-      cout << "\nWind:        ";
+      std::cout << "\nWind:        ";
       if (!metar->isVariableWindDirection())
       { 
-        cout << metar->WindDirection().value() << DEG_SIM;
+        std::cout << metar->WindDirection().value() << DEG_SIM;
       }
       else
       {
-        cout << "VRB";
+        std::cout << "VRB";
       }
-      cout << " / " << metar->WindSpeed().value();
+      std::cout << " / " << metar->WindSpeed().value();
       if (metar->WindGust().has_value())
       {
-        cout << " (" << metar->WindGust().value() << ")";
+        std::cout << " (" << metar->WindGust().value() << ")";
       }
-      cout << " "
-           << speed_units[
-              static_cast<int>(metar->WindSpeedUnits().value())] << endl;
+      std::cout << " "
+                << speed_units[
+                     static_cast<int>(metar->WindSpeedUnits().value())] 
+                << '\n';
     }
 
-    cout << setprecision(2) << fixed;
+    std::cout << std::setprecision(2) << std::fixed;
     if (metar->Visibility().has_value())
     {
-      cout << "\nVisibility:  " << metar->Visibility().value() << " ";
+      std::cout << "\nVisibility:  " << metar->Visibility().value() << " ";
       if (metar->VisibilityUnits() == Metar::distance_units::M)
       {
-        cout << "meters" << endl;
+        std::cout << "meters" << '\n';
       }
       else
       {
-        cout << "miles" << endl;
+        std::cout << "miles" << '\n';
       }
     }
     
-    cout << endl;
+    std::cout << '\n';
     for (unsigned int i = 0 ; i < metar->NumCloudLayers() ; i++)
     {
       auto layer = metar->Layer(i);
       if (!layer->Temporary())
       {
-        cout << sky_conditions[static_cast<int>(layer->Cover())];
+        std::cout << sky_conditions[static_cast<int>(layer->Cover())];
         if (layer->Altitude().has_value())
         {
-          cout << ": " << layer->Altitude().value() * 100  << " feet";
+          std::cout << ": " << layer->Altitude().value() * 100  << " feet";
           if (layer->CloudType().has_value())
           {
-            cout << " ("
-                 << cloud_types[static_cast<int>(layer->CloudType().value())] 
-                 << ")";
+            std::cout << " ("
+                      << cloud_types[
+                           static_cast<int>(layer->CloudType().value())] 
+                      << ")";
           }
         }
-        cout << endl;
+        std::cout << '\n';
       }
     }
 
     for (unsigned int i = 0 ; i < metar->NumPhenomena() ; i++)
     {
       const auto& p = metar->Phenomenon(i);
-      cout << Phenom2String(p) << endl;
+      std::cout << Phenom2String(p) << '\n';
     }
 
     return 0;

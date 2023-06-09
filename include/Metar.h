@@ -10,13 +10,13 @@
 #include <vector>
 #include <optional>
 
-#include "Phenom.h"
-#include "Clouds.h"
-
 namespace Storage_B
 {
   namespace Weather
   {
+    class Clouds;
+    class Phenom;
+
     class Metar
     {
     public:
