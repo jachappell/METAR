@@ -5,6 +5,8 @@
 //
 
 #include "Metar.h"
+#include "Clouds.h"
+#include "Phenom.h"
 
 #include <string>
 
