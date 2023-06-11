@@ -153,8 +153,10 @@ int main(int argc, char **argv)
     auto pos = data.find('\n');
     metar_str = data.substr(pos);
 
-    pos = metar_str.find_first_not_of('\n');
-    metar_str = metar_str.substr(pos);
+    const std::string ws(" \t\v\r\n");
+    pos = metar_str.find_first_not_of(ws);
+    auto end = metar_str.find_last_not_of(ws);
+    metar_str = metar_str.substr(pos, end);
   }
 
   if (!metar_str.empty())
