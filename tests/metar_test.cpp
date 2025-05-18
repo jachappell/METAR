@@ -1048,3 +1048,42 @@ BOOST_AUTO_TEST_CASE(real_METAR_9)
   BOOST_CHECK(metar->TemperatureNA() == 6.1);
   BOOST_CHECK(metar->DewPointNA() == 0.6);
 }
+
+BOOST_AUTO_TEST_CASE(real_METAR_10)
+{
+  const char *metar_str = "KSTL 162025Z 24004KT 10SM FEW039 SCT060 BKN090 BKN250 22/17 A2953 RMK AO2 WSHFT 1938 RAE24 TSE24 OCNL LTGICCCCG DSNT N-S CB DSNT N-S MOV NE P0015 T02170172\n U";
+
+  auto metar = Metar::Create(metar_str); 
+
+  BOOST_CHECK(metar->ICAO() == "KSTL");
+
+  BOOST_CHECK(metar->Day() == 16);
+  BOOST_CHECK(metar->Hour() == 20);
+  BOOST_CHECK(metar->Minute() == 25);
+
+  BOOST_CHECK(metar->WindDirection() == 240);
+  BOOST_CHECK(metar->WindSpeed() == 4);
+  BOOST_CHECK(metar->WindSpeedUnits() == Metar::speed_units::KT);
+  
+  BOOST_CHECK(metar->Visibility() == 10);
+  BOOST_CHECK(metar->VisibilityUnits() == Metar::distance_units::SM);
+  
+  BOOST_CHECK(metar->NumCloudLayers() == 4);
+  BOOST_CHECK(metar->Layer(0)->Cover() == Clouds::cover::FEW);
+  BOOST_CHECK(metar->Layer(0)->Altitude() == 39);
+  BOOST_CHECK(metar->Layer(1)->Cover() == Clouds::cover::SCT);
+  BOOST_CHECK(metar->Layer(1)->Altitude() == 60);
+  BOOST_CHECK(metar->Layer(2)->Cover() == Clouds::cover::BKN);
+  BOOST_CHECK(metar->Layer(2)->Altitude() == 90);
+  BOOST_CHECK(metar->Layer(3)->Cover() == Clouds::cover::BKN);
+  BOOST_CHECK(metar->Layer(3)->Altitude() == 250);
+  
+  BOOST_CHECK(metar->Temperature() == 22);
+  BOOST_CHECK(metar->DewPoint() == 17);
+ 
+  BOOST_CHECK(metar->AltimeterA().has_value());
+  BOOST_CHECK(metar->AltimeterA() == 29.53);
+
+  BOOST_CHECK(metar->TemperatureNA() == 21.7);
+  BOOST_CHECK(metar->DewPointNA() == 17.2);
+}

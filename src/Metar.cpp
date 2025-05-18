@@ -693,7 +693,8 @@ void MetarImpl::parse_tempNA(const char *str)
 
   if (strlen(str) > 5)
   {
-    strcpy(val, str + 5);
+    strncpy(val, str + 5, 4);
+    val[4] = '\0';
     _fdew = tempNA(val);
   }
 }
