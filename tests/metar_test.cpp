@@ -10,10 +10,11 @@
 
 #include <string>
 
-#define BOOST_TEST_MODULE METAR
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 
 using namespace Storage_B::Weather;
+
+BOOST_AUTO_TEST_SUITE(MetarTests)
 
 BOOST_AUTO_TEST_CASE(uninitialized_observation_time)
 {
@@ -1087,3 +1088,5 @@ BOOST_AUTO_TEST_CASE(real_METAR_10)
   BOOST_CHECK(metar->TemperatureNA() == 21.7);
   BOOST_CHECK(metar->DewPointNA() == 17.2);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

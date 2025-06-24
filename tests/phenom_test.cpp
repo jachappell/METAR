@@ -8,10 +8,11 @@
 
 #include <string>
 
-#define BOOST_TEST_MODULE METAR
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 
 using namespace Storage_B::Weather;
+
+BOOST_AUTO_TEST_SUITE(PhenomTest)
 
 BOOST_AUTO_TEST_CASE(phenoms)
 {
@@ -396,3 +397,5 @@ BOOST_AUTO_TEST_CASE(phenom_vicinity_blowing)
     BOOST_CHECK(p.Vicinity() == true);
     BOOST_CHECK(p.Blowing() == true);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -23,8 +23,7 @@ namespace
     "BKN",
     "OVC"
   };
-  const auto NUM_LAYERS =
-      sizeof(sky_conditions) / sizeof(sky_conditions[0]);
+  constexpr auto NUM_LAYERS = std::size(sky_conditions);
 
   const char *cloud_types[] =
   {
@@ -32,11 +31,10 @@ namespace
     "CB",
     "ACC" 
   };
-  const auto NUM_CLOUDS =
-      sizeof(cloud_types) / sizeof(cloud_types[0]);
+  constexpr auto NUM_CLOUDS = std::size(cloud_types);
 }
 
-class CloudsImpl : public Clouds
+class CloudsImpl final : public Clouds
 {
 public:
   CloudsImpl(bool temp, cover c, int alt, type t)
@@ -60,17 +58,17 @@ public:
   {
   }
 
-  virtual ~CloudsImpl() = default;
+  ~CloudsImpl() override = default;
 
   CloudsImpl() = delete;
 
   CloudsImpl(const CloudsImpl&) = delete;
   CloudsImpl& operator=(const CloudsImpl&) = delete;
 
-  virtual cover Cover() const { return _cover; } 
-  virtual std::optional<int> Altitude() const { return _alt; }
-  virtual std::optional<type> CloudType() const { return _type; }
-  virtual bool Temporary() const { return _tempo; }
+  cover Cover() const override { return _cover; }
+  std::optional<int> Altitude() const override { return _alt; }
+  std::optional<type> CloudType() const override { return _type; }
+  bool Temporary() const override { return _tempo; }
 
 private:
   bool _tempo;

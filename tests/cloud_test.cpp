@@ -8,10 +8,11 @@
 
 #include <string>
 
-#define BOOST_TEST_MODULE METAR
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 
 using namespace Storage_B::Weather;
+
+BOOST_AUTO_TEST_SUITE(CloudTests)
 
 BOOST_AUTO_TEST_CASE(cloud_layer_CLR)
 {
@@ -106,3 +107,5 @@ BOOST_AUTO_TEST_CASE(cloud_layer_ACC)
   BOOST_CHECK(result->CloudType().has_value());
   BOOST_CHECK(result->CloudType() == Clouds::type::ACC);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

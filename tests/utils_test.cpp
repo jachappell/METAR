@@ -6,10 +6,11 @@
 
 #include "Utils.h"
 
-#define BOOST_TEST_MODULE METAR
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 
 using namespace Storage_B::Weather;
+
+BOOST_AUTO_TEST_SUITE(utils)
 
 BOOST_AUTO_TEST_CASE(humidity_100)
 {
@@ -51,3 +52,5 @@ BOOST_AUTO_TEST_CASE(heat_index, * boost::unit_test::tolerance(0.05))
   
   BOOST_TEST(Utils::HeatIndex(30.0, 75.0) == 36.0);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

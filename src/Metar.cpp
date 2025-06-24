@@ -177,106 +177,106 @@ namespace
   }
 }
 
-class PhenomDefault : public Phenom
+class PhenomDefault  final : public Phenom
 {
 public:
-  PhenomDefault() {}
+  PhenomDefault() = default;
   
   PhenomDefault(const PhenomDefault&) = delete;
   PhenomDefault& operator=(const PhenomDefault&) = delete;
 
-  ~PhenomDefault() = default;
+  ~PhenomDefault() override = default;
 
-  virtual unsigned int NumPhenom() const { return 0; }
+  unsigned int NumPhenom() const override { return 0; }
 
   virtual phenom operator[](typename std::vector<Phenom>::size_type) const 
   {
     return phenom::NONE;
   }
   
-  virtual intensity Intensity() const { return intensity::NORMAL; } 
-  virtual bool Blowing() const { return false; }
-  virtual bool Freezing() const { return false; }
-  virtual bool Drifting() const { return false; }
-  virtual bool Vicinity() const { return false; }
-  virtual bool Partial() const { return false; }
-  virtual bool Shallow() const { return false; } 
-  virtual bool Patches() const { return false; }
-  virtual bool ThunderStorm() const { return false; }
-  virtual bool Temporary() const { return false; }
+  intensity Intensity() const override { return intensity::NORMAL; }
+  bool Blowing() const override { return false; }
+  bool Freezing() const override { return false; }
+  bool Drifting() const override { return false; }
+  bool Vicinity() const override { return false; }
+  bool Partial() const override { return false; }
+  bool Shallow() const override { return false; }
+  bool Patches() const override { return false; }
+  bool ThunderStorm() const override { return false; }
+  bool Temporary() const override { return false; }
 };
 
-class MetarImpl : public Metar
+class MetarImpl final : public Metar
 {
 public:
-  MetarImpl(const char *metar_str);
+  explicit MetarImpl(const char *metar_str);
   MetarImpl(char *metar_str);
 
-  virtual ~MetarImpl() = default;
+  ~MetarImpl() override = default;
 
   MetarImpl(const MetarImpl&) = delete;
   MetarImpl& operator=(const MetarImpl&) = delete;
 
-  virtual std::optional<message_type> MessageType() const { return _message_type; }
+  std::optional<message_type> MessageType() const override { return _message_type; }
 
-  virtual std::optional<std::string> ICAO() const { return _icao; }
+  std::optional<std::string> ICAO() const override { return _icao; }
       
-  virtual std::optional<int> Day() const { return _day; }
+  std::optional<int> Day() const override { return _day; }
 
-  virtual std::optional<int> Hour() const { return _hour; }
+  std::optional<int> Hour() const override { return _hour; }
 
-  virtual std::optional<int> Minute() const { return _min; }
+  std::optional<int> Minute() const override { return _min; }
 
-  virtual std::optional<int> WindDirection() const { return _wind_dir; }
+  std::optional<int> WindDirection() const override { return _wind_dir; }
 
-  virtual bool isVariableWindDirection() const { return _vrb; }
+  bool isVariableWindDirection() const override { return _vrb; }
 
-  virtual std::optional<int> WindSpeed() const { return _wind_spd; }
+  std::optional<int> WindSpeed() const override { return _wind_spd; }
 
-  virtual std::optional<int> WindGust() const { return _gust; }
+  std::optional<int> WindGust() const override { return _gust; }
 
-  virtual std::optional<int> MinWindDirection() const { return _min_wind_dir; }
+  std::optional<int> MinWindDirection() const override { return _min_wind_dir; }
 
-  virtual std::optional<int> MaxWindDirection() const { return _max_wind_dir; }
+  std::optional<int> MaxWindDirection() const override { return _max_wind_dir; }
 
-  virtual std::optional<speed_units> WindSpeedUnits() const
+  std::optional<speed_units> WindSpeedUnits() const override
   {
     return _wind_speed_units;
   }
 
-  virtual std::optional<double> Visibility() const { return _vis; }
+  std::optional<double> Visibility() const override { return _vis; }
 
-  virtual std::optional<distance_units> VisibilityUnits() const
+  std::optional<distance_units> VisibilityUnits() const override
   {
     return _vis_units;
   }
 
-  virtual bool isVisibilityLessThan() const { return _vis_lt; }
+  bool isVisibilityLessThan() const override { return _vis_lt; }
   
-  virtual bool isCAVOK() const { return _cavok; }
+  bool isCAVOK() const override { return _cavok; }
       
-  virtual std::optional<int> VerticalVisibility() const { return _vert_vis; }
+  std::optional<int> VerticalVisibility() const override { return _vert_vis; }
   
-  virtual std::optional<int> Temperature() const { return _temp; }
+  std::optional<int> Temperature() const override { return _temp; }
 
-  virtual std::optional<int> DewPoint() const { return _dew; }
+  std::optional<int> DewPoint() const override { return _dew; }
 
-  virtual std::optional<double> AltimeterA() const { return _altimeterA; }
+  std::optional<double> AltimeterA() const override { return _altimeterA; }
 
-  virtual std::optional<int> AltimeterQ() const { return _altimeterQ; }
+  std::optional<int> AltimeterQ() const override { return _altimeterQ; }
 
-  virtual std::optional<double> SeaLevelPressure() const { return _slp; }
+  std::optional<double> SeaLevelPressure() const override { return _slp; }
 
-  virtual std::optional<double> TemperatureNA() const { return _ftemp; }
+  std::optional<double> TemperatureNA() const override { return _ftemp; }
 
-  virtual std::optional<double> DewPointNA() const { return _fdew; }
+  std::optional<double> DewPointNA() const override { return _fdew; }
 
-  virtual unsigned int NumCloudLayers() const
+  unsigned int NumCloudLayers() const override
   { 
     return _layers.size(); 
   }
 
-  std::shared_ptr<Clouds> Layer(unsigned int idx) const
+  std::shared_ptr<Clouds> Layer(unsigned int idx) const override
   {
     if (idx < NumCloudLayers())
     {
@@ -286,12 +286,12 @@ public:
     return nullptr;
   }
 
-  unsigned int NumPhenomena() const
+  unsigned int NumPhenomena() const override
   {
     return _phenomena.size();
   }
 
-  const Phenom& Phenomenon(unsigned int idx) const
+  const Phenom& Phenomenon(unsigned int idx) const override
   {
     if (idx < NumPhenomena())
     {

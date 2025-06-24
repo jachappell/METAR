@@ -39,7 +39,7 @@ namespace
   const char *VA = "VA";
 }
 
-class PhenomImpl : public Phenom 
+class PhenomImpl final : public Phenom
 {
 public:
   PhenomImpl(bool tempo,
@@ -70,16 +70,14 @@ public:
   PhenomImpl(const PhenomImpl&) = delete;
   PhenomImpl& operator=(const PhenomImpl&) = delete;
 
-  ~PhenomImpl() = default;
+  ~PhenomImpl() override = default;
 
-  unsigned int NumPhenom() const 
-  { 
+  unsigned int NumPhenom() const override {
     return _phenoms.size();
   }
 
-  virtual phenom operator[](typename std::vector<Phenom>::size_type
-                            idx) const
-  {
+  phenom operator[](typename std::vector<Phenom>::size_type
+                            idx) const override {
     if (idx < NumPhenom())
     {
       return _phenoms[idx];
@@ -88,16 +86,16 @@ public:
     return phenom::NONE;
   }
 
-  virtual intensity Intensity() const { return _intensity; }
-  virtual bool Blowing() const { return _blowing; }
-  virtual bool Freezing() const { return _freezing; }
-  virtual bool Drifting() const { return _drifting; }
-  virtual bool Vicinity() const { return _vicinity; }
-  virtual bool Partial() const { return _partial; }
-  virtual bool Shallow() const { return _shallow; }
-  virtual bool Patches() const { return _patches; }
-  virtual bool ThunderStorm() const { return _ts; }
-  virtual bool Temporary() const { return _tempo; }
+  intensity Intensity() const override { return _intensity; }
+  bool Blowing() const override { return _blowing; }
+  bool Freezing() const override { return _freezing; }
+  bool Drifting() const override { return _drifting; }
+  bool Vicinity() const override { return _vicinity; }
+  bool Partial() const override { return _partial; }
+  bool Shallow() const override { return _shallow; }
+  bool Patches() const override { return _patches; }
+  bool ThunderStorm() const override { return _ts; }
+  bool Temporary() const override { return _tempo; }
 
 private:
   std::vector<phenom> _phenoms;
@@ -106,7 +104,7 @@ private:
   bool _freezing;
   bool _drifting;
   bool _vicinity;
-  bool _shower;
+  bool _shower{};
   bool _partial;
   bool _shallow;
   bool _patches;
@@ -117,7 +115,7 @@ private:
 std::shared_ptr<Phenom> Phenom::Create(const char *str, bool tempo)
 {
   std::vector<Phenom::phenom> p;
-  Phenom::intensity inten = Phenom::intensity::NORMAL;
+  intensity inten = Phenom::intensity::NORMAL;
   bool blowing = false;
   bool freezing = false;
   bool drifting = false;
@@ -280,7 +278,7 @@ std::shared_ptr<Phenom> Phenom::Create(const char *str, bool tempo)
   }
 
   if (
-      (p.size() > 0)
+      (!p.empty())
       || blowing
       || freezing
       || drifting
