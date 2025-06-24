@@ -27,7 +27,7 @@ $ make<br />
 To build and run tests:<br />
 $ cd tests <br />
 $ mkdir build<br />
-$ cd build
-$ cmake ..
-$ make
+$ cd build<br />
+$ cmake ..<br />
+$ make<br />
 $ ./metar_test
